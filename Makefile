@@ -1,13 +1,13 @@
 UV := uv
-FILE := src/__main__.py
-
+FILE := src/pac-man.py
+CONFIG := ../*.json
 .PHONY: install run debug clean lint lint-strict
 
 install:
 	$(UV) sync
 
 run:
-	$(UV) run python -m src
+	$(UV) run python -m src $(CONFIG)
 
 debug:
 	$(UV) run python -m pdb $(FILE)
