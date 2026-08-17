@@ -3,6 +3,12 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# fichier a ne pas rendre
+*.pdf
+*.zip
+*.whl
+.gitignore
+
 # C extensions
 *.so
 
