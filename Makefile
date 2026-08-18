@@ -1,6 +1,6 @@
 UV := uv
-FILE := src/pac-man.py
-CONFIG := ../*.json
+FILE := src/__main__.py
+CONFIG := ./config.json
 .PHONY: install run debug clean lint lint-strict
 
 install:

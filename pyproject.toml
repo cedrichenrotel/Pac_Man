@@ -5,6 +5,7 @@ description = "Add your description here"
 requires-python = ">=3.10"
 dependencies = [
     "mazegenerator",
+    "pydantic>=2.13.4",
     "pygame>=2.6.1",
 ]
 
