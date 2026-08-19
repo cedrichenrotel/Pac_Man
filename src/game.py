@@ -23,7 +23,11 @@ class Game():
         if (mlx_window is None):
             # soit terminer le code soit relancer ?
             pass
-        self.current_scene = MenuScene(mlx_init, mlx_window)
+        self.current_scene = MenuScene(self.mlx, mlx_init, mlx_window,
+                                       self.width, self.height)
+        # self.mlx.mlx_loop(mlx_init)
+        self.current_scene.launch()
+        # self.mlx.mlx_loop(mlx_init)
         print("test")
         time.sleep(2)
         # a changer par la boucle
