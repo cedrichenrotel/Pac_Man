@@ -1,7 +1,6 @@
 import sys
 try:
     from pydantic import BaseModel, model_validator, Field
-    from typing import Any
 except ImportError:
     sys.exit()
 
@@ -13,13 +12,15 @@ class Level(BaseModel):
 
     @model_validator(mode="before")
     def check_dimensions(cls, values):
-        if values.get("width", 0) <= 2 or not isinstance("width", int):
-            print(f"[WARNING] invalid width, using default")
-            width = 15
-        
-        if values.get("height", 0) <= 2 or not isinstance("height", int):
-            print(f"[WARNING] invalid height, using default")
-            height = 15
+        if (not isinstance(values.get("width"), int) or
+                values.get("width", 0) <= 2):
+            values["width"] = 15
+            print("[WARNING] invalid width, using default.")
+
+        if (not isinstance(values.get("height"), int) or
+                values.get("height", 0) <= 2):
+            values["height"] = 15
+            print("[WARNING] invalid height, using default.")
         return values
 
 
@@ -38,28 +39,44 @@ class Config_json(BaseModel):
     @model_validator(mode="before")
     def check_config_values(cls, values):
 
-        if values.get("highscore_filename", str) == "" or not isinstance("highscore_filename", str):
-            print(f"[WARNING] invalid highscore_filename, using default")
+        if (not isinstance(values.get("highscore_filename"), str) or
+                values.get("highscore_filename", str) == ""):
             values["highscore_filename"] = "highscore.json"
-        if values.get("lives", int) <= 0 or not isinstance("lives", int):
-            print(f"[WARNING] invalid lives, using default")
+            print("[WARNING] invalid highscore_filename, using default.")
+
+        if (not isinstance(values.get("lives"), int) or
+                values.get("lives", int) <= 0):
             values["lives"] = 3
-        if values.get("pacgum", int) < 0 or not isinstance("pacgum", int):
-            print(f"[WARNING] invalid pacgum, using default")
+            print("[WARNING] invalid lives, using default.")
+
+        if (not isinstance(values.get("pacgum"), int) or
+                values.get("pacgum", int) < 0):
             values["pacgum"] = 42
-        if values.get("points_per_pacgum", int) < 0 or not isinstance("points_per_pacgum", int):
-            print(f"[WARNING] invalid points_per_pacgum, using default")
-            values["points_per_pacgum"] = 42
-        if values.get("points_per_super_pacgum", int) < 0 or not isinstance("points_per_super_pacgum", int):
-            print(f"[WARNING] invalid points_per_super_pacgum, using default")
+            print("[WARNING] invalid pacgum, using default.")
+
+        if (not isinstance(values.get("points_per_pacgum"), int) or
+                values.get("points_per_pacgum", int) < 0):
+            values["points_per_pacgum"] = 10
+            print("[WARNING] invalid points_per_pacgum, using default.")
+
+        if (not isinstance(values.get("points_per_super_pacgum"), int) or
+                values.get("points_per_super_pacgum", int) < 0):
             values["points_per_super_pacgum"] = 50
-        if values.get("points_per_ghost", int) < 0 or not isinstance("points_per_ghost", int):
-            print(f"[WARNING] invalid points_per_ghost, using default")
+            print("[WARNING] invalid points_per_super_pacgum, using default.")
+
+        if (not isinstance(values.get("points_per_ghost"), int) or
+                values.get("points_per_ghost", int) < 0):
             values["points_per_ghost"] = 200
-        if values.get("seed", int) < 0 or not isinstance("seed", int):
-            print(f"[WARNING] invalid seed, using default")
+            print("[WARNING] invalid points_per_ghost, using default.")
+
+        if (not isinstance(values.get("seed"), int) or
+                values.get("seed", int) < 0):
             values["seed"] = 42
-        if values.get("level_max_time", int) < 0 or not isinstance("level_max_time", int):
-            print(f"[WARNING] invalid , using default")
+            print("[WARNING] invalid seed, using default.")
+
+        if (not isinstance(values.get("level_max_time"), int) or
+                values.get("level_max_time", int) < 0):
             values["level_max_time"] = 90
+            print("[WARNING] invalid level_max_time, using default.")
+
         return values
