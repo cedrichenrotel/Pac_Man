@@ -6,7 +6,6 @@ __pycache__/
 # fichier a ne pas rendre
 *.pdf
 *.zip
-*.whl
 .gitignore
 
 # C extensions
