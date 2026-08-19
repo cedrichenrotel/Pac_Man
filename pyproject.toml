@@ -5,12 +5,14 @@ description = "Add your description here"
 requires-python = ">=3.10"
 dependencies = [
     "mazegenerator",
+    "mlx",
     "pydantic>=2.13.4",
     "pygame>=2.6.1",
 ]
 
 [tool.uv.sources]
-mazegenerator = { path = "mazegenerator-2.1.0-py3-none-any.whl" }
+mazegenerator = { path = "lib/mazegenerator-2.1.0-py3-none-any.whl" }
+mlx = { path = "lib/mlx-2.2-py3-none-any.whl" }
 
 [dependency-groups]
 dev = [
