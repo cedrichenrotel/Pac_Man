@@ -20,11 +20,18 @@ def main()->None:
 
         try:
             config_path: Path = valid_type_file(Path(args.config))
-            parse_config_json:  = load_json(config_path)
+            parse_config_json = load_json(config_path)
         except Exception as e:
             print(f"[ERROR]: {e}")
+            sys.exit()
+
+        try:
+            config = Config_json(**parse_config_json)
+        except Exception as e:
+            print(f"[WARNING] Invalid config values: {e}")
+
     except KeyboardInterrupt:
-        print("[WARNING]: The programme was stopped manually\n")
+        print("[WARNING]: The programme was stopped manually")
         sys.exit()
     return
 
