@@ -1,9 +1,10 @@
-import ctypes
 from mlx import Mlx
 
-# libmlx.so utilise strlcpy (fonction BSD) sans lier libbsd correctement,
-# on la precharge en RTLD_GLOBAL pour que le symbole soit resolu au chargement.
-ctypes.CDLL("libbsd.so.0", mode=ctypes.RTLD_GLOBAL)
+
+class MenuScene():
+    def __init__(self, width: int, height: int):
+        self.width = width
+        self.height = height
 
 
 def mymouse(button, x, y, mystuff):
