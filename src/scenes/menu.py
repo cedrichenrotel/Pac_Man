@@ -12,49 +12,49 @@ GRAY = make_color(128, 128, 128)
 DARK_GRAY = make_color(60, 60, 60)
 YELLOW = make_color(255, 255, 0)
 
+XK_UP = 65362
+XK_DOWN = 65364
+XK_RETURN = 65293
+
 
 class MenuScene(Scene):
-    def __init__(self, mlx, mlx_init, mlx_window, width, height):
+    def __init__(self, game, mlx, mlx_init, mlx_window, width, height):
+        self.game = game
         self.width = width
         self.height = height
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
+        self.selected = 0
+        self.entries = [
+              ("Start Game", self.game.start_game),
+              ("View Highscores", self.game.show_highscores),
+              ("Instructions", self.game.show_instructions),
+              ("Exit", self.game.quit_game),
+          ]
 
     def get_calc(self):
         self.middle_w = int(self.width / 2) - 100
         self.middle_h = int(self.height / 2) - 100
         self.step = 40
 
-    # def write_banner(self, width, height):
-    #     for i in range(1, self.step):
-    #         self.mlx.mlx_pixel_put(self.mlx_init, self.mlx_window,
-    #                                width, height + i, GRAY)
-    #     for i in range(1, 150):
-    #         self.mlx.mlx_pixel_put(self.mlx_init, self.mlx_window, width + i,
-    #                                height, GRAY)
-    #         self.mlx.mlx_pixel_put(self.mlx_init, self.mlx_window, width + i,
-    #                                height + 20, GRAY)
+    def draw_selector(self, x, y):
+        height = 12
+        for dy in range(-height // 2, height // 2 + 1):
+            width = height // 2 - abs(dy)
+            for dx in range(width):
+                self.mlx.mlx_pixel_put(self.mlx_init, self.mlx_window,
+                                       x + dx, y + dy, LIGHT_GRAY)
 
-    def write_title(self):
-        # self.write_banner(self.middle_w, self.middle_h)
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window, self.middle_w,
-                                self.middle_h, YELLOW, "Start Game")
-
-        # self.write_banner(self.middle_w, self.middle_h + self.step)
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window, self.middle_w,
-                                self.middle_h + self.step,
-                                YELLOW, "View Highscores")
-
-        # self.write_banner(self.middle_w, self.middle_h + self.step*2)
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window, self.middle_w,
-                                self.middle_h + self.step*2,
-                                YELLOW, "Instructions")
-
-        # self.write_banner(self.middle_w, self.middle_h + self.step*3)
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window, self.middle_w,
-                                self.middle_h + self.step*3, YELLOW,
-                                "Exit")
+    def draw_menu(self):
+        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+        self.install_menu_image()
+        for i, (label, _action) in enumerate(self.entries):
+            y = self.middle_h + self.step * i
+            if i == self.selected:
+                self.draw_selector(self.middle_w - 20, y + 10)
+            self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                    self.middle_w, y, YELLOW, label)
 
     def install_menu_image(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -71,9 +71,17 @@ class MenuScene(Scene):
             self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
                                              img_ptr, int(left_space / 2), 0)
 
+    def on_key(self, keycode, param):
+        if keycode == XK_UP:
+            self.selected = (self.selected - 1) % len(self.entries)
+            self.draw_menu()
+        elif keycode == XK_DOWN:
+            self.selected = (self.selected + 1) % len(self.entries)
+            self.draw_menu()
+        elif keycode == XK_RETURN:
+            self.entries[self.selected][1]()
+
     def launch(self):
-        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.get_calc()
-        self.install_menu_image()
-        self.write_title()
-        self.mlx.mlx_do_sync(self.mlx_init)
+        self.draw_menu()
+        self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)

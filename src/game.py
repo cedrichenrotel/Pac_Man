@@ -1,6 +1,6 @@
 from src.scenes.menu import MenuScene
 from mlx import Mlx
-import time
+# import time
 
 
 class Game():
@@ -10,30 +10,34 @@ class Game():
         self.running = True
         self.mlx = Mlx()
 
+    def run(self):
+        self.mlx_init = self.mlx.mlx_init()
+        if self.mlx_init is None:
+            return
+        self.mlx_window = self.mlx.mlx_new_window(self.mlx_init, self.width,
+                                                  self.height, "Pac-Man")
+        if self.mlx_window is None:
+            return
+        self.current_scene = MenuScene(self, self.mlx, self.mlx_init,
+                                       self.mlx_window,
+                                       self.width,
+                                       self.height)
+        self.current_scene.launch()
+        self.mlx.mlx_loop(self.mlx_init)
+        self.mlx.mlx_release(self.mlx_init)
+
     def change_scene(self, new_scene):
         self.current_scene = new_scene
 
-    def run(self):
-        mlx_init = self.mlx.mlx_init()
-        if (mlx_init is None):
-            # soit terminer le code soit relancer ?
-            pass
-        mlx_window = self.mlx.mlx_new_window(mlx_init, self.width,
-                                             self.height, "Pac-Man")
-        if (mlx_window is None):
-            # soit terminer le code soit relancer ?
-            pass
-        self.current_scene = MenuScene(self.mlx, mlx_init, mlx_window,
-                                       self.width, self.height)
-        # self.mlx.mlx_loop(mlx_init)
-        self.current_scene.launch()
-        # self.mlx.mlx_loop(mlx_init)
-        print("test")
-        time.sleep(2)
-        # a changer par la boucle
-        # while self.running:
-        #     pass
-        self.mlx.mlx_release(mlx_init)
+    def start_game(self):
+        print("start game (TODO: scene level)")
 
-    # def change_scene(self):
-    #     pass
+    def show_highscores(self):
+        print("show highscores (TODO: scene score)")
+
+    def show_instructions(self):
+        print("show instructions (TODO)")
+
+    def quit_game(self):
+        self.running = False
+        self.mlx.mlx_loop_exit(self.mlx_init)
