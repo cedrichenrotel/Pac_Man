@@ -6,6 +6,7 @@ requires-python = ">=3.10"
 dependencies = [
     "mazegenerator",
     "mlx",
+    "pillow>=12.3.0",
     "pydantic>=2.13.4",
     "pygame>=2.6.1",
 ]
