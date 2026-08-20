@@ -1,6 +1,5 @@
 import sys
 try:
-    from src.error import ParseError
     from src.parse_config import parse_args, valid_type_file
     from src.load_config import load_json, read_json
     from src.model import Config_json, Level
