@@ -1,5 +1,5 @@
 def check_comments(data: str) -> str:
-    """ supports comments. Lines beginning with “#” are comments 
+    """ supports comments. Lines beginning with “#” are comments
         and should be ignored """
 
     in_block_comment: bool = False

@@ -25,6 +25,7 @@ class Level(BaseModel):
 
 
 class Config_json(BaseModel):
+    """Configuration model for the Pac-Man game."""
 
     highscore_filename: str = Field(default="highscore.json")
     lives: int = Field(default=3)
