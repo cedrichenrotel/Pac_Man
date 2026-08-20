@@ -7,17 +7,18 @@ try:
 except ImportError:
     sys.exit()
 
-def read_json(file: Path | str) -> str:
+# def read_json(file: Path | str) -> str:
 
-    with open(file, 'r') as f:
-        text: str = f.read()
-        data: str = check_comments(text)
-    return (data)
+#     with open(file, 'r') as f:
+#         text: str = f.read()
+#         data: str = check_comments(text)
+#     return (data)
 
 def load_json(file: Path | str) -> Any:
 
     with open(file, 'r') as f:
-        data = json.load(f)
+        text: str = f.read()
+        data: str = check_comments(text)
     return data
 
 

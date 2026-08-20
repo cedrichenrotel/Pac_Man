@@ -20,8 +20,6 @@ def main()->None:
 
         try:
             config_path: Path = valid_type_file(Path(args.config))
-
-            
             parse_config_json = load_json(config_path)
         except Exception as e:
             print(f"[ERROR]: {e}")
