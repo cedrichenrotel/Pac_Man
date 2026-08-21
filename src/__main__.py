@@ -3,19 +3,20 @@ try:
     from src.parse_config import parse_args, valid_type_file
     from src.load_config import load_json, read_json
     from src.model import Config_json, Level
+    from mazegenerator import MazeGenerator
     from typing import Any
     from pathlib import Path
     import argparse
-#	from pydantic import ValidationError
 except ImportError as e:
     print(f'[IMPORT ERROR]: {e}')
     sys.exit()
 
 
-def main()->None:
+def main() -> None:
 
     try:
         args: argparse.Namespace = parse_args()
+        generator = MazeGenerator()
 
         try:
             config_path: Path = valid_type_file(Path(args.config))
