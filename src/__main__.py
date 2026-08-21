@@ -1,8 +1,7 @@
 import sys
 try:
-    from src.error import ParseError
     from src.parse_config import parse_args, valid_type_file
-    from src.load_config import load_json
+    from src.load_config import load_json, read_json
     from src.model import Config_json, Level
     from typing import Any
     from pathlib import Path
@@ -20,13 +19,14 @@ def main()->None:
 
         try:
             config_path: Path = valid_type_file(Path(args.config))
-            parse_config_json = load_json(config_path)
+            clean_config_json: str = read_json(config_path)
+            load_config_json: dict[str, Any] = load_json(clean_config_json)
         except Exception as e:
             print(f"[ERROR]: {e}")
             sys.exit()
 
         try:
-            config = Config_json(**parse_config_json)
+            config: Config_json = Config_json(**load_config_json)
         except Exception as e:
             print(f"[WARNING] Invalid config values: {e}")
 
