@@ -5,3 +5,6 @@ try:
 except ImportError as e:
     print(f'[IMPORT ERROR]: {e}')
     sys.exit()
+
+class Entities:
+    def __init__(self)
