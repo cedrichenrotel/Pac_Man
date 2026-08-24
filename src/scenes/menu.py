@@ -24,6 +24,7 @@ class MenuScene:
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
         self.selected: int = 0
+        self.img: Tuple[Optional[int], int, int] = (0, 0, 0)
         self.entries: List[Tuple[str, Callable[[], None]]] = [
               ("Start Game", self.start_game),
               ("View Highscores", self.show_highscores),
@@ -49,7 +50,11 @@ class MenuScene:
     def draw_menu(self) -> None:
         '''install the title with them redirections'''
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.install_menu_image()
+        if self.img[0]:
+            img_ptr, img_width, _ = self.img
+            left_space = self.width - img_width
+            self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                             img_ptr, int(left_space / 2), 0)
         for i, (label, _action) in enumerate(self.entries):
             y = self.middle_h + self.step * i
             if i == self.selected:
@@ -65,9 +70,7 @@ class MenuScene:
         image_path = os.path.normpath(image_path)
         Image.open(image_path).convert("RGBA").save(image_path)
 
-        self.img: Tuple[Optional[int],
-                        int,
-                        int] = self.mlx.mlx_png_file_to_image(
+        self.img = self.mlx.mlx_png_file_to_image(
             self.mlx_init, image_path)
         img_ptr, img_width, img_height = self.img
 
@@ -92,11 +95,15 @@ class MenuScene:
 
     def launch(self) -> None:
         self.get_calc()
+        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+        self.install_menu_image()
         self.draw_menu()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
     def start_game(self) -> None:
         '''redirect to the level scene'''
+        if self.img[0]:
+            self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
         self.game.current_scene = LevelScene(self.game, self.mlx,
                                              self.mlx_init, self.mlx_window,
                                              self.width, self.height)
@@ -104,6 +111,8 @@ class MenuScene:
 
     def show_highscores(self) -> None:
         '''redirect to the score scene'''
+        if self.img[0]:
+            self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
         self.game.current_scene = ScoreScene(self.game, self.mlx,
                                              self.mlx_init, self.mlx_window,
                                              self.width, self.height)
@@ -111,6 +120,8 @@ class MenuScene:
 
     def show_instructions(self) -> None:
         '''redirect to the instruction scene'''
+        if self.img[0]:
+            self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
         self.game.current_scene = InstructionScene(self.game, self.mlx,
                                                    self.mlx_init,
                                                    self.mlx_window,
