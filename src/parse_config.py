@@ -1,9 +1,10 @@
 import sys
+from utils import COLORS
 try:
     from pathlib import Path
     import argparse
 except ImportError as e:
-    print(f'[IMPORT ERROR]: {e}')
+    print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()
 
 

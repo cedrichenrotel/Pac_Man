@@ -71,7 +71,7 @@ def make_color(r: int, g: int, b: int, a: int = 255) -> int:
     return r | (g << 8) | (b << 16) | (a << 24)
 
 
-'''basics color'''
+'''basics color for mlx'''
 red: int = make_color(255, 0, 0, 0)
 green: int = make_color(0, 255, 0, 0)
 blue: int = make_color(0, 0, 255, 0)
@@ -86,3 +86,27 @@ XK_UP: int = 65362
 XK_DOWN: int = 65364
 XK_RETURN: int = 65293
 XK_ESCAPE: int = 65307
+
+
+'''color for print in terminal'''
+COLORS = {
+    "reset": "\033[0m",
+    "bold": "\033[1m",
+    "underline": "\033[4m",
+    "black": "\033[30m",
+    "red": "\033[31m",
+    "green": "\033[32m",
+    "yellow": "\033[33m",
+    "blue": "\033[34m",
+    "magenta": "\033[35m",
+    "cyan": "\033[36m",
+    "white": "\033[37m",
+    "bright_black": "\033[90m",
+    "bright_red": "\033[91m",
+    "bright_green": "\033[92m",
+    "bright_yellow": "\033[93m",
+    "bright_blue": "\033[94m",
+    "bright_magenta": "\033[95m",
+    "bright_cyan": "\033[96m",
+    "bright_white": "\033[97m",
+}

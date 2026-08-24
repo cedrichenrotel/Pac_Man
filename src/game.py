@@ -4,7 +4,7 @@ from src.scenes.level import LevelScene
 from src.scenes.score import ScoreScene
 from src.scenes.instruction import InstructionScene
 from mlx import Mlx
-# import time
+from src.error import GameError
 
 SceneType = Union[MenuScene, LevelScene, ScoreScene, InstructionScene]
 
@@ -22,11 +22,11 @@ class Game():
         """launch mlx threw the menu scene"""
         self.mlx_init: Optional[int] = self.mlx.mlx_init()
         if self.mlx_init is None:
-            return
+            raise GameError("Cannot init properly the mlx")
         self.mlx_window: Optional[int] = self.mlx.mlx_new_window(
             self.mlx_init, self.width, self.height, "Pac-Man")
         if self.mlx_window is None:
-            return
+            raise GameError("Cannot init properly the window of mlx")
         self.current_scene: SceneType = MenuScene(self, self.mlx,
                                                   self.mlx_init,
                                                   self.mlx_window,
