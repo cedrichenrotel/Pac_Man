@@ -58,26 +58,26 @@ class Config_json(BaseModel):
         if (not isinstance(values.get("points_per_pacgum"), int) or
                 values.get("points_per_pacgum", int) < 0):
             values["points_per_pacgum"] = 10
-            print("[WARNING] invalid points_per_pacgum, using default.")
+            print("[WARNING] Invalid points_per_pacgum, using default.")
 
         if (not isinstance(values.get("points_per_super_pacgum"), int) or
                 values.get("points_per_super_pacgum", int) < 0):
             values["points_per_super_pacgum"] = 50
-            print("[WARNING] invalid points_per_super_pacgum, using default.")
+            print("[WARNING] Invalid points_per_super_pacgum, using default.")
 
         if (not isinstance(values.get("points_per_ghost"), int) or
                 values.get("points_per_ghost", int) < 0):
             values["points_per_ghost"] = 200
-            print("[WARNING] invalid points_per_ghost, using default.")
+            print("[WARNING] Invalid points_per_ghost, using default.")
 
         if (not isinstance(values.get("seed"), int) or
                 values.get("seed", int) < 0):
             values["seed"] = 42
-            print("[WARNING] invalid seed, using default.")
+            print("[WARNING] Invalid seed, using default.")
 
         if (not isinstance(values.get("level_max_time"), int) or
                 values.get("level_max_time", int) < 0):
             values["level_max_time"] = 90
-            print("[WARNING] invalid level_max_time, using default.")
+            print("[WARNING] Invalid level_max_time, using default.")
 
         return values

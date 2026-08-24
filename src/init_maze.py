@@ -4,6 +4,7 @@ try:
     from src.error import ParseError
     from src.model import Config_json
     from mazegenerator import MazeGenerator
+    # from src.entities import
 except ImportError as e:
     print(f'[IMPORT ERROR]: {e}')
     sys.exit()
@@ -18,6 +19,7 @@ class RenderMaze:
         self.maze: MazeGenerator = maze
         self.config: Config_json = config
         self.pacgum_pos: list[tuple[int, int]] = []
+        self.reserved_pos: list[tuple[int, int]] = []
 
     def config_start(self) -> int:
 
@@ -28,16 +30,19 @@ class RenderMaze:
         """ initialises the pagums in the maze at random and stores
             their positions in a list """
 
+        nb_pacgum: int = self.config.pacgum
         pos_start: tuple[int, int] = self.maze.maze_entry
         lst_pos_val: list[tuple[int, int]] = []
 
         for y, line in enumerate(self.maze.maze):
             for x, val in enumerate(line):
-                if val != 15 and (x, y) != pos_start:
+                if (val != 15 and (x, y) != pos_start and
+                   (x, y) not in self.reserved_pos):
                     lst_pos_val.append((x, y))
 
-        if (self.config.pacgum > len(lst_pos_val)):
-            raise ParseError("Init_pacgum() -> The pagum count is too large "
-                             "relative to the valid position list")
-        self.pacgum_pos = random.sample(lst_pos_val, self.config.pacgum)
+        if (nb_pacgum > len(lst_pos_val)):
+            nb_pacgum = len(lst_pos_val)
+            print("[WARNING] Number of pacgum too high, using default")
+
+        self.pacgum_pos = random.sample(lst_pos_val, nb_pacgum)
         return 1

@@ -4,7 +4,7 @@ try:
     from src.error import ParseError
     from src.parse_config import parse_args, valid_type_file
     from src.load_config import load_json, read_json
-    from src.model import Config_json, Level
+    from src.model import Config_json
     from mazegenerator import MazeGenerator
     from typing import Any
     from pathlib import Path
@@ -38,7 +38,7 @@ def main() -> None:
         except ParseError as e:
             print(f"[ERROR] Init_maze.py: {e}")
             sys.exit()
-    except KeyboardInterrupt:
+    except (Exception, KeyboardInterrupt):
         print("[WARNING]: The programme was stopped manually")
         sys.exit()
     return
