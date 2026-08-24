@@ -2,17 +2,22 @@ import sys
 try:
     from pathlib import Path
     from typing import Any
+    from src.utils import check_comments
     import json
 except ImportError:
     sys.exit()
 
 
-def load_json(file: Path | str) -> Any:
+def read_json(file: Path | str) -> str:
 
     with open(file, 'r') as f:
-        data = json.load(f)
+        text: str = f.read()
+        data: str = check_comments(text)
+    return (data)
 
-    return data
+
+def load_json(file: str) -> dict[str, Any]:
+    return json.loads(file)
 
 
 def create_json(file: Path, data: list[dict[str, Any]]) -> None:

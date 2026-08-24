@@ -10,9 +10,10 @@ except ImportError as e:
 def valid_type_file(p: Path) -> Path:
 
     if not p.is_file():
-        raise ValueError(f'The path to the {p} file does not exist')
+        raise ValueError(f'Valide_type_file -> The path to the {p} file'
+                         f' does not exist')
     if p.suffix != '.json':
-        raise ValueError(f'{p}: Incorrect file format')
+        raise ValueError(f'Valide_type_file -> "{p}" is not a valid JSON file')
     return p
 
 

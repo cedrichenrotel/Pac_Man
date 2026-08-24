@@ -8,7 +8,6 @@ __pycache__/
 *.zip
 .gitignore
 .vscode
-
 # C extensions
 *.so
 
