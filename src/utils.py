@@ -1,5 +1,7 @@
 def clean_lines_comments(line: str, copie_upto: int) -> tuple[list[str], bool]:
-    """ returns the elements in the line that are not part of a comment """
+    """ Returns the elements of the line that are not part of a comment and
+        a boolean value indicating whether the line is within an
+        unclosed comment block """
 
     in_block_comment: bool = False
     in_string: bool = False
@@ -36,8 +38,8 @@ def clean_lines_comments(line: str, copie_upto: int) -> tuple[list[str], bool]:
 
 
 def check_comments(data: str) -> str:
-    """ supports comments. Lines beginning with “#” are comments
-        and should be ignored """
+    """ extracts uncommented elements (those without #, // or /* */) and
+        tidies up the lines """
 
     rst: list[str] = []
     in_block_comment: bool = False
