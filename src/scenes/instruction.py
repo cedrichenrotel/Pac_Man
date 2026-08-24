@@ -3,13 +3,13 @@ from typing import Optional, TYPE_CHECKING
 from src.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
 from mlx import Mlx
 
-# guarded to avoid a circular import: game.py imports LevelScene at module
-# level, so Game can only be imported here for type hints
+# guarded to avoid a circular import: game.py imports InstructionScene at
+# module level, so Game can only be imported here for type hints
 if TYPE_CHECKING:
     from src.game import Game
 
 
-class LevelScene:
+class InstructionScene:
     def __init__(self, game: "Game", mlx: Mlx, mlx_init: Optional[int],
                  mlx_window: Optional[int], width: int, height: int) -> None:
         self.game = game
@@ -20,12 +20,12 @@ class LevelScene:
         self.mlx_window = mlx_window
 
     def launch(self) -> None:
-        '''display the level scene'''
+        '''display the instructions scene'''
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
                                 int(self.height / 2),
-                                YELLOW, "Level (TODO)")
+                                YELLOW, "Instructions (TODO)")
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
                                 int(self.height / 2) + 40,
