@@ -1,5 +1,5 @@
 import sys
-from utils import COLORS
+from src.utils import COLORS
 try:
     from pydantic import BaseModel, model_validator, Field
 except ImportError:

@@ -1,5 +1,5 @@
 import sys
-from utils import COLORS
+from src.utils import COLORS
 try:
     from src.error import ParseError
     from src.model import Config_json
