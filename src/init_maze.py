@@ -1,13 +1,13 @@
 import sys
+from src.utils import COLORS
 try:
     import random
     from src.utils import get_corners, get_center_maze
-    from src.error import ParseError
     from src.model import Config_json
     from mazegenerator import MazeGenerator
     from src.entities import Pacman, Ghost
 except ImportError as e:
-    print(f'[IMPORT ERROR]: {e}')
+    print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()
 
 
@@ -40,7 +40,8 @@ class RenderMaze:
 
         if (nb_pacgum > len(lst_pos_val)):
             nb_pacgum = len(lst_pos_val)
-            print("[WARNING] Number of pacgum too high, using default")
+            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                  "Number of pacgum too high, using default")
 
         self.pacgum_pos = random.sample(lst_pos_val, nb_pacgum)
 

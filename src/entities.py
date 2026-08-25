@@ -1,8 +1,9 @@
 import sys
+from src.utils import COLORS
 try:
     from mazegenerator import MazeGenerator
 except ImportError as e:
-    print(f'[IMPORT ERROR]: {e}')
+    print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()
 
 
