@@ -14,12 +14,12 @@ class Level(BaseModel):
     @model_validator(mode="before")
     def check_dimensions(cls, values: dict[str, Any]) -> dict[str, Any]:
         if (not isinstance(values.get("width"), int) or
-                values.get("width", 0) <= 2):
+                values.get("width", 0) < 15):
             values["width"] = 15
             print("[WARNING] invalid width, using default.")
 
         if (not isinstance(values.get("height"), int) or
-                values.get("height", 0) <= 2):
+                values.get("height", 0) < 15):
             values["height"] = 15
             print("[WARNING] invalid height, using default.")
         return values
@@ -80,5 +80,10 @@ class Config_json(BaseModel):
                 values.get("level_max_time", int) < 0):
             values["level_max_time"] = 90
             print("[WARNING] Invalid level_max_time, using default.")
+
+        if (not isinstance(values.get("level"), list) or
+                len(values.get("level", [])) == 0):
+            values["level"] = [{"width": 15, "height": 15}]
+            print("[WARNING] Invalid level, using default.")
 
         return values

@@ -1,3 +1,12 @@
+import sys
+try:
+    from mazegenerator import MazeGenerator
+    from src.model import Config_json
+except ImportError as e:
+    print(f'[IMPORT ERROR]: {e}')
+    sys.exit()
+
+
 def clean_lines_comments(line: str, copie_upto: int) -> tuple[list[str], bool]:
     """ Returns the elements of the line that are not part of a comment and
         a boolean value indicating whether the line is within an
@@ -64,3 +73,23 @@ def check_comments(data: str) -> str:
         data_lines[i] = ''.join(rst)
     data_clean: str = '\n'.join(data_lines)
     return data_clean
+
+
+def get_corners(maze: MazeGenerator) -> dict[str, tuple[int, int]]:
+    """ locating the four corners of the maze dans un dict """
+
+    height: int = len(maze.maze) - 1
+    width: int = len(maze.maze[0]) - 1
+
+    return {
+     'top_left': (0, 0),
+     'top_right': (width, 0),
+     'low_left': (0, height),
+     'low_right': (width, height)
+    }
+
+
+def get_center_maze(config: Config_json) -> tuple[int, int]:
+    """ locates the centre of the maze """
+
+    return (config.level[0].width // 2, config.level[0].height // 2)
