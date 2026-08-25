@@ -1,7 +1,7 @@
 import sys
 try:
     import random
-    from src.utils import get_corners
+    from src.utils import get_corners, get_center_maze
     from src.error import ParseError
     from src.model import Config_json
     from mazegenerator import MazeGenerator
@@ -55,8 +55,8 @@ class RenderMaze:
     def init_pacman(self) -> bool:
         """ Initialising the pacman on the maze """
 
-        x, y = self.maze.maze_entry
-        self.reserved_pos.append(self.maze.maze_entry)
+        x, y = get_center_maze(self.maze)
+        self.reserved_pos.append((x, y))
         self.pacman = Pacman(x, y, self.config.lives)
         return True
 

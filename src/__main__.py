@@ -1,6 +1,5 @@
 import sys
 try:
-    from src.utils import get_center_maze
     from src.init_maze import RenderMaze
     from src.error import ParseError
     from src.parse_config import parse_args, valid_type_file
@@ -33,11 +32,8 @@ def main() -> None:
         except Exception as e:
             print(f"[WARNING] Invalid config values: {e}")
 
-        center_cell: tuple[int, int] = get_center_maze(config)
-
         generator = MazeGenerator(
             size=(config.level[0].width, config.level[0].height),
-            entry_cell=center_cell,
             seed=config.seed
             )
 

@@ -1,7 +1,6 @@
 import sys
 try:
     from mazegenerator import MazeGenerator
-    from src.model import Config_json
 except ImportError as e:
     print(f'[IMPORT ERROR]: {e}')
     sys.exit()
@@ -89,7 +88,20 @@ def get_corners(maze: MazeGenerator) -> dict[str, tuple[int, int]]:
     }
 
 
-def get_center_maze(config: Config_json) -> tuple[int, int]:
+def get_center_maze(maze: MazeGenerator) -> tuple[int, int]:
     """ locates the centre of the maze """
 
-    return (config.level[0].width // 2, config.level[0].height // 2)
+    height: int = len(maze.maze)
+    width: int = len(maze.maze[0])
+    center_pos: tuple[int, int] = (width // 2, height // 2)
+    best_pos: tuple[int, int] = center_pos
+    best_dist: float = float('inf')  # distance inconnu
+
+    for y, line in enumerate(maze.maze):
+        for x, val in enumerate(line):
+            if val != 15:
+                distance: int = abs(x - center_pos[0]) + abs(y - center_pos[1])
+                if best_dist > distance:
+                    best_dist = distance
+                    best_pos = (x, y)
+    return (best_pos)
