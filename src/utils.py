@@ -1,3 +1,11 @@
+import sys
+try:
+    from mazegenerator import MazeGenerator
+except ImportError as e:
+    print(f'[IMPORT ERROR]: {e}')
+    sys.exit()
+
+
 def clean_lines_comments(line: str, copie_upto: int) -> tuple[list[str], bool]:
     """ Returns the elements of the line that are not part of a comment and
         a boolean value indicating whether the line is within an
@@ -57,13 +65,46 @@ def check_comments(data: str) -> str:
                 continue
 
         else:
-            copie_upto: int = 0
+            copie_upto = 0
 
         rst, in_block_comment = clean_lines_comments(line, copie_upto)
 
         data_lines[i] = ''.join(rst)
     data_clean: str = '\n'.join(data_lines)
     return data_clean
+
+
+def get_corners(maze: MazeGenerator) -> dict[str, tuple[int, int]]:
+    """ locating the four corners of the maze dans un dict """
+
+    height: int = len(maze.maze) - 1
+    width: int = len(maze.maze[0]) - 1
+
+    return {
+     'top_left': (0, 0),
+     'top_right': (width, 0),
+     'low_left': (0, height),
+     'low_right': (width, height)
+    }
+
+
+def get_center_maze(maze: MazeGenerator) -> tuple[int, int]:
+    """ locates the centre of the maze """
+
+    height: int = len(maze.maze)
+    width: int = len(maze.maze[0])
+    center_pos: tuple[int, int] = (width // 2, height // 2)
+    best_pos: tuple[int, int] = center_pos
+    best_dist: float = float('inf')  # distance inconnu
+
+    for y, line in enumerate(maze.maze):
+        for x, val in enumerate(line):
+            if val != 15:
+                distance: int = abs(x - center_pos[0]) + abs(y - center_pos[1])
+                if best_dist > distance:
+                    best_dist = distance
+                    best_pos = (x, y)
+    return (best_pos)
 
 
 def make_color(r: int, g: int, b: int, a: int = 255) -> int:

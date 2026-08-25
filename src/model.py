@@ -1,6 +1,7 @@
 import sys
 from src.utils import COLORS
 try:
+    from typing import Any
     from pydantic import BaseModel, model_validator, Field
 except ImportError:
     sys.exit()
@@ -12,16 +13,18 @@ class Level(BaseModel):
     height: int = Field(default=15)
 
     @model_validator(mode="before")
-    def check_dimensions(cls, values):
+    def check_dimensions(cls, values: dict[str, Any]) -> dict[str, Any]:
         if (not isinstance(values.get("width"), int) or
-                values.get("width", 0) <= 2):
+                values.get("width", 0) < 15):
             values["width"] = 15
-            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} invalid width, using default.")
+            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                  "invalid width, using default.")
 
         if (not isinstance(values.get("height"), int) or
-                values.get("height", 0) <= 2):
+                values.get("height", 0) < 15):
             values["height"] = 15
-            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} invalid height, using default.")
+            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                  "invalid height, using default.")
         return values
 
 
@@ -39,7 +42,7 @@ class Config_json(BaseModel):
     level: list[Level] = Field(default_factory=list)
 
     @model_validator(mode="before")
-    def check_config_values(cls, values):
+    def check_config_values(cls, values: dict[str, Any]) -> dict[str, Any]:
 
         if (not isinstance(values.get("highscore_filename"), str) or
                 values.get("highscore_filename", str) == ""):
@@ -88,5 +91,10 @@ class Config_json(BaseModel):
             values["level_max_time"] = 90
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                   "Invalid level_max_time, using default.")
+
+        if (not isinstance(values.get("level"), list) or
+                len(values.get("level", [])) == 0):
+            values["level"] = [{"width": 15, "height": 15}]
+            print("[WARNING] Invalid level, using default.")
 
         return values

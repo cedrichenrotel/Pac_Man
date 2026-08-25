@@ -4,7 +4,7 @@ from src.utils import COLORS
 try:
     from src.game import Game
     from src.init_maze import RenderMaze
-    from src.error import ParseError, GameError
+    from src.error import GameError
     from src.parse_config import parse_args, valid_type_file
     from src.load_config import load_json, read_json
     from src.model import Config_json
@@ -20,7 +20,6 @@ except ImportError as e:
 def main() -> None:
     try:
         args: argparse.Namespace = parse_args()
-        generator = MazeGenerator()
 
         try:
             config_path: Path = valid_type_file(Path(args.config))
@@ -35,15 +34,17 @@ def main() -> None:
         except Exception as e:
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                   f"Invalid config values: {e}")
-        try:
-            render_maze: RenderMaze = RenderMaze(generator, config)
-            render_maze.config_start()
-            game = Game(1000, 1000)
-            game.run()
-        except ParseError as e:
-            print(f"{COLORS['bright_red']}[ERROR]{COLORS['reset']}"
-                  f" Init_maze.py: {e}")
-            sys.exit()
+
+        generator = MazeGenerator(
+            size=(config.level[0].width, config.level[0].height),
+            seed=config.seed
+            )
+
+        render_maze: RenderMaze = RenderMaze(generator, config)
+        render_maze.config_start()
+        game = Game(1000, 1000)
+        game.run()
+
     except (Exception, KeyboardInterrupt) as e:
         print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
               "The program was stopped manually")

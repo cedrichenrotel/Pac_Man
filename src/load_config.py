@@ -17,7 +17,8 @@ def read_json(file: Path | str) -> str:
 
 
 def load_json(file: str) -> dict[str, Any]:
-    return json.loads(file)
+    data: dict[str, Any] = json.loads(file)
+    return data
 
 
 def create_json(file: Path, data: list[dict[str, Any]]) -> None:
