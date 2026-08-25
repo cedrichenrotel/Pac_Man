@@ -26,7 +26,7 @@ class RenderMaze:
         self.ghosts: list[Ghost] = []
         self.corners: dict[str, tuple[int, int]] = get_corners(self.maze)
 
-    def init_pacgum(self) -> bool:
+    def init_pacgum(self) -> None:
         """ initialises the pagums in the maze at random and stores
             their positions in a list """
 
@@ -43,24 +43,21 @@ class RenderMaze:
             print("[WARNING] Number of pacgum too high, using default")
 
         self.pacgum_pos = random.sample(lst_pos_val, nb_pacgum)
-        return True
 
-    def init_superpacgum(self) -> bool:
+    def init_superpacgum(self) -> None:
         """ Initialising the superpacgum on the maze """
 
         for x, y in self.corners.values():
             self.superpacgum_pos.append((x, y))
-        return True
 
-    def init_pacman(self) -> bool:
+    def init_pacman(self) -> None:
         """ Initialising the pacman on the maze """
 
         x, y = get_center_maze(self.maze)
         self.reserved_pos.append((x, y))
         self.pacman = Pacman(x, y, self.config.lives)
-        return True
 
-    def init_ghost(self) -> bool:
+    def init_ghost(self) -> None:
         """ Initialising the ghost on the maze """
 
         self.reserved_pos.extend(self.corners.values())
@@ -68,25 +65,11 @@ class RenderMaze:
         for x, y in self.corners.values():
             self.ghosts.append(Ghost(x, y))
 
-        return True
-
-    def config_start(self) -> bool:
+    def config_start(self) -> None:
         """Initialising all the elements in the maze using separate
             functions """
 
-        if not self.init_pacman():
-            raise ParseError("Config_start() -> Init_pacman initialisation "
-                             "failed")
-
-        if not self.init_superpacgum():
-            raise ParseError("Config_start() -> Init_superpacgum "
-                             "initialisation failed")
-
-        if not self.init_ghost():
-            raise ParseError("Config_start() -> Init_ghost initialisation "
-                             "failed")
-
-        if not self.init_pacgum():
-            raise ParseError("Config_start() -> Init_pacgum initialisation "
-                             "failed")
-        return True
+        self.init_pacman()
+        self.init_superpacgum()
+        self.init_ghost()
+        self.init_pacgum()
