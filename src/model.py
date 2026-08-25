@@ -1,5 +1,6 @@
 import sys
 try:
+    from typing import Any
     from pydantic import BaseModel, model_validator, Field
 except ImportError:
     sys.exit()
@@ -11,7 +12,7 @@ class Level(BaseModel):
     height: int = Field(default=15)
 
     @model_validator(mode="before")
-    def check_dimensions(cls, values):
+    def check_dimensions(cls, values: dict[str, Any]) -> dict[str, Any]:
         if (not isinstance(values.get("width"), int) or
                 values.get("width", 0) <= 2):
             values["width"] = 15
@@ -38,7 +39,7 @@ class Config_json(BaseModel):
     level: list[Level] = Field(default_factory=list)
 
     @model_validator(mode="before")
-    def check_config_values(cls, values):
+    def check_config_values(cls, values: dict[str, Any]) -> dict[str, Any]:
 
         if (not isinstance(values.get("highscore_filename"), str) or
                 values.get("highscore_filename", str) == ""):

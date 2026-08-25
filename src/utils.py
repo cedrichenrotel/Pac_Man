@@ -57,7 +57,7 @@ def check_comments(data: str) -> str:
                 continue
 
         else:
-            copie_upto: int = 0
+            copie_upto = 0
 
         rst, in_block_comment = clean_lines_comments(line, copie_upto)
 

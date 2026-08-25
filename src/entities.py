@@ -16,15 +16,16 @@ class Entities():
         """ allows entities to move through the maze without
             passing through walls """
 
-        directions: dict[str, tuple] = {
+        directions: dict[str, tuple[int, int, int]] = {
             'N': (0, -1, 1),
             'E': (1, 0, 2),
             'S': (0, 1, 4),
             'W': (-1, 0, 8)
         }
-        dx, dy, code = directions[direction]  # deballe le tuple existant dx = 0, dy = -1, code = 1
 
-        if maze.maze[self.y][self.x] & code == 0:  # verifie si il n'y pas de mur sur pos dx,dy
+        dx, dy, code = directions[direction]
+
+        if maze.maze[self.y][self.x] & code == 0:
             self.x += dx
             self.y += dy
             return True
