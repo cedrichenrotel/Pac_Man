@@ -45,6 +45,17 @@ class LevelScene:
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
-        self.GameRender.game_engine.level.add_score(self.score)
-        self.GameRender.game_engine.level.next_level()
-        # ducoup apres next_level redessiner limage du maze
+        lvl_engine = self.GameRender.game_engine.level
+        if (lvl_engine.actual_lvl != lvl_engine.lvl_max):
+            lvl_engine.add_score(self.score)
+            lvl_engine.next_level()
+            # ducoup apres next_level redessiner limage du maze
+        else:
+            # si jamais le nombre de level max etait atteind, on reviens au menu.
+            # egalement on devrait plus tard ajouter le score au highscore
+            from src.render.scenes.menu import MenuScene
+            self.GameRender.current_scene = MenuScene(self.GameRender, self.mlx,
+                                                      self.mlx_init,
+                                                      self.mlx_window,
+                                                      self.width, self.height)
+            self.GameRender.current_scene.launch()

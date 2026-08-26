@@ -28,7 +28,6 @@ class Level():
     def next_level(self) -> None:
         """ called by the render side when the current level is won,
             regenerates the maze and reinitialises its elements """
-
         self.actual_lvl += 1
         self.game_engine.generator = MazeGenerator(
                     size=(self.game_engine.config.level.width,
