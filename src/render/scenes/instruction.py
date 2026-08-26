@@ -1,15 +1,15 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
+from src.render.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
 from mlx import Mlx
 
-# guarded to avoid a circular import: game.py imports ScoreScene at module
-# level, so Game can only be imported here for type hints
+# guarded to avoid a circular import: game.py imports InstructionScene at
+# module level, so Game can only be imported here for type hints
 if TYPE_CHECKING:
-    from src.game import Game
+    from src.render.game import Game
 
 
-class ScoreScene:
+class InstructionScene:
     def __init__(self, game: "Game", mlx: Mlx, mlx_init: Optional[int],
                  mlx_window: Optional[int], width: int, height: int) -> None:
         self.game = game
@@ -20,12 +20,12 @@ class ScoreScene:
         self.mlx_window = mlx_window
 
     def launch(self) -> None:
-        '''display the highscores scene'''
+        '''display the instructions scene'''
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
                                 int(self.height / 2),
-                                YELLOW, "Highscores (TODO)")
+                                YELLOW, "Instructions (TODO)")
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
                                 int(self.height / 2) + 40,
@@ -35,7 +35,7 @@ class ScoreScene:
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
         if keycode == XK_ESCAPE:
-            from src.scenes.menu import MenuScene
+            from src.render.scenes.menu import MenuScene
             self.game.current_scene = MenuScene(self.game, self.mlx,
                                                 self.mlx_init,
                                                 self.mlx_window,

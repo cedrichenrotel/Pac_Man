@@ -1,11 +1,11 @@
 import sys
-from src.utils import COLORS
+from src.colors import COLORS
 try:
     import random
-    from src.utils import get_corners, get_center_maze
-    from src.model import Config_json
+    from src.engine.utils import get_corners, get_center_maze
+    from src.engine.model import Config_json
     from mazegenerator import MazeGenerator
-    from src.entities import Pacman, Ghost
+    from src.engine.entities import Pacman, Ghost
 except ImportError as e:
     print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()

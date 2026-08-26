@@ -1,13 +1,13 @@
 import sys
-from src.utils import COLORS
+from src.colors import COLORS
 
 try:
-    from src.game import Game
-    from src.init_maze import RenderMaze
+    from src.render.game import Game
+    from src.engine.init_maze import RenderMaze
     from src.error import GameError
-    from src.parse_config import parse_args, valid_type_file
-    from src.load_config import load_json, read_json
-    from src.model import Config_json
+    from src.engine.parse_config import parse_args, valid_type_file
+    from src.engine.load_config import load_json, read_json
+    from src.engine.model import Config_json
     from mazegenerator import MazeGenerator
     from typing import Any
     from pathlib import Path

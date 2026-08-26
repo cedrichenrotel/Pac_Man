@@ -1,8 +1,8 @@
 from typing import Optional, Union
-from src.scenes.menu import MenuScene
-from src.scenes.level import LevelScene
-from src.scenes.score import ScoreScene
-from src.scenes.instruction import InstructionScene
+from src.render.scenes.menu import MenuScene
+from src.render.scenes.level import LevelScene
+from src.render.scenes.score import ScoreScene
+from src.render.scenes.instruction import InstructionScene
 from mlx import Mlx
 from src.error import GameError
 

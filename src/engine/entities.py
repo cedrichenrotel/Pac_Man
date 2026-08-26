@@ -1,5 +1,5 @@
 import sys
-from src.utils import COLORS
+from src.colors import COLORS
 try:
     from mazegenerator import MazeGenerator
 except ImportError as e:

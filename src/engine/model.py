@@ -1,5 +1,5 @@
 import sys
-from src.utils import COLORS
+from src.colors import COLORS
 try:
     from typing import Any
     from pydantic import BaseModel, model_validator, Field

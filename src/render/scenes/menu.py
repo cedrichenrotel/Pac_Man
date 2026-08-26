@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Callable, List, Optional, Tuple, TYPE_CHECKING
-from src.scenes.level import LevelScene
-from src.scenes.score import ScoreScene
-from src.scenes.instruction import InstructionScene
-from src.utils import YELLOW, LIGHT_GRAY, XK_UP, XK_DOWN, XK_RETURN
+from src.render.scenes.level import LevelScene
+from src.render.scenes.score import ScoreScene
+from src.render.scenes.instruction import InstructionScene
+from src.render.utils import YELLOW, LIGHT_GRAY, XK_UP, XK_DOWN, XK_RETURN
 from mlx import Mlx
 from PIL import Image
 import os
@@ -11,7 +11,7 @@ import os
 # guarded to avoid a circular import: game.py imports MenuScene at module
 # level, so Game can only be imported here for type hints
 if TYPE_CHECKING:
-    from src.game import Game
+    from src.render.game import Game
 
 
 class MenuScene:
