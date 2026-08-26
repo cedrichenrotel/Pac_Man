@@ -3,16 +3,16 @@ from typing import Optional, TYPE_CHECKING
 from src.render.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
 from mlx import Mlx
 
-# guarded to avoid a circular import: game.py imports InstructionScene at
-# module level, so Game can only be imported here for type hints
+# guarded to avoid a circular import: GameRender.py imports InstructionScene at
+# module level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
-    from src.render.game import Game
+    from src.render.GameRender import GameRender
 
 
 class InstructionScene:
-    def __init__(self, game: "Game", mlx: Mlx, mlx_init: Optional[int],
+    def __init__(self, GameRender: "GameRender", mlx: Mlx, mlx_init: Optional[int],
                  mlx_window: Optional[int], width: int, height: int) -> None:
-        self.game = game
+        self.GameRender = GameRender
         self.width = width
         self.height = height
         self.mlx = mlx
@@ -36,8 +36,8 @@ class InstructionScene:
         '''go back to the menu scene on escape'''
         if keycode == XK_ESCAPE:
             from src.render.scenes.menu import MenuScene
-            self.game.current_scene = MenuScene(self.game, self.mlx,
+            self.GameRender.current_scene = MenuScene(self.GameRender, self.mlx,
                                                 self.mlx_init,
                                                 self.mlx_window,
                                                 self.width, self.height)
-            self.game.current_scene.launch()
+            self.GameRender.current_scene.launch()

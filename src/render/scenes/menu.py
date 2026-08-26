@@ -8,16 +8,16 @@ from mlx import Mlx
 from PIL import Image
 import os
 
-# guarded to avoid a circular import: game.py imports MenuScene at module
-# level, so Game can only be imported here for type hints
+# guarded to avoid a circular import: GameRender.py imports MenuScene at module
+# level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
-    from src.render.game import Game
+    from src.render.GameRender import GameRender
 
 
 class MenuScene:
-    def __init__(self, game: 'Game', mlx: Mlx, mlx_init: Optional[int],
+    def __init__(self, GameRender: 'GameRender', mlx: Mlx, mlx_init: Optional[int],
                  mlx_window: Optional[int], width: int, height: int) -> None:
-        self.game = game
+        self.GameRender = GameRender
         self.width = width
         self.height = height
         self.mlx = mlx
@@ -26,7 +26,7 @@ class MenuScene:
         self.selected: int = 0
         self.img: Tuple[Optional[int], int, int] = (0, 0, 0)
         self.entries: List[Tuple[str, Callable[[], None]]] = [
-              ("Start Game", self.start_game),
+              ("Start GameRender", self.start_game),
               ("View Highscores", self.show_highscores),
               ("Instructions", self.show_instructions),
               ("Exit", self.quit_game),
@@ -104,31 +104,31 @@ class MenuScene:
         '''redirect to the level scene'''
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
-        self.game.current_scene = LevelScene(self.game, self.mlx,
+        self.GameRender.current_scene = LevelScene(self.GameRender, self.mlx,
                                              self.mlx_init, self.mlx_window,
                                              self.width, self.height)
-        self.game.current_scene.launch()
+        self.GameRender.current_scene.launch()
 
     def show_highscores(self) -> None:
         '''redirect to the score scene'''
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
-        self.game.current_scene = ScoreScene(self.game, self.mlx,
+        self.GameRender.current_scene = ScoreScene(self.GameRender, self.mlx,
                                              self.mlx_init, self.mlx_window,
                                              self.width, self.height)
-        self.game.current_scene.launch()
+        self.GameRender.current_scene.launch()
 
     def show_instructions(self) -> None:
         '''redirect to the instruction scene'''
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
-        self.game.current_scene = InstructionScene(self.game, self.mlx,
+        self.GameRender.current_scene = InstructionScene(self.GameRender, self.mlx,
                                                    self.mlx_init,
                                                    self.mlx_window,
                                                    self.width, self.height)
-        self.game.current_scene.launch()
+        self.GameRender.current_scene.launch()
 
     def quit_game(self) -> None:
-        """mlx quitting the game"""
+        """mlx quitting the GameRender"""
         self.running = False
         self.mlx.mlx_loop_exit(self.mlx_init)

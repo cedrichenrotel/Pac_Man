@@ -20,6 +20,6 @@ def valid_type_file(p: Path) -> Path:
 
 def parse_args() -> argparse.Namespace:
 
-    parser = argparse.ArgumentParser(description="Pac-Man game")
+    parser = argparse.ArgumentParser(description="Pac-Man GameRender")
     parser.add_argument('config', help="path to JSON config file")
     return parser.parse_args()

@@ -9,9 +9,9 @@ from src.error import GameError
 SceneType = Union[MenuScene, LevelScene, ScoreScene, InstructionScene]
 
 
-class Game():
-    '''Class Game on contaim the basics for launch
-    the game and the size of the screen'''
+class GameRender():
+    '''Class GameRender on contaim the basics for launch
+    the GameRender and the size of the screen'''
     def __init__(self, width: int, height: int) -> None:
         self.width: int = width
         self.height: int = height

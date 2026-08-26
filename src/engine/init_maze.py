@@ -11,9 +11,9 @@ except ImportError as e:
     sys.exit()
 
 
-class RenderMaze:
+class InitMaze:
     """ combining the Labyrinth class and the configuration
-       data to initialise the game """
+       data to initialise the GameRender """
 
     def __init__(self, maze: MazeGenerator, config: Config_json) -> None:
 
