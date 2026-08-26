@@ -36,7 +36,7 @@ def main() -> None:
                   f"Invalid config values: {e}")
 
         generator = MazeGenerator(
-            size=(config.level[0].width, config.level[0].height),
+            size=(config.level.width, config.level.height),
             seed=config.seed
             )
 
