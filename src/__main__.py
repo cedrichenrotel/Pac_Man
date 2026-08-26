@@ -2,14 +2,11 @@ import sys
 from src.colors import COLORS
 
 try:
-    # from src.render.GameRender import GameRender
-    # from src.engine.init_maze import InitMaze
     from src.error import GameError
     from src.engine.parse_config import parse_args, valid_type_file
     from src.engine.load_config import load_json, read_json
     from src.engine.model import Config_json
     from src.engine.game_engine import GameEngine
-    # from mazegenerator import MazeGenerator
     from typing import Any
     from pathlib import Path
     import argparse

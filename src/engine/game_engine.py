@@ -2,7 +2,7 @@ import sys
 from src.colors import COLORS
 try:
     from src.engine.model import Config_json
-    # from src.engine.level import Level
+    from src.engine.level import Level
     from src.engine.init_maze import InitMaze
     from src.render.game import GameRender
     from mazegenerator import MazeGenerator
@@ -12,19 +12,28 @@ except ImportError as e:
 
 
 class GameEngine():
-    def __init__(self, config: Config_json):
-        self.config = config
+    """ orchestrates the game lifecycle: maze generation, maze
+        initialisation, level tracking and launching the render """
 
-    def initialize(self):
-        self.generator = MazeGenerator(
+    def __init__(self, config: Config_json) -> None:
+        self.config: Config_json = config
+
+    def initialize(self) -> None:
+        """ generates the first maze, initialises its elements and
+            launches the render """
+
+        self.generator: MazeGenerator = MazeGenerator(
                     size=(self.config.level.width, self.config.level.height),
                     seed=self.config.seed
                     )
-    
+
         self.init_maze: InitMaze = InitMaze(self.generator, self.config)
         self.init_maze.config_start()
-        self.game_render = GameRender(1000, 1000)
+        self.level: Level = Level(self)
+        self.game_render: GameRender = GameRender(1000, 1000, self)
         self.game_render.run()
 
-    def run(self):
+    def run(self) -> None:
+        """ entry point of the engine """
+
         self.initialize()

@@ -6,7 +6,7 @@ from mlx import Mlx
 # guarded to avoid a circular import: GameRender.py imports LevelScene at module
 # level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
-    from src.render.GameRender import GameRender
+    from src.render.game import GameRender
 
 
 class LevelScene:
@@ -14,6 +14,7 @@ class LevelScene:
                  mlx_window: Optional[int], width: int, height: int) -> None:
         self.GameRender = GameRender
         self.width = width
+        self.score = 0
         self.height = height
         self.mlx = mlx
         self.mlx_init = mlx_init
@@ -41,3 +42,9 @@ class LevelScene:
                                                 self.mlx_window,
                                                 self.width, self.height)
             self.GameRender.current_scene.launch()
+
+    def winning(self) -> None:
+        # example de si le lvl etait gagner
+        self.GameRender.game_engine.level.add_score(self.score)
+        self.GameRender.game_engine.level.next_level()
+        # ducoup apres next_level redessiner limage du maze

@@ -6,7 +6,7 @@ from mlx import Mlx
 # guarded to avoid a circular import: GameRender.py imports ScoreScene at module
 # level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
-    from src.render.GameRender import GameRender
+    from src.render.game import GameRender
 
 
 class ScoreScene:

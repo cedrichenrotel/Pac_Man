@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, TYPE_CHECKING
 from src.render.scenes.menu import MenuScene
 from src.render.scenes.level import LevelScene
 from src.render.scenes.score import ScoreScene
@@ -8,11 +8,15 @@ from src.error import GameError
 
 SceneType = Union[MenuScene, LevelScene, ScoreScene, InstructionScene]
 
+if TYPE_CHECKING:
+    from src.engine.game_engine import GameEngine 
+
 
 class GameRender():
     '''Class GameRender on contaim the basics for launch
     the GameRender and the size of the screen'''
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, width: int, height: int, game_engine: "GameEngine") -> None:
+        self.game_engine = game_engine
         self.width: int = width
         self.height: int = height
         self.running: bool = True
