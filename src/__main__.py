@@ -1,14 +1,12 @@
 import sys
-from src.utils import COLORS
+from src.colors import COLORS
 
 try:
-    from src.game import Game
-    from src.init_maze import RenderMaze
     from src.error import GameError
-    from src.parse_config import parse_args, valid_type_file
-    from src.load_config import load_json, read_json
-    from src.model import Config_json
-    from mazegenerator import MazeGenerator
+    from src.engine.parse_config import parse_args, valid_type_file
+    from src.engine.load_config import load_json, read_json
+    from src.engine.model import Config_json
+    from src.engine.game_engine import GameEngine
     from typing import Any
     from pathlib import Path
     import argparse
@@ -35,15 +33,8 @@ def main() -> None:
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                   f"Invalid config values: {e}")
 
-        generator = MazeGenerator(
-            size=(config.level[0].width, config.level[0].height),
-            seed=config.seed
-            )
-
-        render_maze: RenderMaze = RenderMaze(generator, config)
-        render_maze.config_start()
-        game = Game(1000, 1000)
-        game.run()
+        engine = GameEngine(config)
+        engine.run()
 
     except (Exception, KeyboardInterrupt) as e:
         print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "

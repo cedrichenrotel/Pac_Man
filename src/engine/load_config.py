@@ -2,7 +2,7 @@ import sys
 try:
     from pathlib import Path
     from typing import Any
-    from src.utils import check_comments
+    from src.engine.utils import check_comments
     import json
 except ImportError:
     sys.exit()
