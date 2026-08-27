@@ -39,7 +39,7 @@ class Config_json(BaseModel):
     points_per_ghost: int = Field(default=200)
     seed: int = Field(default=42)
     level_max_time: int = Field(default=90)
-    level: Level = Field(default_factory=dict)
+    level: Level = Field(default_factory=Level)
 
     @model_validator(mode="before")
     def check_config_values(cls, values: dict[str, Any]) -> dict[str, Any]:
@@ -95,6 +95,7 @@ class Config_json(BaseModel):
         if (not isinstance(values.get("level"), dict) or
                 len(values.get("level", {})) == 0):
             values["level"] = {"width": 15, "height": 15}
-            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} Invalid level, using default.")
+            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                  "Invalid level, using default.")
 
         return values

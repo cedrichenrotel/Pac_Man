@@ -36,7 +36,3 @@ class Level():
         self.game_engine.init_maze = InitMaze(self.game_engine.generator,
                                               self.game_engine.config)
         self.game_engine.init_maze.config_start()
-
-    
-
-    

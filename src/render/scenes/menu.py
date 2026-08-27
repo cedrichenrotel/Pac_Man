@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 
 
 class MenuScene:
-    def __init__(self, GameRender: 'GameRender', mlx: Mlx, mlx_init: Optional[int],
+    def __init__(self, GameRender: 'GameRender', mlx: Mlx,
+                 mlx_init: Optional[int],
                  mlx_window: Optional[int], width: int, height: int) -> None:
         self.GameRender = GameRender
         self.width = width
@@ -104,28 +105,31 @@ class MenuScene:
         '''redirect to the level scene'''
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
-        self.GameRender.current_scene = LevelScene(self.GameRender, self.mlx,
-                                             self.mlx_init, self.mlx_window,
-                                             self.width, self.height)
+        self.GameRender.current_scene = LevelScene(
+            self.GameRender, self.mlx,
+            self.mlx_init, self.mlx_window,
+            self.width, self.height)
         self.GameRender.current_scene.launch()
 
     def show_highscores(self) -> None:
         '''redirect to the score scene'''
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
-        self.GameRender.current_scene = ScoreScene(self.GameRender, self.mlx,
-                                             self.mlx_init, self.mlx_window,
-                                             self.width, self.height)
+        self.GameRender.current_scene = ScoreScene(
+            self.GameRender, self.mlx,
+            self.mlx_init, self.mlx_window,
+            self.width, self.height)
         self.GameRender.current_scene.launch()
 
     def show_instructions(self) -> None:
         '''redirect to the instruction scene'''
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
-        self.GameRender.current_scene = InstructionScene(self.GameRender, self.mlx,
-                                                   self.mlx_init,
-                                                   self.mlx_window,
-                                                   self.width, self.height)
+        self.GameRender.current_scene = InstructionScene(
+            self.GameRender, self.mlx,
+            self.mlx_init,
+            self.mlx_window,
+            self.width, self.height)
         self.GameRender.current_scene.launch()
 
     def quit_game(self) -> None:

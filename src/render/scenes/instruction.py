@@ -10,7 +10,8 @@ if TYPE_CHECKING:
 
 
 class InstructionScene:
-    def __init__(self, GameRender: "GameRender", mlx: Mlx, mlx_init: Optional[int],
+    def __init__(self, GameRender: "GameRender", mlx: Mlx,
+                 mlx_init: Optional[int],
                  mlx_window: Optional[int], width: int, height: int) -> None:
         self.GameRender = GameRender
         self.width = width
@@ -36,8 +37,9 @@ class InstructionScene:
         '''go back to the menu scene on escape'''
         if keycode == XK_ESCAPE:
             from src.render.scenes.menu import MenuScene
-            self.GameRender.current_scene = MenuScene(self.GameRender, self.mlx,
-                                                self.mlx_init,
-                                                self.mlx_window,
-                                                self.width, self.height)
+            self.GameRender.current_scene = MenuScene(
+                self.GameRender, self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width, self.height)
             self.GameRender.current_scene.launch()
