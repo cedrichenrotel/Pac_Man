@@ -1,4 +1,5 @@
 from typing import Optional, Union
+from src.init_maze import RenderMaze
 from src.scenes.menu import MenuScene
 from src.scenes.level import LevelScene
 from src.scenes.score import ScoreScene
@@ -12,7 +13,9 @@ SceneType = Union[MenuScene, LevelScene, ScoreScene, InstructionScene]
 class Game():
     '''Class Game on contaim the basics for launch
     the game and the size of the screen'''
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, render_maze: RenderMaze, width: int,
+                 height: int) -> None:
+        self.render_maze: RenderMaze = render_maze
         self.width: int = width
         self.height: int = height
         self.running: bool = True

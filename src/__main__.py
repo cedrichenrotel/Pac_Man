@@ -42,7 +42,7 @@ def main() -> None:
 
         render_maze: RenderMaze = RenderMaze(generator, config)
         render_maze.config_start()
-        game = Game(1000, 1000)
+        game = Game(render_maze, 1000, 1000)
         game.run()
 
     except (Exception, KeyboardInterrupt) as e:

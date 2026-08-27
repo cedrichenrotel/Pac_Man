@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
+from src.init_maze import RenderMaze
 from src.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
 from mlx import Mlx
 
@@ -21,6 +22,11 @@ class LevelScene:
 
     def launch(self) -> None:
         '''display the level scene'''
+
+        level: tab[int] = 
+        cell_size_x: int = self.width // self.game.render_maze.config.level[0].width
+        cell_size_y: int = self.height // self.game.render_maze.config.level[0].height
+
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
