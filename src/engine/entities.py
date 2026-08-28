@@ -1,5 +1,6 @@
 import sys
-from src.utils import COLORS
+from src.colors import COLORS
+from src.engine.utils import DIRECTIONS
 try:
     from mazegenerator import MazeGenerator
 except ImportError as e:
@@ -17,14 +18,7 @@ class Entities():
         """ allows entities to move through the maze without
             passing through walls """
 
-        directions: dict[str, tuple[int, int, int]] = {
-            'N': (0, -1, 1),
-            'E': (1, 0, 2),
-            'S': (0, 1, 4),
-            'W': (-1, 0, 8)
-        }
-
-        dx, dy, code = directions[direction]
+        dx, dy, code = DIRECTIONS[direction]
 
         if maze.maze[self.y][self.x] & code == 0:
             self.x += dx

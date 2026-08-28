@@ -1,21 +1,24 @@
-from typing import Optional, Union
-from src.init_maze import RenderMaze
-from src.scenes.menu import MenuScene
-from src.scenes.level import LevelScene
-from src.scenes.score import ScoreScene
-from src.scenes.instruction import InstructionScene
+from typing import Optional, Union, TYPE_CHECKING
+from src.render.scenes.menu import MenuScene
+from src.render.scenes.level import LevelScene
+from src.render.scenes.score import ScoreScene
+from src.render.scenes.instruction import InstructionScene
 from mlx import Mlx
 from src.error import GameError
 
 SceneType = Union[MenuScene, LevelScene, ScoreScene, InstructionScene]
 
+if TYPE_CHECKING:
+    from src.engine.game_engine import GameEngine
 
-class Game():
-    '''Class Game on contaim the basics for launch
-    the game and the size of the screen'''
-    def __init__(self, render_maze: RenderMaze, width: int,
-                 height: int) -> None:
-        self.render_maze: RenderMaze = render_maze
+
+class GameRender():
+    '''Class GameRender on contaim the basics for launch
+    the GameRender and the size of the screen'''
+
+    def __init__(self, width: int, height: int,
+                 game_engine: "GameEngine") -> None:
+        self.game_engine = game_engine
         self.width: int = width
         self.height: int = height
         self.running: bool = True
@@ -23,6 +26,7 @@ class Game():
 
     def run(self) -> None:
         """launch mlx threw the menu scene"""
+
         self.mlx_init: Optional[int] = self.mlx.mlx_init()
         if self.mlx_init is None:
             raise GameError("Cannot init properly the mlx")

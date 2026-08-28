@@ -1,4 +1,4 @@
-from src.utils import COLORS
+from src.colors import COLORS
 
 
 class ParseError(Exception):
