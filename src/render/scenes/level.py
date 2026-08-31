@@ -1,7 +1,9 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.render.utils import YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE, BLUE_PIX
+from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
+                              BLUE_PIX, get_cell_size)
 from src.engine.utils import DIRECTIONS
+from src.engine.entities import Pacman
 from mlx import Mlx
 
 # guarded to avoid a circular import: GameRender.py imports LevelScene at
@@ -11,9 +13,11 @@ if TYPE_CHECKING:
 
 
 class LevelScene:
+
     def __init__(self, GameRender: "GameRender", mlx: Mlx,
                  mlx_init: Optional[int],
                  mlx_window: Optional[int], width: int, height: int) -> None:
+
         self.GameRender = GameRender
         self.maze = self.GameRender.game_engine.generator.maze
         self.width = width
@@ -22,16 +26,17 @@ class LevelScene:
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
+        self.maze_width: int = self.GameRender.game_engine.config.level.width
+        self.maze_height: int = self.GameRender.game_engine.config.level.height
 
     def draw_wall(self, x: int, y: int) -> None:
         """allows the pixel size to be standardised and the walls of the maze
             to be displayed pixel by pixel"""
 
-        maze_width: int = self.GameRender.game_engine.config.level.width
-        maze_height: int = self.GameRender.game_engine.config.level.height
-        cell_size_x: int = self.width // maze_width
-        cell_size_y: int = self.height // maze_height
-        cell_size: int = min(cell_size_x, cell_size_y)
+        cell_size: int = get_cell_size(self.width,
+                                       self.height,
+                                       self.maze_width,
+                                       self.maze_height)
         val: int = self.maze[y][x]
 
         for direction, (dx, dy, code) in DIRECTIONS.items():
@@ -78,6 +83,7 @@ class LevelScene:
                                 int(self.height / 2) + 40,
                                 LIGHT_GRAY_PIX, "Press ESC to return to menu")
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
+        self.draw_pacman()
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
@@ -109,3 +115,20 @@ class LevelScene:
                 self.mlx_window,
                 self.width, self.height)
             self.GameRender.current_scene.launch()
+
+    def draw_pacman(self) -> None:
+
+        pacman: Pacman = self.GameRender.game_engine.init_maze.pacman
+        cell_size: int = get_cell_size(self.width,
+                                       self.height,
+                                       self.maze_width,
+                                       self.maze_height)
+        px: int = pacman.x * cell_size
+        py: int = pacman.y * cell_size
+        img_ptr, width, height = (self.GameRender.sprites_stores.
+                                  sprites['pacman'][0])
+        self.mlx.mlx_put_image_to_window(self.mlx_init,
+                                         self.mlx_window,
+                                         img_ptr,
+                                         px,
+                                         py)

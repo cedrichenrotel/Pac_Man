@@ -1,4 +1,5 @@
 from typing import Optional, Union, TYPE_CHECKING
+from src.render.sprites_stores import SpriteStores
 from src.render.scenes.menu import MenuScene
 from src.render.scenes.level import LevelScene
 from src.render.scenes.score import ScoreScene
@@ -34,6 +35,12 @@ class GameRender():
             self.mlx_init, self.width, self.height, "Pac-Man")
         if self.mlx_window is None:
             raise GameError("Cannot init properly the window of mlx")
+
+        self.sprites_stores: SpriteStores = SpriteStores(self,
+                                                         self.mlx,
+                                                         self.mlx_init)
+        self.sprites_stores.load_all()
+
         self.current_scene: SceneType = MenuScene(self, self.mlx,
                                                   self.mlx_init,
                                                   self.mlx_window,

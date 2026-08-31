@@ -1,3 +1,6 @@
+import os
+
+
 def make_color(r: int, g: int, b: int, a: int = 255,
                text: bool = False) -> int:
     '''Install RGBA components into a single integer color.'''
@@ -31,3 +34,20 @@ XK_UP: int = 65362
 XK_DOWN: int = 65364
 XK_RETURN: int = 65293
 XK_ESCAPE: int = 65307
+
+
+def get_asset_path(path: str) -> str:
+    """ convert a relative path to 'assets/’ into a usable absolute path,
+        regardless of where the programme is launched from """
+
+    current_dir: str = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(current_dir, "../../assets/", path)
+
+
+def get_cell_size(width: int, height: int, maze_width: int,
+                  maze_height: int) -> int:
+    """ calculate the number of pixels in a cell """
+
+    cell_size_x: int = width // maze_width
+    cell_size_y: int = height // maze_height
+    return min(cell_size_x, cell_size_y)
