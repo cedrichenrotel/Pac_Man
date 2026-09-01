@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 UV := uv
 FILE := src/__main__.py
 CONFIG := ./config.json
@@ -7,7 +8,7 @@ install:
 	$(UV) sync
 
 run:
-	$(UV) run python -m src $(CONFIG)
+	$(UV) run python -m src $(CONFIG) 2> >(grep -v "MESA: warning: Driver does not support" >&2)
 
 debug:
 	$(UV) run python -m pdb $(FILE)

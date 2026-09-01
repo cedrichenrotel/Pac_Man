@@ -53,6 +53,8 @@ class LevelScene:
                 self.width, self.height, self.config)
             self.GameRender.current_scene.launch()
 
+    # retaper cette fonction pour bien recuper le level
+    # actuelle de la class level engine
     # def winning(self) -> None:
     #     # example de si le lvl etait gagner
     #     lvl_engine = self.GameRender.game_engine.level
