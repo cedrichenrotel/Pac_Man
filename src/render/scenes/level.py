@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
-                              BLUE_PIX, get_cell_size)
+                              get_cell_size)
 from src.engine.utils import DIRECTIONS
 from src.engine.entities import Pacman
 from mlx import Mlx
@@ -38,28 +38,27 @@ class LevelScene:
                                        self.maze_width,
                                        self.maze_height)
         val: int = self.maze[y][x]
+        img_ptr, width, height = (self.GameRender.sprites_stores.
+                                  sprites['wall'][0])
 
         for direction, (dx, dy, code) in DIRECTIONS.items():
             if val & code != 0:
                 px: int = x * cell_size
                 py: int = y * cell_size
-                for i in range(cell_size):
+                for i in range(0, cell_size, width):
                     if dx == 0:
-                        self.mlx.mlx_pixel_put(
-                            self.mlx_init,
-                            self.mlx_window,
-                            px + i,
-                            py + cell_size // 2 + dy * (cell_size // 2),
-                            BLUE_PIX
-                            )
+                        self.mlx.mlx_put_image_to_window(self.mlx_init,
+                                                         self.mlx_window,
+                                                         img_ptr,
+                                                         px + i,
+                                                         py + cell_size // 2 + dy * (cell_size // 2))
+
                     else:
-                        self.mlx.mlx_pixel_put(
-                            self.mlx_init,
-                            self.mlx_window,
-                            px + cell_size // 2 + dx * (cell_size // 2),
-                            py + i,
-                            BLUE_PIX
-                            )
+                        self.mlx.mlx_put_image_to_window(self.mlx_init,
+                                                         self.mlx_window,
+                                                         img_ptr,
+                                                         px + cell_size // 2 + dx * (cell_size // 2),
+                                                         py + i)
 
     def draw_maze(self) -> None:
         """ As you navigate the maze, the y and x coordinates are sent to
@@ -137,7 +136,8 @@ class LevelScene:
 
     def draw_pacgum(self) -> None:
         """Draw the Pacgum sprite on the maze."""
-        pacgums: list[tuple[int, int]] = self.GameRender.game_engine.init_maze.pacgum_pos
+        pacgums: list[tuple[int, int]] = (self.GameRender.game_engine.
+                                        init_maze.pacgum_pos)
         cell_size: int = get_cell_size(self.width,
                                        self.height,
                                        self.maze_width,
