@@ -5,6 +5,7 @@ try:
     from src.engine.utils import get_corners, get_center_maze
     from src.engine.model import Config_json
     from mazegenerator import MazeGenerator
+    from src.error import GameError
     from src.engine.entities import Pacman, Ghost
 except ImportError as e:
     print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
@@ -62,9 +63,15 @@ class InitMaze:
         """ Initialising the ghost on the maze """
 
         self.reserved_pos.extend(self.corners.values())
-
         for x, y in self.corners.values():
             self.ghosts.append(Ghost(x, y))
+
+        for ghost in self.ghosts:
+            if (ghost.moving_position_initial(self.maze) is False):
+                raise GameError("Error initializing the ghost")
+            # ghost.path_to_pacman(self.maze, self.pacman)
+        # # test:
+        self.ghosts[0].path_to_pacman(self.maze, self.pacman)
 
     def config_start(self) -> None:
         """Initialising all the elements in the maze using separate
