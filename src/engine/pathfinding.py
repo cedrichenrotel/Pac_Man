@@ -105,7 +105,7 @@ class Pathfinding():
 
     def bfs(self, pos_pacman: tuple[int, int],
             pos_ghost: tuple[int, int]) -> list[tuple[int, int]]:
-        """ launchn the bfs algo and return the path
+        """ launch the bfs algo and return the path
         from the ghost position to pacman position """
 
         visited = [pos_ghost]
