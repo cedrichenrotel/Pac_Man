@@ -31,9 +31,10 @@ class SpriteStores():
 
         if name not in self.sprites:
             self.sprites[name]: list[Any] = []
-
-        self.sprites[name].append(self.mlx.mlx_png_file_to_image(self.mlx_init,
-                                                                 image_path))
+        img = self.mlx.mlx_png_file_to_image(self.mlx_init, image_path)
+        if img[0] is None:
+            raise ValueError("def load(): Failed to load image")
+        self.sprites[name].append(img)
 
     def load_folder(self, name: str, folder: str) -> None:
         """ list and sort the files in a folder before calling load() """

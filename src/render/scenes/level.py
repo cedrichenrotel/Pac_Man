@@ -84,6 +84,7 @@ class LevelScene:
                                 LIGHT_GRAY_PIX, "Press ESC to return to menu")
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.draw_pacman()
+        self.draw_pacgum()
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
@@ -117,6 +118,7 @@ class LevelScene:
             self.GameRender.current_scene.launch()
 
     def draw_pacman(self) -> None:
+        """Draw the Pacman sprite on the maze."""
 
         pacman: Pacman = self.GameRender.game_engine.init_maze.pacman
         cell_size: int = get_cell_size(self.width,
@@ -132,3 +134,21 @@ class LevelScene:
                                          img_ptr,
                                          px,
                                          py)
+
+    def draw_pacgum(self) -> None:
+        """Draw the Pacgum sprite on the maze."""
+        pacgums: list[tuple[int, int]] = self.GameRender.game_engine.init_maze.pacgum_pos
+        cell_size: int = get_cell_size(self.width,
+                                       self.height,
+                                       self.maze_width,
+                                       self.maze_height)
+        for pacgum in pacgums:
+            px: int = pacgum[0] * cell_size
+            py: int = pacgum[1] * cell_size
+            img_ptr, width, height = (self.GameRender.sprites_stores.
+                                      sprites['pacgum'][0])
+            self.mlx.mlx_put_image_to_window(self.mlx_init,
+                                             self.mlx_window,
+                                             img_ptr,
+                                             px,
+                                             py)
