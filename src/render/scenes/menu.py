@@ -66,7 +66,7 @@ class MenuScene:
     def install_menu_image(self) -> None:
         '''install in the scene an image from assets/'''
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        image_path = os.path.join(current_dir, "./../../"
+        image_path = os.path.join(current_dir, "./../../../"
                                                "assets/menu/menu_logo.png")
         image_path = os.path.normpath(image_path)
         Image.open(image_path).convert("RGBA").save(image_path)
