@@ -28,8 +28,8 @@ class LevelScene:
 
     def launch(self) -> None:
         '''display the level scene'''
-        level: Level = Level(self.config)
-        level.generate_maze(self.config.seed)
+        self.level_engine: Level = Level(self.config)
+        self.level_engine.generate_maze(self.config.seed)
 
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
@@ -53,23 +53,20 @@ class LevelScene:
                 self.width, self.height, self.config)
             self.GameRender.current_scene.launch()
 
-    # retaper cette fonction pour bien recuper le level
-    # actuelle de la class level engine
-    # def winning(self) -> None:
-    #     # example de si le lvl etait gagner
-    #     lvl_engine = self.GameRender.game_engine.level
-    #     if (lvl_engine.actual_lvl != lvl_engine.lvl_max):
-    #         lvl_engine.add_score(self.score)
-    #         lvl_engine.next_level()
-    #         # ducoup apres next_level redessiner limage du maze
-    #     else:
-    #         # si jamais le nombre de level max etait atteind, on reviens
-    #         # au menu. egalement on devrait plus tard ajouter le score
-    #         # au highscore
-    #         from src.render.scenes.menu import MenuScene
-    #         self.GameRender.current_scene = MenuScene(
-    #             self.GameRender, self.mlx,
-    #             self.mlx_init,
-    #             self.mlx_window,
-    #             self.width, self.height, self.config)
-    #         self.GameRender.current_scene.launch()
+    def winning(self) -> None:
+        # example de si le lvl etait gagner
+        if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
+            self.level_engine.add_score(self.score)
+            self.level_engine.next_level()
+            # ducoup apres next_level redessiner limage du maze
+        else:
+            # si jamais le nombre de level max etait atteind, on reviens
+            # au menu. egalement on devrait plus tard ajouter le score
+            # au highscore
+            from src.render.scenes.menu import MenuScene
+            self.GameRender.current_scene = MenuScene(
+                self.GameRender, self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width, self.height, self.config)
+            self.GameRender.current_scene.launch()
