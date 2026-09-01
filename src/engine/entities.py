@@ -57,7 +57,7 @@ class Ghost(Entities):
                 return True
         return False
 
-    def path_to_pacman(self, maze: MazeGenerator, pacman: Pacman):
+    def path_to_pacman(self, maze: MazeGenerator, pacman: Pacman) -> None:
         """ get the path from ghost to pacman  """
         pos_pacman: tuple = (pacman.x, pacman.y)
         pos_ghost: tuple = (self.x, self.y)
