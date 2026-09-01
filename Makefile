@@ -8,7 +8,7 @@ install:
 	$(UV) sync
 
 run:
-	$(UV) run python -m src $(CONFIG) 2> >(grep -v "MESA: warning: Driver does not support" >&2)
+	@$(UV) run python -m src $(CONFIG) 2> >(grep -v "MESA: warning: Driver does not support" >&2)
 
 debug:
 	$(UV) run python -m pdb $(FILE)
