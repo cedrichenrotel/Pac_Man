@@ -35,7 +35,7 @@ class GameEngine():
 
         self.generate_maze(self.config.seed)
         self.level: Level = Level(self)
-        self.game_render: GameRender = GameRender(1000, 1000, self)
+        self.game_render: GameRender = GameRender(1200, 1200, self)
         self.game_render.run()
 
     def run(self) -> None:
