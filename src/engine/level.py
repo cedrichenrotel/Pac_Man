@@ -3,6 +3,7 @@ from src.colors import COLORS
 
 try:
     import os
+    import json
     from pathlib import Path
     from src.engine.parse_config import parse_highscore
     from src.engine.load_config import create_json_missing
@@ -23,6 +24,7 @@ class Level():
         self.score: int = 0
         self.lvl_max: int = 10
         self.actual_lvl: int = 0
+        self.highscore: dict[str, int]
 
     def generate_maze(self, seed: int) -> None:
         """ generates a maze for the given seed and initialises its
@@ -51,6 +53,12 @@ class Level():
         path = "./highscore.json"
         file = Path(path)
         if create_json_missing(file) is True:
-            if parse_highscore(file, path) is False:
+            highscore = parse_highscore(file, path)
+            if highscore is False:
                 os.remove(path)
                 create_json_missing(file)
+            else:
+                with open(path) as f:
+                    self.highscore = json.load(f)
+                # self.highscore = highscore
+                print(self.highscore)

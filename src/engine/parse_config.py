@@ -29,7 +29,8 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parse_highscore(file: Path, path: str) -> bool:
+def parse_highscore(file: Path,
+                    path: str) -> bool:
 
     try:
         if os.stat(file).st_size != 0:
@@ -47,5 +48,4 @@ def parse_highscore(file: Path, path: str) -> bool:
               "parsing error in highscore.json: "
               "invalid format in {player_name : score}")
         return False
-
     return True
