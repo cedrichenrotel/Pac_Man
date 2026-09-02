@@ -25,10 +25,6 @@ class InstructionScene:
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
-                                int(self.height / 2),
-                                YELLOW, "Instructions (TODO)")
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width / 2) - 100,
                                 int(self.height / 2) + 40,
                                 LIGHT_GRAY, "Press ESC to return to menu")
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)

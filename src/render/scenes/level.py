@@ -68,6 +68,9 @@ class LevelScene:
             for x in range(len(self.maze[y])):
                 self.draw_wall(x, y)
 
+    def on_expose(self, param: object) -> None:
+        self.render()
+
     def render(self) -> None:
 
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
@@ -88,6 +91,7 @@ class LevelScene:
 
         self.render()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
+        self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
