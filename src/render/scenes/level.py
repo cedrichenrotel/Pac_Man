@@ -68,8 +68,7 @@ class LevelScene:
             for x in range(len(self.maze[y])):
                 self.draw_wall(x, y)
 
-    def launch(self) -> None:
-        '''display the level scene'''
+    def render(self) -> None:
 
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.draw_maze()
@@ -81,9 +80,14 @@ class LevelScene:
                                 int(self.width / 2) - 100,
                                 int(self.height / 2) + 40,
                                 LIGHT_GRAY_PIX, "Press ESC to return to menu")
-        self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.draw_pacman()
         self.draw_pacgum()
+
+    def launch(self) -> None:
+        '''display the level scene'''
+
+        self.render()
+        self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
@@ -102,8 +106,9 @@ class LevelScene:
         lvl_engine = self.GameRender.game_engine.level
         if (lvl_engine.actual_lvl != lvl_engine.lvl_max):
             lvl_engine.add_score(self.score)
+            self.maze = self.GameRender.game_engine.generator.maze
             lvl_engine.next_level()
-            # ducoup apres next_level redessiner limage du maze
+            self.render()
         else:
             # si jamais le nombre de level max etait atteind, on reviens
             # au menu. egalement on devrait plus tard ajouter le score
@@ -131,8 +136,8 @@ class LevelScene:
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          img_ptr,
-                                         px,
-                                         py)
+                                         px + cell_size // 2 ,
+                                         py + cell_size // 2 )
 
     def draw_pacgum(self) -> None:
         """Draw the Pacgum sprite on the maze."""
@@ -150,5 +155,5 @@ class LevelScene:
             self.mlx.mlx_put_image_to_window(self.mlx_init,
                                              self.mlx_window,
                                              img_ptr,
-                                             px,
-                                             py)
+                                             px + cell_size // 2,
+                                             py + cell_size // 2)

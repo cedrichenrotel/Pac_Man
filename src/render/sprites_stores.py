@@ -49,9 +49,9 @@ class SpriteStores():
     def load_all(self) -> None:
         """ The program stores the images in memory """
 
+        self.load('wall', "sprites/wall/wall.png")
         self.load('pacgum', "sprites/pacgum/pacgum.png")
         self.load('super_pacgum', "sprites/pacgum/super_pacgum.png")
-        self.load('wall', "sprites/wall/cerise.png")
         self.load_folder('ghost_red', "sprites/ghost/ghost_red")
         self.load_folder('ghost_blue', "sprites/ghost/ghost_blue")
         self.load_folder('pacman', "sprites/pacman")
