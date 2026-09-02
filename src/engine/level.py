@@ -22,6 +22,7 @@ class Level():
     def __init__(self, config: Config_json) -> None:
         self.config = config
         self.score: int = 0
+        self.player_name: str
         self.lvl_max: int = 10
         self.actual_lvl: int = 0
         self.highscore: dict[str, int]
@@ -46,19 +47,35 @@ class Level():
         self.actual_lvl += 1
         self.generate_maze(self.config.seed + self.actual_lvl)
 
-    def install_score(self) -> None:
+    # peut etre la mettre dans utils car je vais en avoir besoin
+    # au moment de l'affichage des score
+    def install_score_system(self) -> None:
         """ create highscore.json if missing otherwise
         parse the json """
 
-        path = "./highscore.json"
-        file = Path(path)
-        if create_json_missing(file) is True:
-            highscore = parse_highscore(file, path)
+        self.path = "./highscore.json"
+        self.file = Path(self.path)
+        if create_json_missing(self.file) is True:
+            highscore = parse_highscore(self.file, self.path)
             if highscore is False:
-                os.remove(path)
-                create_json_missing(file)
+                os.remove(self.path)
+                create_json_missing(self.file)
             else:
-                with open(path) as f:
+                with open(self.path) as f:
                     self.highscore = json.load(f)
-                # self.highscore = highscore
                 print(self.highscore)
+
+    def push_new_score(self) -> None:
+        new_score = {self.player_name: self.score}
+        self.highscore.update(new_score)
+        self.highscore = {k: v for k, v in
+                          sorted(self.highscore.items(),
+                                 key=lambda item: item[1], reverse=True)}
+        try:
+            with open(self.path, "w", encoding="utf-8"):
+                pass
+            with open(self.path, "w", encoding="utf-8") as f:
+                json.dump(self.highscore, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                  f"cannot push new scores in highscores: {e}")
