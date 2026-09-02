@@ -2,6 +2,10 @@ import sys
 from src.colors import COLORS
 
 try:
+    import os
+    from pathlib import Path
+    from src.engine.parse_config import parse_highscore
+    from src.engine.load_config import create_json_missing
     from mazegenerator import MazeGenerator
     from src.engine.model import Config_json
     from src.engine.init_maze import InitMaze
@@ -39,3 +43,14 @@ class Level():
             regenerates the maze and reinitialises its elements """
         self.actual_lvl += 1
         self.generate_maze(self.config.seed + self.actual_lvl)
+
+    def install_score(self) -> None:
+        """ create highscore.json if missing otherwise
+        parse the json """
+
+        path = "./highscore.json"
+        file = Path(path)
+        if create_json_missing(file) is True:
+            if parse_highscore(file, path) is False:
+                os.remove(path)
+                create_json_missing(file)

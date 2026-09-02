@@ -30,7 +30,7 @@ class LevelScene:
         '''display the level scene'''
         self.level_engine: Level = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
-
+        self.level_engine.install_score()
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
