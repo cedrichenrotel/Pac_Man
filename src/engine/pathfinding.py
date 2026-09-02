@@ -11,9 +11,10 @@ except ImportError as e:
 class Pathfinding():
     def __init__(self, maze: MazeGenerator):
         self.maze = maze
+        self.visited: list[tuple[int, int]] = []
+        self.real_path: list[tuple[int, int]] = []
 
-    def can_move(self, direction: str, pos: tuple[int, int],
-                 visited: list[tuple[int, int]]) -> bool:
+    def can_move(self, direction: str, pos: tuple[int, int]) -> bool:
         """ check from position, direction N,S,E,W can be possible and
         also if its not allready been visited """
 
@@ -28,7 +29,7 @@ class Pathfinding():
 
         if self.maze.maze[pos[1]][pos[0]] & code == 0:
             next_pos = (pos[0] + dx, pos[1] + dy)
-            if (next_pos not in visited):
+            if (next_pos not in self.visited):
                 return True
         return False
 
@@ -46,61 +47,57 @@ class Pathfinding():
         next_pos = (pos[0] + dx, pos[1] + dy)
         return next_pos
 
-    def get_free_paths(self, pos: tuple[int, int],
-                       visited: list[tuple[int, int]]) -> list[str]:
+    def get_free_paths(self, pos: tuple[int, int]) -> list[str]:
         """ get all the possible coordinate from pos"""
 
         coordinates = ["S", "N", "E", "W"]
         coordinates_available = []
         for coordinate in coordinates:
-            if self.can_move(coordinate, pos, visited) is True:
+            if self.can_move(coordinate, pos) is True:
                 coordinates_available.append(coordinate)
         return coordinates_available
 
     def return_where_possibility(
-        self, pos: tuple[int, int], visited: list[tuple[int, int]]
+        self, pos: tuple[int, int]
     ) -> tuple[tuple[int, int] | None, list[str]]:
         """ get all the possible coordinate if pos is in dead end"""
 
-        for visit in reversed(visited):
-            new_pos = self.get_free_paths(visit, visited)
+        for visit in reversed(self.visited):
+            new_pos = self.get_free_paths(visit)
             if len(new_pos) != 0:
                 return visit, new_pos
         return None, []
 
     def check_neighbour(
-        self, pos: tuple[int, int], visited: list[tuple[int, int]],
-        real_path: list[tuple[int, int]]
+        self, pos: tuple[int, int]
     ) -> tuple[tuple[int, int] | None, str | None]:
         """ choose neighbour cell from actual position """
 
-        coordinates = self.get_free_paths(pos, visited)
+        coordinates = self.get_free_paths(pos)
         if len(coordinates) != 0:
             return pos, random.choice(coordinates)
 
-        base_pos, coordinates = self.return_where_possibility(pos, visited)
+        base_pos, coordinates = self.return_where_possibility(pos)
         if base_pos is None:
             return None, None
 
-        index_to = real_path.index(pos)
-        index_from = real_path.index(base_pos)
-        del real_path[index_from+1:index_to]
-        del real_path[-1]
+        index_to = self.real_path.index(pos)
+        index_from = self.real_path.index(base_pos)
+        del self.real_path[index_from+1:index_to]
+        del self.real_path[-1]
 
         return base_pos, random.choice(coordinates)
 
-    def select_way(self, pos: tuple[int, int],
-                   visited: list[tuple[int, int]],
-                   real_path: list[tuple[int, int]]
+    def select_way(self, pos: tuple[int, int]
                    ) -> tuple[int, int] | None:
         """ move and update position """
 
-        base_pos, neigbour = self.check_neighbour(pos, visited, real_path)
+        base_pos, neigbour = self.check_neighbour(pos)
         if base_pos is None or neigbour is None:
             return None
         actual_pos = self.move(neigbour, base_pos)
-        visited.append(actual_pos)
-        real_path.append(actual_pos)
+        self.visited.append(actual_pos)
+        self.real_path.append(actual_pos)
         return actual_pos
 
     def bfs(self, pos_pacman: tuple[int, int],
@@ -108,14 +105,13 @@ class Pathfinding():
         """ launch the bfs algo and return the path
         from the ghost position to pacman position """
 
-        visited = [pos_ghost]
+        self.visited.append(pos_ghost)
         actual_pos = pos_ghost
-        real_path: list[tuple[int, int]] = []
 
         while actual_pos != pos_pacman:
-            next_pos = self.select_way(actual_pos, visited, real_path)
+            next_pos = self.select_way(actual_pos)
             if next_pos is None:
                 raise RuntimeError("Pathfinding: no path found to pacman")
             actual_pos = next_pos
-        print(real_path)
-        return real_path
+        print(self.real_path)
+        return self.real_path
