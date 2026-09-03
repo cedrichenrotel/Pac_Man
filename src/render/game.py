@@ -1,4 +1,5 @@
 from typing import Optional, Union, TYPE_CHECKING
+from src.render.sprites_stores import SpriteStores
 from src.render.scenes.menu import MenuScene
 from src.render.scenes.level import LevelScene
 from src.render.scenes.score import ScoreScene
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 class GameRender():
     '''Class GameRender on contaim the basics for launch
     the GameRender and the size of the screen'''
+
     def __init__(self, width: int, height: int,
                  game_engine: "GameEngine", config: Config_json) -> None:
         self.config = config
@@ -27,6 +29,7 @@ class GameRender():
 
     def run(self) -> None:
         """launch mlx threw the menu scene"""
+
         self.mlx_init: Optional[int] = self.mlx.mlx_init()
         if self.mlx_init is None:
             raise GameError("Cannot init properly the mlx")
@@ -34,7 +37,10 @@ class GameRender():
             self.mlx_init, self.width, self.height, "Pac-Man")
         if self.mlx_window is None:
             raise GameError("Cannot init properly the window of mlx")
-
+        self.sprites_stores: SpriteStores = SpriteStores(self,
+                                                         self.mlx,
+                                                         self.mlx_init)
+        self.sprites_stores.load_all()
         self.current_scene: SceneType = MenuScene(self, self.mlx,
                                                   self.mlx_init,
                                                   self.mlx_window,

@@ -40,12 +40,14 @@ class MenuScene:
 
     def get_calc(self) -> None:
         '''calcul to get the center of the screen'''
+
         self.middle_w: int = int(self.width / 2) - 100
         self.middle_h: int = int(self.height / 2) - 100
         self.step: int = 40
 
     def draw_selector(self, x: int, y: int) -> None:
         '''draw the selector '>' of menu'''
+
         height = 12
         for dy in range(-height // 2, height // 2 + 1):
             width = height // 2 - abs(dy)
@@ -55,6 +57,7 @@ class MenuScene:
 
     def draw_menu(self) -> None:
         '''install the title with them redirections'''
+
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         if self.img[0]:
             img_ptr, img_width, _ = self.img
@@ -70,6 +73,7 @@ class MenuScene:
 
     def install_menu_image(self) -> None:
         '''install in the scene an image from assets/'''
+
         current_dir = os.path.dirname(os.path.abspath(__file__))
         image_path = os.path.join(current_dir, "./../../../"
                                                "assets/menu/menu_logo.png")
@@ -90,6 +94,7 @@ class MenuScene:
         '''record the key press and do the action
         key up to go up, key down to go down,
         enter to select the title'''
+
         if keycode == XK_UP:
             self.selected = (self.selected - 1) % len(self.entries)
             self.draw_menu()
@@ -108,6 +113,7 @@ class MenuScene:
 
     def start_game(self) -> None:
         '''redirect to the level scene'''
+
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
         self.GameRender.current_scene = LevelScene(
@@ -118,6 +124,7 @@ class MenuScene:
 
     def show_highscores(self) -> None:
         '''redirect to the score scene'''
+
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
         self.GameRender.current_scene = ScoreScene(
@@ -128,6 +135,7 @@ class MenuScene:
 
     def show_instructions(self) -> None:
         '''redirect to the instruction scene'''
+
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
         self.GameRender.current_scene = InstructionScene(
@@ -139,5 +147,6 @@ class MenuScene:
 
     def quit_game(self) -> None:
         """mlx quitting the GameRender"""
+
         self.running = False
         self.mlx.mlx_loop_exit(self.mlx_init)

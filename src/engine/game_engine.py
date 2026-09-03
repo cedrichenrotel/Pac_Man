@@ -18,8 +18,7 @@ class GameEngine():
     def initialize(self) -> None:
         """ generates the first maze, initialises its elements and
             launches the render """
-
-        self.game_render: GameRender = GameRender(1000, 1000, self,
+        self.game_render: GameRender = GameRender(1200, 1200, self,
                                                   self.config)
         self.game_render.run()
 

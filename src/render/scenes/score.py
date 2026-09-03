@@ -26,7 +26,8 @@ class ScoreScene:
         self.mlx_window = mlx_window
 
     def launch(self) -> None:
-        '''display the highscores scene'''
+        '''display the level scene'''
+
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,

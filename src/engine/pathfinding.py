@@ -2,6 +2,7 @@ import sys
 from src.colors import COLORS
 try:
     from mazegenerator import MazeGenerator
+    from src.engine.utils import DIRECTIONS
     import random
 except ImportError as e:
     print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
@@ -18,14 +19,7 @@ class Pathfinding():
         """ check from position, direction N,S,E,W can be possible and
         also if its not allready been visited """
 
-        directions: dict[str, tuple[int, int, int]] = {
-            'N': (0, -1, 1),
-            'E': (1, 0, 2),
-            'S': (0, 1, 4),
-            'W': (-1, 0, 8)
-        }
-
-        dx, dy, code = directions[direction]
+        dx, dy, code = DIRECTIONS[direction]
 
         if self.maze.maze[pos[1]][pos[0]] & code == 0:
             next_pos = (pos[0] + dx, pos[1] + dy)
@@ -36,14 +30,8 @@ class Pathfinding():
     def move(self, direction: str, pos: tuple[int, int]) -> tuple[int, int]:
         """ move from a position to a direction """
 
-        directions: dict[str, tuple[int, int, int]] = {
-            'N': (0, -1, 1),
-            'E': (1, 0, 2),
-            'S': (0, 1, 4),
-            'W': (-1, 0, 8)
-        }
+        dx, dy, code = DIRECTIONS[direction]
 
-        dx, dy, code = directions[direction]
         next_pos = (pos[0] + dx, pos[1] + dy)
         return next_pos
 

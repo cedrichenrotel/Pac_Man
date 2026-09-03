@@ -6,6 +6,14 @@ except ImportError as e:
     sys.exit()
 
 
+DIRECTIONS: dict[str, tuple[int, int, int]] = {
+            'N': (0, -1, 1),
+            'E': (1, 0, 2),
+            'S': (0, 1, 4),
+            'W': (-1, 0, 8)
+        }
+
+
 def clean_lines_comments(line: str, copie_upto: int) -> tuple[list[str], bool]:
     """ Returns the elements of the line that are not part of a comment and
         a boolean value indicating whether the line is within an
@@ -105,3 +113,14 @@ def get_center_maze(maze: MazeGenerator) -> tuple[int, int]:
                     best_dist = distance
                     best_pos = (x, y)
     return (best_pos)
+
+
+def algo_fixed_walk(render: float, x: int) -> float:
+    """ Fixed-point method for fluid displacement """
+
+    vitesse: float = 0.1
+    if render < vitesse:
+        render += vitesse
+    elif render > x:
+        render -= vitesse
+    return render
