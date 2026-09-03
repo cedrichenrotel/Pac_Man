@@ -5,7 +5,8 @@ from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
 from src.engine.utils import DIRECTIONS
 from src.engine.entities import Ghost
 from mlx import Mlx
-
+from src.engine.model import Config_json
+from src.engine.level import Level
 # guarded to avoid a circular import: GameRender.py imports LevelScene at
 # module level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
@@ -16,8 +17,16 @@ class LevelScene:
 
     def __init__(self, GameRender: "GameRender", mlx: Mlx,
                  mlx_init: Optional[int],
+<<<<<<< HEAD
                  mlx_window: Optional[int], width: int, height: int) -> None:
 
+=======
+                 mlx_window: Optional[int],
+                 width: int,
+                 height: int,
+                 config: Config_json) -> None:
+        self.config = config
+>>>>>>> main
         self.GameRender = GameRender
         self.maze = self.GameRender.game_engine.generator.maze
         self.width = width
@@ -107,8 +116,23 @@ class LevelScene:
 
     def launch(self) -> None:
         '''display the level scene'''
+<<<<<<< HEAD
 
         self.render()
+=======
+        self.level_engine: Level = Level(self.config)
+        self.level_engine.generate_maze(self.config.seed)
+
+        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                int(self.width / 2) - 100,
+                                int(self.height / 2),
+                                YELLOW, "Level (TODO)")
+        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                int(self.width / 2) - 100,
+                                int(self.height / 2) + 40,
+                                LIGHT_GRAY, "Press ESC to return to menu")
+>>>>>>> main
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
 
@@ -121,17 +145,24 @@ class LevelScene:
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height)
+                self.width, self.height, self.config)
             self.GameRender.current_scene.launch()
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
+<<<<<<< HEAD
         lvl_engine = self.GameRender.game_engine.level
         if (lvl_engine.actual_lvl != lvl_engine.lvl_max):
             lvl_engine.add_score(self.score)
             self.maze = self.GameRender.game_engine.generator.maze
             lvl_engine.next_level()
             self.render()
+=======
+        if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
+            self.level_engine.add_score(self.score)
+            self.level_engine.next_level()
+            # ducoup apres next_level redessiner limage du maze
+>>>>>>> main
         else:
             # si jamais le nombre de level max etait atteind, on reviens
             # au menu. egalement on devrait plus tard ajouter le score
@@ -141,7 +172,7 @@ class LevelScene:
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height)
+                self.width, self.height, self.config)
             self.GameRender.current_scene.launch()
 
     def draw_pacman(self) -> None:

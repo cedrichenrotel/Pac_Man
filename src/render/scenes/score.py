@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from src.render.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
+from src.engine.model import Config_json
 from mlx import Mlx
 
 # guarded to avoid a circular import: GameRender.py imports ScoreScene at
@@ -12,7 +13,11 @@ if TYPE_CHECKING:
 class ScoreScene:
     def __init__(self, GameRender: "GameRender", mlx: Mlx,
                  mlx_init: Optional[int],
-                 mlx_window: Optional[int], width: int, height: int) -> None:
+                 mlx_window: Optional[int],
+                 width: int,
+                 height: int,
+                 config: Config_json) -> None:
+        self.config = config
         self.GameRender = GameRender
         self.width = width
         self.height = height
@@ -42,5 +47,5 @@ class ScoreScene:
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height)
+                self.width, self.height, self.config)
             self.GameRender.current_scene.launch()

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Callable, List, Optional, Tuple, TYPE_CHECKING
 from src.render.scenes.level import LevelScene
 from src.render.scenes.score import ScoreScene
+from src.engine.model import Config_json
 from src.render.scenes.instruction import InstructionScene
 from src.render.utils import YELLOW, LIGHT_GRAY, XK_UP, XK_DOWN, XK_RETURN
 from mlx import Mlx
@@ -17,7 +18,11 @@ if TYPE_CHECKING:
 class MenuScene:
     def __init__(self, GameRender: 'GameRender', mlx: Mlx,
                  mlx_init: Optional[int],
-                 mlx_window: Optional[int], width: int, height: int) -> None:
+                 mlx_window: Optional[int],
+                 width: int,
+                 height: int,
+                 config: Config_json) -> None:
+        self.config = config
         self.GameRender = GameRender
         self.width = width
         self.height = height
@@ -114,7 +119,7 @@ class MenuScene:
         self.GameRender.current_scene = LevelScene(
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
-            self.width, self.height)
+            self.width, self.height, self.config)
         self.GameRender.current_scene.launch()
 
     def show_highscores(self) -> None:
@@ -125,7 +130,7 @@ class MenuScene:
         self.GameRender.current_scene = ScoreScene(
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
-            self.width, self.height)
+            self.width, self.height, self.config)
         self.GameRender.current_scene.launch()
 
     def show_instructions(self) -> None:
@@ -137,7 +142,7 @@ class MenuScene:
             self.GameRender, self.mlx,
             self.mlx_init,
             self.mlx_window,
-            self.width, self.height)
+            self.width, self.height, self.config)
         self.GameRender.current_scene.launch()
 
     def quit_game(self) -> None:

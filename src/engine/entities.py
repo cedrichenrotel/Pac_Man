@@ -3,6 +3,7 @@ from src.colors import COLORS
 from src.engine.utils import DIRECTIONS, algo_fixed_walk
 try:
     from mazegenerator import MazeGenerator
+    from src.engine.pathfinding import Pathfinding
 except ImportError as e:
     print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()
@@ -48,3 +49,20 @@ class Ghost(Entities):
         super().__init__(x, y)
         self.eaten: bool = False  # mangé
         self.is_edible: bool = False  # est comestible
+
+    def moving_position_initial(self, maze: MazeGenerator) -> bool:
+        """ change ghost position next to super_pacgum """
+
+        directions = ["N", "S", "E", "W"]
+        for direction in directions:
+            if (self.move(direction, maze) is True):
+                return True
+        return False
+
+    def path_to_pacman(self, maze: MazeGenerator, pacman: Pacman) -> None:
+        """ get the path from ghost to pacman  """
+        pos_pacman: tuple = (pacman.x, pacman.y)
+        pos_ghost: tuple = (self.x, self.y)
+
+        algo = Pathfinding(maze)
+        algo.bfs(pos_pacman, pos_ghost)
