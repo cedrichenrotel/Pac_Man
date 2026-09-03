@@ -32,8 +32,8 @@ class Entities():
     def move_render(self) -> None:
         """ Smooth movement via the fixed pitch """
 
-        algo_fixed_walk(self.render_x, self.x)
-        algo_fixed_walk(self.render_y, self.y)
+        self.render_x = algo_fixed_walk(self.render_x, self.x)
+        self.render_y = algo_fixed_walk(self.render_y, self.y)
 
 
 class Pacman(Entities):
