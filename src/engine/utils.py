@@ -123,11 +123,12 @@ def install_score_system(path: str, file: Path) -> dict[str, int]:
     parse the json """
 
     if create_json_missing(file) is True:
-        highscore: bool = parse_highscore(file, path)
-        if highscore is False:
+        is_highscore_good_format: bool = parse_highscore(file, path)
+        if is_highscore_good_format is False:
             os.remove(path)
             create_json_missing(file)
         else:
             with open(path) as f:
                 highscores: dict[str, int] = json.load(f)
+    # push_new_score(path, highscores)
     return highscores
