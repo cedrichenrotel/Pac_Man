@@ -17,7 +17,10 @@ class GameRender():
     '''Class GameRender on contaim the basics for launch
     the GameRender and the size of the screen'''
     def __init__(self, width: int, height: int,
-                 game_engine: "GameEngine", config: Config_json) -> None:
+                 game_engine: "GameEngine",
+                 config: Config_json,
+                 highscore: dict[str, int]) -> None:
+        self.highscore = highscore
         self.config = config
         self.game_engine = game_engine
         self.width: int = width
@@ -40,7 +43,8 @@ class GameRender():
                                                   self.mlx_window,
                                                   self.width,
                                                   self.height,
-                                                  self.config)
+                                                  self.config,
+                                                  self.highscore)
         self.current_scene.launch()
         self.mlx.mlx_loop(self.mlx_init)
         self.mlx.mlx_release(self.mlx_init)

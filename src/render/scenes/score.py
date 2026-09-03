@@ -16,7 +16,9 @@ class ScoreScene:
                  mlx_window: Optional[int],
                  width: int,
                  height: int,
-                 config: Config_json) -> None:
+                 config: Config_json,
+                 highscore: dict[str, int]) -> None:
+        self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
         self.width = width
@@ -25,16 +27,25 @@ class ScoreScene:
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
 
+    def show_highscores(self) -> None:
+        self.marge = 0
+        if self.highscore is None:
+            print("cets vide")
+        else:
+            for key, value in self.highscore.items():
+                self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                        int(self.width / 2) - 100,
+                                        int(self.height / 2) + self.marge,
+                                        YELLOW, f"{key}: {value}")
+                self.marge += 40
+
     def launch(self) -> None:
         '''display the highscores scene'''
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+        self.show_highscores()
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
-                                int(self.height / 2),
-                                YELLOW, "Highscores (TODO)")
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width / 2) - 100,
-                                int(self.height / 2) + 40,
+                                int(self.height / 2) + self.marge + 40,
                                 LIGHT_GRAY, "Press ESC to return to menu")
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
@@ -46,5 +57,6 @@ class ScoreScene:
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height, self.config)
+                self.width, self.height,
+                self.config, self.highscore)
             self.GameRender.current_scene.launch()

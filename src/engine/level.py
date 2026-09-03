@@ -2,11 +2,7 @@ import sys
 from src.colors import COLORS
 
 try:
-    import os
     import json
-    from pathlib import Path
-    from src.engine.parse_config import parse_highscore
-    from src.engine.load_config import create_json_missing
     from mazegenerator import MazeGenerator
     from src.engine.model import Config_json
     from src.engine.init_maze import InitMaze
@@ -47,35 +43,18 @@ class Level():
         self.actual_lvl += 1
         self.generate_maze(self.config.seed + self.actual_lvl)
 
-    # peut etre la mettre dans utils car je vais en avoir besoin
-    # au moment de l'affichage des score
-    def install_score_system(self) -> None:
-        """ create highscore.json if missing otherwise
-        parse the json """
-
-        self.path = "./highscore.json"
-        self.file = Path(self.path)
-        if create_json_missing(self.file) is True:
-            highscore = parse_highscore(self.file, self.path)
-            if highscore is False:
-                os.remove(self.path)
-                create_json_missing(self.file)
-            else:
-                with open(self.path) as f:
-                    self.highscore = json.load(f)
-                print(self.highscore)
-
-    def push_new_score(self) -> None:
+    def push_new_score(self, path: str, highscore: dict[str, int]) -> None:
         new_score = {self.player_name: self.score}
-        self.highscore.update(new_score)
-        self.highscore = {k: v for k, v in
-                          sorted(self.highscore.items(),
-                                 key=lambda item: item[1], reverse=True)}
+        highscore.update(new_score)
+        highscore = {k: v for k, v in
+                     sorted(highscore.items(),
+                            key=lambda item: item[1], reverse=True)}
+        highscore = dict(list(highscore.items())[:10])
         try:
-            with open(self.path, "w", encoding="utf-8"):
+            with open(path, "w", encoding="utf-8"):
                 pass
-            with open(self.path, "w", encoding="utf-8") as f:
-                json.dump(self.highscore, f, indent=4, ensure_ascii=False)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(highscore, f, indent=4, ensure_ascii=False)
         except Exception as e:
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                   f"cannot push new scores in highscores: {e}")

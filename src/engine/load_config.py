@@ -16,13 +16,6 @@ def read_json(file: Path | str) -> str:
     return (data)
 
 
-def create_json_missing(file: Path) -> bool:
-    if file.exists() is False:
-        file.touch()
-        return False
-    return True
-
-
 def load_json(file: str) -> dict[str, Any]:
     data: dict[str, Any] = json.loads(file)
     return data

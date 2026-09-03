@@ -1,6 +1,10 @@
 import sys
 try:
+    import json
+    import os
+    from pathlib import Path
     from mazegenerator import MazeGenerator
+    from src.engine.parse_config import parse_highscore
 except ImportError as e:
     print(f'[IMPORT ERROR]: {e}')
     sys.exit()
@@ -105,3 +109,24 @@ def get_center_maze(maze: MazeGenerator) -> tuple[int, int]:
                     best_dist = distance
                     best_pos = (x, y)
     return (best_pos)
+
+
+def create_json_missing(file: Path) -> bool:
+    if file.exists() is False:
+        file.touch()
+        return False
+    return True
+
+
+def install_score_system(path: str, file: Path) -> dict[str, int]:
+    """ create highscore.json if missing otherwise
+    parse the json """
+    if create_json_missing(file) is True:
+        highscore: bool = parse_highscore(file, path)
+        if highscore is False:
+            os.remove(path)
+            create_json_missing(file)
+        else:
+            with open(path) as f:
+                highscores: dict[str, int] = json.load(f)
+    return highscores
