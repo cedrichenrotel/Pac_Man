@@ -26,6 +26,7 @@ class Level():
     def generate_maze(self, seed: int) -> None:
         """ generates a maze for the given seed and initialises its
             elements """
+
         self.generator: MazeGenerator = MazeGenerator(
                     size=(self.config.level.width, self.config.level.height),
                     seed=seed
@@ -40,10 +41,16 @@ class Level():
     def next_level(self) -> None:
         """ called by the render side when the current level is won,
             regenerates the maze and reinitialises its elements """
+
         self.actual_lvl += 1
         self.generate_maze(self.config.seed + self.actual_lvl)
 
     def push_new_score(self, path: str, highscore: dict[str, int]) -> None:
+        """ push the new score from player to all highscore,
+            order by descending, max 10 best score and write
+            in highscore.json
+        """
+
         new_score = {self.player_name: self.score}
         highscore.update(new_score)
         highscore = {k: v for k, v in

@@ -121,6 +121,7 @@ def create_json_missing(file: Path) -> bool:
 def install_score_system(path: str, file: Path) -> dict[str, int]:
     """ create highscore.json if missing otherwise
     parse the json """
+
     if create_json_missing(file) is True:
         highscore: bool = parse_highscore(file, path)
         if highscore is False:
