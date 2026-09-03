@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING
 from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
                               get_cell_size)
 from src.engine.utils import DIRECTIONS
-from src.engine.entities import Pacman
+from src.engine.entities import Pacman, Ghost
 from mlx import Mlx
 
 # guarded to avoid a circular import: GameRender.py imports LevelScene at
@@ -33,13 +33,15 @@ class LevelScene:
         """allows the pixel size to be standardised and the walls of the maze
             to be displayed pixel by pixel"""
 
+        img_ptr, width, height = (self.GameRender.sprites_stores.
+                                  sprites['wall'][0])
+        margin: int = width // 2
         cell_size: int = get_cell_size(self.width,
                                        self.height,
                                        self.maze_width,
-                                       self.maze_height)
+                                       self.maze_height,
+                                       margin)
         val: int = self.maze[y][x]
-        img_ptr, width, height = (self.GameRender.sprites_stores.
-                                  sprites['wall'][0])
 
         directions_to_draw = ['N', 'W']
         if x == self.maze_width - 1:
@@ -50,22 +52,24 @@ class LevelScene:
         for direction in directions_to_draw:
             dx, dy, code = DIRECTIONS[direction]
             if val & code != 0:
-                px: int = x * cell_size
-                py: int = y * cell_size
+                px: int = margin + x * cell_size
+                py: int = margin + y * cell_size
                 for i in range(0, cell_size, width):
                     if dx == 0:
-                        py_pos: int = py + cell_size // 2 + dy * (cell_size // 2)
-                        if dy == 1:
-                            py_pos -= height + 1
+                        if dy == -1:
+                            py_pos: int = py - height // 2
+                        else:
+                            py_pos = py + cell_size - height // 2
                         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                                          self.mlx_window,
                                                          img_ptr,
                                                          px + i,
                                                          py_pos)
                     else:
-                        px_pos: int = px + cell_size // 2 + dx * (cell_size // 2)
-                        if dx == 1:
-                            px_pos -= width + 1
+                        if dx == -1:
+                            px_pos: int = px - width // 2
+                        else:
+                            px_pos = px + cell_size - width // 2
                         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                                          self.mlx_window,
                                                          img_ptr,
@@ -99,6 +103,7 @@ class LevelScene:
         self.draw_pacman()
         self.draw_pacgum()
         self.draw_super_pacgum()
+        self.draw_gosth()
 
     def launch(self) -> None:
         '''display the level scene'''
@@ -143,51 +148,81 @@ class LevelScene:
         """Draw the Pacman sprite on the maze."""
 
         pacman: Pacman = self.GameRender.game_engine.init_maze.pacman
+        _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
+        margin: int = wall_width // 2
         cell_size: int = get_cell_size(self.width,
                                        self.height,
                                        self.maze_width,
-                                       self.maze_height)
-        px: int = pacman.x * cell_size
-        py: int = pacman.y * cell_size
+                                       self.maze_height,
+                                       margin)
+        px: int = margin + pacman.x * cell_size
+        py: int = margin + pacman.y * cell_size
         img_ptr, width, height = (self.GameRender.sprites_stores.
                                   sprites['pacman'][0])
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          img_ptr,
-                                         px + cell_size // 2 ,
-                                         py + cell_size // 2 )
+                                         px + cell_size // 2 - width // 2,
+                                         py + cell_size // 2 - height // 2)
+
+    def draw_gosth(self) -> None:
+
+        ghosts: list[Ghost] = self.GameRender.game_engine.init_maze.ghosts
+        _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
+        margin: int = wall_width // 2
+        cell_size: int = get_cell_size(self.width,
+                                       self.height,
+                                       self.maze_width,
+                                       self.maze_height,
+                                       margin)
+        img_ptr, width, height = (self.GameRender.sprites_stores.
+                                  sprites['ghost_red'][0])
+        for ghost in ghosts:
+            px: int = margin + ghost.x * cell_size
+            py: int = margin + ghost.y * cell_size
+            self.mlx.mlx_put_image_to_window(self.mlx_init,
+                                             self.mlx_window,
+                                             img_ptr,
+                                             px + cell_size // 2 - width // 2,
+                                             py + cell_size // 2 - height // 2)
 
     def draw_pacgum(self) -> None:
         """ Draw the Pacgum sprite on the maze. """
         pacgums: list[tuple[int, int]] = (self.GameRender.game_engine.
-                                        init_maze.pacgum_pos)
+                                          init_maze.pacgum_pos)
+        _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
+        margin: int = wall_width // 2
         cell_size: int = get_cell_size(self.width,
                                        self.height,
                                        self.maze_width,
-                                       self.maze_height)
+                                       self.maze_height,
+                                       margin)
         for pacgum in pacgums:
-            px: int = pacgum[0] * cell_size
-            py: int = pacgum[1] * cell_size
+            px: int = margin + pacgum[0] * cell_size
+            py: int = margin + pacgum[1] * cell_size
             img_ptr, width, height = (self.GameRender.sprites_stores.
                                       sprites['pacgum'][0])
             self.mlx.mlx_put_image_to_window(self.mlx_init,
                                              self.mlx_window,
                                              img_ptr,
-                                             px + cell_size // 2,
-                                             py + cell_size // 2)
+                                             px + cell_size // 2 - width // 2,
+                                             py + cell_size // 2 - height // 2)
 
     def draw_super_pacgum(self) -> None:
         """ Draw the Super Pacgum sprite on the maze. """
 
         super_pacgums: list[tuple[int, int]] = (self.GameRender.game_engine.
                                                 init_maze.superpacgum_pos)
+        _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
+        margin: int = wall_width // 2
         cell_size: int = get_cell_size(self.width,
                                        self.height,
                                        self.maze_width,
-                                       self.maze_height)
+                                       self.maze_height,
+                                       margin)
         for super_pacgum in super_pacgums:
-            px: int = super_pacgum[0] * cell_size 
-            py: int = super_pacgum[1] * cell_size
+            px: int = margin + super_pacgum[0] * cell_size
+            py: int = margin + super_pacgum[1] * cell_size
             img_ptr, width, height = (self.GameRender.sprites_stores.
                                       sprites['super_pacgum'][0])
             self.mlx.mlx_put_image_to_window(self.mlx_init,

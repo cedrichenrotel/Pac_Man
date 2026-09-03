@@ -45,9 +45,11 @@ def get_asset_path(path: str) -> str:
 
 
 def get_cell_size(width: int, height: int, maze_width: int,
-                  maze_height: int) -> int:
-    """ calculate the number of pixels in a cell """
+                  maze_height: int, margin: int = 0) -> int:
+    """ calculate the number of pixels in a cell, reserving `margin`
+        pixels on each side so bordering walls can be centered without
+        being clipped by the window edge """
 
-    cell_size_x: int = width // maze_width
-    cell_size_y: int = height // maze_height
+    cell_size_x: int = (width - margin * 2) // maze_width
+    cell_size_y: int = (height - margin * 2) // maze_height
     return min(cell_size_x, cell_size_y)
