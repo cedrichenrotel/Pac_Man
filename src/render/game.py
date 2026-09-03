@@ -37,15 +37,10 @@ class GameRender():
             self.mlx_init, self.width, self.height, "Pac-Man")
         if self.mlx_window is None:
             raise GameError("Cannot init properly the window of mlx")
-
-<<<<<<< HEAD
         self.sprites_stores: SpriteStores = SpriteStores(self,
                                                          self.mlx,
                                                          self.mlx_init)
         self.sprites_stores.load_all()
-
-=======
->>>>>>> main
         self.current_scene: SceneType = MenuScene(self, self.mlx,
                                                   self.mlx_init,
                                                   self.mlx_window,

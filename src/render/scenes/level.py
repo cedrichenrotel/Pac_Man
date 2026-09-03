@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
-                              get_cell_size)
+from src.render.utils import YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE, get_cell_size
 from src.engine.utils import DIRECTIONS
 from src.engine.entities import Ghost
 from mlx import Mlx
@@ -17,26 +16,21 @@ class LevelScene:
 
     def __init__(self, GameRender: "GameRender", mlx: Mlx,
                  mlx_init: Optional[int],
-<<<<<<< HEAD
-                 mlx_window: Optional[int], width: int, height: int) -> None:
-
-=======
                  mlx_window: Optional[int],
                  width: int,
                  height: int,
                  config: Config_json) -> None:
         self.config = config
->>>>>>> main
         self.GameRender = GameRender
-        self.maze = self.GameRender.game_engine.generator.maze
+        # self.maze = self.GameRender.game_engine.generator.maze
         self.width = width
         self.score = 0
         self.height = height
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
-        self.maze_width: int = self.GameRender.game_engine.config.level.width
-        self.maze_height: int = self.GameRender.game_engine.config.level.height
+        # self.maze_width: int = self.GameRender.game_engine.config.level.width
+        # self.maze_height: int = self.GameRender.game_engine.config.level.height
 
     def draw_wall(self, x: int, y: int) -> None:
         """allows the pixel size to be standardised and the walls of the maze
@@ -101,14 +95,6 @@ class LevelScene:
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.draw_maze()
         self.draw_maze()
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width // 2) - 100,
-                                int(self.height // 2),
-                                YELLOW, "Level (TODO)")
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width // 2) - 100,
-                                int(self.height // 2) + 40,
-                                LIGHT_GRAY_PIX, "Press ESC to return to menu")
         self.draw_pacman()
         self.draw_pacgum()
         self.draw_super_pacgum()
@@ -116,23 +102,13 @@ class LevelScene:
 
     def launch(self) -> None:
         '''display the level scene'''
-<<<<<<< HEAD
 
-        self.render()
-=======
         self.level_engine: Level = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
-
-        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width / 2) - 100,
-                                int(self.height / 2),
-                                YELLOW, "Level (TODO)")
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width / 2) - 100,
-                                int(self.height / 2) + 40,
-                                LIGHT_GRAY, "Press ESC to return to menu")
->>>>>>> main
+        self.maze = self.level_engine.generator.maze
+        self.maze_width: int = self.level_engine.config.level.width
+        self.maze_height: int = self.level_engine.config.level.height
+        self.render()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
 
@@ -150,19 +126,12 @@ class LevelScene:
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
-<<<<<<< HEAD
-        lvl_engine = self.GameRender.game_engine.level
-        if (lvl_engine.actual_lvl != lvl_engine.lvl_max):
-            lvl_engine.add_score(self.score)
-            self.maze = self.GameRender.game_engine.generator.maze
-            lvl_engine.next_level()
-            self.render()
-=======
         if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
             self.level_engine.add_score(self.score)
             self.level_engine.next_level()
+            # self.maze = self.GameRender.game_engine.generator.maze
+            # self.render()
             # ducoup apres next_level redessiner limage du maze
->>>>>>> main
         else:
             # si jamais le nombre de level max etait atteind, on reviens
             # au menu. egalement on devrait plus tard ajouter le score
@@ -178,7 +147,7 @@ class LevelScene:
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""
 
-        pacman = self.GameRender.game_engine.init_maze.pacman
+        pacman = self.level_engine.init_maze.pacman
         assert pacman is not None
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
         margin: int = wall_width // 2
@@ -199,7 +168,7 @@ class LevelScene:
 
     def draw_gosth(self) -> None:
 
-        ghosts: list[Ghost] = self.GameRender.game_engine.init_maze.ghosts
+        ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
         margin: int = wall_width // 2
         cell_size: int = get_cell_size(self.width,
@@ -220,8 +189,8 @@ class LevelScene:
 
     def draw_pacgum(self) -> None:
         """ Draw the Pacgum sprite on the maze. """
-        pacgums: list[tuple[int, int]] = (self.GameRender.game_engine.
-                                          init_maze.pacgum_pos)
+        pacgums: list[tuple[int, int]] = (self.level_engine.init_maze
+                                          .pacgum_pos)
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
         margin: int = wall_width // 2
         cell_size: int = get_cell_size(self.width,
@@ -243,8 +212,8 @@ class LevelScene:
     def draw_super_pacgum(self) -> None:
         """ Draw the Super Pacgum sprite on the maze. """
 
-        super_pacgums: list[tuple[int, int]] = (self.GameRender.game_engine.
-                                                init_maze.superpacgum_pos)
+        super_pacgums: list[tuple[int, int]] = (self.level_engine.init_maze
+                                                .superpacgum_pos)
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
         margin: int = wall_width // 2
         cell_size: int = get_cell_size(self.width,
