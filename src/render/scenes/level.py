@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING
 from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
                               get_cell_size)
 from src.engine.utils import DIRECTIONS
-from src.engine.entities import Pacman, Ghost
+from src.engine.entities import Ghost
 from mlx import Mlx
 
 # guarded to avoid a circular import: GameRender.py imports LevelScene at
@@ -147,7 +147,8 @@ class LevelScene:
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""
 
-        pacman: Pacman = self.GameRender.game_engine.init_maze.pacman
+        pacman = self.GameRender.game_engine.init_maze.pacman
+        assert pacman is not None
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
         margin: int = wall_width // 2
         cell_size: int = get_cell_size(self.width,

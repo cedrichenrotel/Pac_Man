@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.render.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
+from src.render.utils import LIGHT_GRAY, XK_ESCAPE
 from mlx import Mlx
 
 # guarded to avoid a circular import: GameRender.py imports InstructionScene at

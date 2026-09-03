@@ -30,7 +30,7 @@ class SpriteStores():
         image_path: str = get_asset_path(path)
 
         if name not in self.sprites:
-            self.sprites[name]: list[Any] = []
+            self.sprites[name] = []
         img = self.mlx.mlx_png_file_to_image(self.mlx_init, image_path)
         if img[0] is None:
             raise ValueError("def load(): Failed to load image")
