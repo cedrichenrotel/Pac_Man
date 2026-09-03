@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.render.utils import YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE, get_cell_size
+from src.render.utils import XK_ESCAPE, get_cell_size
 from src.engine.utils import DIRECTIONS
 from src.engine.entities import Ghost
 from mlx import Mlx
@@ -22,15 +22,12 @@ class LevelScene:
                  config: Config_json) -> None:
         self.config = config
         self.GameRender = GameRender
-        # self.maze = self.GameRender.game_engine.generator.maze
         self.width = width
         self.score = 0
         self.height = height
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
-        # self.maze_width: int = self.GameRender.game_engine.config.level.width
-        # self.maze_height: int = self.GameRender.game_engine.config.level.height
 
     def draw_wall(self, x: int, y: int) -> None:
         """allows the pixel size to be standardised and the walls of the maze
