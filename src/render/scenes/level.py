@@ -95,7 +95,7 @@ class LevelScene:
         self.draw_pacman()
         self.draw_pacgum()
         self.draw_super_pacgum()
-        self.draw_gosth()
+        self.draw_ghost()
 
     def launch(self) -> None:
         '''display the level scene'''
@@ -163,7 +163,7 @@ class LevelScene:
                                          px + cell_size // 2 - width // 2,
                                          py + cell_size // 2 - height // 2)
 
-    def draw_gosth(self) -> None:
+    def draw_ghost(self) -> None:
 
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
