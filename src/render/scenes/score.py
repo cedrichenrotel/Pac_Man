@@ -29,13 +29,11 @@ class ScoreScene:
 
     def show_highscores(self) -> None:
         self.marge = 0
-        if self.highscore is None:
-            print("cets vide")
-        else:
+        if self.highscore is not None:
             for key, value in self.highscore.items():
                 self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                         int(self.width / 2) - 100,
-                                        int(self.height / 2) + self.marge,
+                                        int(self.height / 4) + self.marge,
                                         YELLOW, f"{key}: {value}")
                 self.marge += 40
 
@@ -45,7 +43,7 @@ class ScoreScene:
         self.show_highscores()
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
-                                int(self.height / 2) + self.marge + 40,
+                                int(self.height / 4) + self.marge + 40,
                                 LIGHT_GRAY, "Press ESC to return to menu")
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 

@@ -28,18 +28,6 @@ class InstructionScene:
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
 
-    # def show_highscores(self):
-    #     marge = 0
-    #     if self.highscore is None:
-    #         print("cets vide")
-    #     else:
-    #         for key, value in self.highscore.items():
-    #             self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-    #                                     int(self.width / 2) - 100,
-    #                                     int(self.height / 2) + marge,
-    #                                     YELLOW, f"{key}: {value}")
-    #             marge += 40
-
     def launch(self) -> None:
         '''display the instructions scene'''
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)

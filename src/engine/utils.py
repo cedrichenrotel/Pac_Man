@@ -1,4 +1,5 @@
 import sys
+from src.colors import COLORS
 try:
     import json
     import os
@@ -118,17 +119,39 @@ def create_json_missing(file: Path) -> bool:
     return True
 
 
+def push_json(highscore: dict[str, int], path: str) -> None:
+    try:
+        with open(path, "w", encoding="utf-8"):
+            pass
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(highscore, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+              f"cannot push new scores in highscores: {e}")
+
+
+def order_asc_and_limit(highscore: dict[str, int]) -> None:
+    highscore = {k: v for k, v in
+                 sorted(highscore.items(),
+                        key=lambda item: item[1],
+                        reverse=True)}
+    if len(highscore) > 9:
+        highscore = dict(list(highscore.items())[:10])
+        push_json(highscore, "./highscore.json")
+
+
 def install_score_system(path: str, file: Path) -> dict[str, int]:
     """ create highscore.json if missing otherwise
     parse the json """
 
+    highscores: dict[str, int] = {}
     if create_json_missing(file) is True:
         is_highscore_good_format: bool = parse_highscore(file, path)
         if is_highscore_good_format is False:
             os.remove(path)
             create_json_missing(file)
-        else:
+        elif os.stat(file).st_size != 0:
             with open(path) as f:
-                highscores: dict[str, int] = json.load(f)
-    # push_new_score(path, highscores)
+                highscores = json.load(f)
+            order_asc_and_limit(highscores)
     return highscores

@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 # fichier a ne pas rendre
+.claude
 *.pdf
 *.zip
 .gitignore

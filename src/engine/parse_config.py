@@ -32,7 +32,6 @@ def parse_args() -> argparse.Namespace:
 def parse_highscore(file: Path,
                     path: str) -> bool:
     """ check if highscore.json is in good format """
-
     try:
         if os.stat(file).st_size != 0:
             with open(path) as f:

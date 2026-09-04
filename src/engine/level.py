@@ -2,7 +2,7 @@ import sys
 from src.colors import COLORS
 
 try:
-    import json
+    from src.engine.utils import order_asc_and_limit
     from mazegenerator import MazeGenerator
     from src.engine.model import Config_json
     from src.engine.init_maze import InitMaze
@@ -53,15 +53,4 @@ class Level():
 
         new_score = {self.player_name: self.score}
         highscore.update(new_score)
-        highscore = {k: v for k, v in
-                     sorted(highscore.items(),
-                            key=lambda item: item[1], reverse=True)}
-        highscore = dict(list(highscore.items())[:10])
-        try:
-            with open(path, "w", encoding="utf-8"):
-                pass
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(highscore, f, indent=4, ensure_ascii=False)
-        except Exception as e:
-            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-                  f"cannot push new scores in highscores: {e}")
+        order_asc_and_limit(highscore)
