@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING
 from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
                               get_cell_size)
 from src.engine.utils import DIRECTIONS
-from src.engine.entities import Ghost
+from src.engine.entities import Ghost, Pacman
 from mlx import Mlx
 from src.engine.model import Config_json
 from src.engine.level import Level
@@ -130,17 +130,20 @@ class LevelScene:
         self.render()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
-        # self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
+        self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
 
     def on_loop(self, param: object) -> None:
         """ est rappeler automatiquement par mlx_loop pour avancer
             render_x/y un pas vers x/y, dessine les positions intermediaure """
 
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
-        self.level_engine.init_maze.pacman.move_render()
+        pacman: Pacman | None = self.level_engine.init_maze.pacman
+        assert pacman is not None
+        if pacman.move_render() is True:
+            self.render()
         for ghost in ghosts:
-            ghost.move_render()
-        self.render()
+            if ghost.move_render() is True:
+                self.render()
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
@@ -177,11 +180,11 @@ class LevelScene:
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""
 
-        pacman = self.level_engine.init_maze.pacman
+        pacman: Pacman | None = self.level_engine.init_maze.pacman
         assert pacman is not None
         cell_size, margin_x, margin_y = self._grid()
-        px: int = margin_x + pacman.x * cell_size
-        py: int = margin_y + pacman.y * cell_size
+        px: int = margin_x + pacman.render_x * cell_size
+        py: int = margin_y + pacman.render_y * cell_size
         img_ptr, width, height = (self.GameRender.sprites_stores.
                                   sprites['pacman'][0])
         self.mlx.mlx_put_image_to_window(self.mlx_init,
@@ -197,8 +200,8 @@ class LevelScene:
         img_ptr, width, height = (self.GameRender.sprites_stores.
                                   sprites['ghost_red'][0])
         for ghost in ghosts:
-            px: int = margin_x + ghost.x * cell_size
-            py: int = margin_y + ghost.y * cell_size
+            px: int = margin_x + ghost.render_x * cell_size
+            py: int = margin_y + ghost.render_y * cell_size
             self.mlx.mlx_put_image_to_window(self.mlx_init,
                                              self.mlx_window,
                                              img_ptr,

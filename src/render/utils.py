@@ -34,6 +34,8 @@ XK_UP: int = 65362
 XK_DOWN: int = 65364
 XK_RETURN: int = 65293
 XK_ESCAPE: int = 65307
+XK_LEFT: int = 65361
+XK_RIGHT = 65363
 
 
 def get_asset_path(path: str) -> str:
