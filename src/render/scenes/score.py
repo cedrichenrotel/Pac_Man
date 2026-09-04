@@ -3,6 +3,7 @@ from typing import Optional, TYPE_CHECKING
 from src.render.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
 from src.engine.model import Config_json
 from mlx import Mlx
+import time
 
 # guarded to avoid a circular import: GameRender.py imports ScoreScene at
 # module level, so GameRender can only be imported here for type hints
@@ -30,12 +31,17 @@ class ScoreScene:
     def show_highscores(self) -> None:
         self.marge = 0
         if self.highscore is not None:
+            print(self.highscore)
+            time.sleep(1000 / 1_000_000.0)
             for key, value in self.highscore.items():
+                time.sleep(1000 / 1_000_000.0)
                 self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                         int(self.width / 2) - 100,
                                         int(self.height / 4) + self.marge,
                                         YELLOW, f"{key}: {value}")
                 self.marge += 40
+
+        time.sleep(1000 / 1_000_000.0)
 
     def launch(self) -> None:
         '''display the highscores scene'''

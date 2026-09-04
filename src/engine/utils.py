@@ -131,13 +131,12 @@ def push_json(highscore: dict[str, int], path: str) -> None:
 
 
 def order_asc_and_limit(highscore: dict[str, int]) -> None:
-    highscore = {k: v for k, v in
-                 sorted(highscore.items(),
-                        key=lambda item: item[1],
-                        reverse=True)}
-    if len(highscore) > 9:
-        highscore = dict(list(highscore.items())[:10])
-        push_json(highscore, "./highscore.json")
+    sorted_items = sorted(highscore.items(),
+                          key=lambda item: item[1],
+                          reverse=True)[:10]
+    highscore.clear()
+    highscore.update(sorted_items)
+    push_json(highscore, "./highscore.json")
 
 
 def install_score_system(path: str, file: Path) -> dict[str, int]:
