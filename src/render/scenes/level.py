@@ -171,11 +171,11 @@ class LevelScene:
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""
 
-        pacman: Pacman | None = self.level_engine.init_maze.pacman
-        assert pacman is not None
+        self.pacman: Pacman | None = self.level_engine.init_maze.pacman
+        assert self.pacman is not None
         cell_size, margin_x, margin_y = self._grid()
-        px: int = margin_x + pacman.render_x * cell_size
-        py: int = margin_y + pacman.render_y * cell_size
+        px: int = int(margin_x + self.pacman.render_x * cell_size)
+        py: int = int(margin_y + self.pacman.render_y * cell_size)
         img_ptr, width, height = (self.GameRender.sprites_stores.
                                   sprites['pacman'][0])
         self.mlx.mlx_put_image_to_window(self.mlx_init,
@@ -190,9 +190,14 @@ class LevelScene:
         cell_size, margin_x, margin_y = self._grid()
         img_ptr, width, height = (self.GameRender.sprites_stores.
                                   sprites['ghost_red'][0])
+        # if self.pacman is not None:
+        # self.ghosts[0].path_to_pacman(self.maze, self.pacman)
+        # pacman: Pacman = self.pacman
+        assert self.pacman is not None
         for ghost in ghosts:
-            px: int = margin_x + ghost.render_x * cell_size
-            py: int = margin_y + ghost.render_y * cell_size
+            ghost.path_to_pacman(self.level_engine.generator, self.pacman)
+            px: int = int(margin_x + ghost.render_x * cell_size)
+            py: int = int(margin_y + ghost.render_y * cell_size)
             self.mlx.mlx_put_image_to_window(self.mlx_init,
                                              self.mlx_window,
                                              img_ptr,

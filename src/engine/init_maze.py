@@ -71,8 +71,8 @@ class InitMaze:
                 raise GameError("Error initializing the ghost")
         # il est lancer ici en test
         # mais ne sera pas ici dans le futur:
-        if self.pacman is not None:
-            self.ghosts[0].path_to_pacman(self.maze, self.pacman)
+        # if self.pacman is not None:
+        #     self.ghosts[0].path_to_pacman(self.maze, self.pacman)
 
     def config_start(self) -> None:
         """Initialising all the elements in the maze using separate
