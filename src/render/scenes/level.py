@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.render.utils import (YELLOW, LIGHT_GRAY_PIX, XK_ESCAPE,
-                              get_cell_size)
+from src.render.utils import XK_ESCAPE, get_cell_size
 from src.engine.utils import DIRECTIONS
 from src.engine.entities import Ghost, Pacman
 from mlx import Mlx
@@ -29,8 +28,6 @@ class LevelScene:
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
-        self.maze_width: int = self.GameRender.game_engine.config.level.width
-        self.maze_height: int = self.GameRender.game_engine.config.level.height
 
     def _grid(self) -> tuple[int, int, int]:
         """ cell size, snapped to a multiple of the wall sprite so tiling
@@ -107,18 +104,10 @@ class LevelScene:
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.draw_maze()
         self.draw_maze()
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width // 2) - 100,
-                                int(self.height // 2),
-                                YELLOW, "Level (TODO)")
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width // 2) - 100,
-                                int(self.height // 2) + 40,
-                                LIGHT_GRAY_PIX, "Press ESC to return to menu")
         self.draw_pacman()
         self.draw_pacgum()
         self.draw_super_pacgum()
-        self.draw_gosth()
+        self.draw_ghost()
 
     def launch(self) -> None:
         '''display the level scene'''
@@ -126,7 +115,8 @@ class LevelScene:
         self.level_engine: Level = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
-
+        self.maze_width: int = self.level_engine.config.level.width
+        self.maze_height: int = self.level_engine.config.level.height
         self.render()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
@@ -193,7 +183,7 @@ class LevelScene:
                                          px + cell_size // 2 - width // 2,
                                          py + cell_size // 2 - height // 2)
 
-    def draw_gosth(self) -> None:
+    def draw_ghost(self) -> None:
 
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
         cell_size, margin_x, margin_y = self._grid()
