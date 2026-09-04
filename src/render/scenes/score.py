@@ -44,7 +44,8 @@ class ScoreScene:
         time.sleep(1000 / 1_000_000.0)
 
     def launch(self) -> None:
-        '''display the highscores scene'''
+        '''display the level scene'''
+
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.show_highscores()
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,

@@ -1,5 +1,6 @@
 import sys
 from src.colors import COLORS
+from src.engine.utils import DIRECTIONS, algo_fixed_walk
 try:
     from mazegenerator import MazeGenerator
     from src.engine.pathfinding import Pathfinding
@@ -13,25 +14,26 @@ class Entities():
     def __init__(self, x: int, y: int) -> None:
         self.x: int = x
         self.y: int = y
+        self.render_x: float = x
+        self.render_y: float = y
 
     def move(self, direction: str, maze: MazeGenerator) -> bool:
         """ allows entities to move through the maze without
             passing through walls """
 
-        directions: dict[str, tuple[int, int, int]] = {
-            'N': (0, -1, 1),
-            'E': (1, 0, 2),
-            'S': (0, 1, 4),
-            'W': (-1, 0, 8)
-        }
-
-        dx, dy, code = directions[direction]
+        dx, dy, code = DIRECTIONS[direction]
 
         if maze.maze[self.y][self.x] & code == 0:
             self.x += dx
             self.y += dy
             return True
         return False
+
+    def move_render(self) -> None:
+        """ Smooth movement via the fixed pitch """
+
+        algo_fixed_walk(self.render_x, self.x)
+        algo_fixed_walk(self.render_y, self.y)
 
 
 class Pacman(Entities):

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.render.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
+from src.render.utils import LIGHT_GRAY, XK_ESCAPE
 from mlx import Mlx
 from src.engine.model import Config_json
 
@@ -31,10 +31,6 @@ class InstructionScene:
     def launch(self) -> None:
         '''display the instructions scene'''
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width / 2) - 100,
-                                int(self.height / 2),
-                                YELLOW, "Instructions (TODO)")
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                 int(self.width / 2) - 100,
                                 int(self.height / 2) + 40,
