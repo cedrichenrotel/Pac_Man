@@ -34,6 +34,8 @@ XK_UP: int = 65362
 XK_DOWN: int = 65364
 XK_RETURN: int = 65293
 XK_ESCAPE: int = 65307
+XK_LEFT: int = 65361
+XK_RIGHT = 65363
 
 
 def get_asset_path(path: str) -> str:
@@ -45,11 +47,16 @@ def get_asset_path(path: str) -> str:
 
 
 def get_cell_size(width: int, height: int, maze_width: int,
-                  maze_height: int, margin: int = 0) -> int:
+                  maze_height: int, margin: int = 0, tile: int = 1) -> int:
     """ calculate the number of pixels in a cell, reserving `margin`
         pixels on each side so bordering walls can be centered without
-        being clipped by the window edge """
+        being clipped by the window edge, and rounded down to a multiple
+        of `tile` (the wall sprite size) so wall tiling never overshoots
+        a cell and misaligns at junctions """
 
     cell_size_x: int = (width - margin * 2) // maze_width
     cell_size_y: int = (height - margin * 2) // maze_height
-    return min(cell_size_x, cell_size_y)
+    cell_size: int = min(cell_size_x, cell_size_y)
+    if tile > 1:
+        cell_size = (cell_size // tile) * tile
+    return cell_size
