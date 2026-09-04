@@ -123,8 +123,9 @@ class LevelScene:
         self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
 
     def on_loop(self, param: object) -> None:
-        """ est rappeler automatiquement par mlx_loop pour avancer
-            render_x/y un pas vers x/y, dessine les positions intermediaure """
+        """ is automatically called by mlx_loop to move forward
+            render_x/y moves one step in the x/y direction, drawing the
+            intermediate positions """
 
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
         pacman: Pacman | None = self.level_engine.init_maze.pacman
