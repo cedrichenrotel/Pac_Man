@@ -1,6 +1,11 @@
 import sys
+from src.colors import COLORS
 try:
+    import json
+    import os
+    from pathlib import Path
     from mazegenerator import MazeGenerator
+    from src.engine.parse_config import parse_highscore
 except ImportError as e:
     print(f'[IMPORT ERROR]: {e}')
     sys.exit()
@@ -113,6 +118,50 @@ def get_center_maze(maze: MazeGenerator) -> tuple[int, int]:
                     best_dist = distance
                     best_pos = (x, y)
     return (best_pos)
+
+
+def create_json_missing(file: Path) -> bool:
+    if file.exists() is False:
+        file.touch()
+        return False
+    return True
+
+
+def push_json(highscore: dict[str, int], path: str) -> None:
+    try:
+        with open(path, "w", encoding="utf-8"):
+            pass
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(highscore, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+              f"cannot push new scores in highscores: {e}")
+
+
+def order_asc_and_limit(highscore: dict[str, int]) -> None:
+    sorted_items = sorted(highscore.items(),
+                          key=lambda item: item[1],
+                          reverse=True)[:10]
+    highscore.clear()
+    highscore.update(sorted_items)
+    push_json(highscore, "./highscore.json")
+
+
+def install_score_system(path: str, file: Path) -> dict[str, int]:
+    """ create highscore.json if missing otherwise
+    parse the json """
+
+    highscores: dict[str, int] = {}
+    if create_json_missing(file) is True:
+        is_highscore_good_format: bool = parse_highscore(file, path)
+        if is_highscore_good_format is False:
+            os.remove(path)
+            create_json_missing(file)
+        elif os.stat(file).st_size != 0:
+            with open(path) as f:
+                highscores = json.load(f)
+            order_asc_and_limit(highscores)
+    return highscores
 
 
 def algo_fixed_walk(render: float, x: int) -> float:

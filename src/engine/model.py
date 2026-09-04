@@ -2,9 +2,11 @@ import sys
 from src.colors import COLORS
 try:
     from typing import Any
-    from pydantic import BaseModel, model_validator, Field
+    from pydantic import BaseModel, model_validator, Field, RootModel
 except ImportError:
     sys.exit()
+
+UserScore = RootModel[dict[str, int]]
 
 
 class Level(BaseModel):

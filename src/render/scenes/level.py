@@ -19,7 +19,9 @@ class LevelScene:
                  mlx_window: Optional[int],
                  width: int,
                  height: int,
-                 config: Config_json) -> None:
+                 config: Config_json,
+                 highscore: dict[str, int]) -> None:
+        self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
         self.width = width
@@ -146,11 +148,13 @@ class LevelScene:
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height, self.config)
+                self.width, self.height,
+                self.config, self.highscore)
             self.GameRender.current_scene.launch()
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
+        self.level_engine.push_new_score("./highscore", self.highscore)
         if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
             self.level_engine.add_score(self.score)
             self.level_engine.next_level()
@@ -165,7 +169,8 @@ class LevelScene:
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height, self.config)
+                self.width, self.height,
+                self.config, self.highscore)
             self.GameRender.current_scene.launch()
 
     def draw_pacman(self) -> None:
