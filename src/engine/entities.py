@@ -29,11 +29,18 @@ class Entities():
             return True
         return False
 
-    def move_render(self) -> None:
+    def move_render(self) -> bool:
         """ Smooth movement via the fixed pitch """
 
+        stock_render_x: float = self.render_x
+        stock_render_y: float = self.render_y
         self.render_x = algo_fixed_walk(self.render_x, self.x)
         self.render_y = algo_fixed_walk(self.render_y, self.y)
+
+        if (self.render_x != stock_render_x or
+           self.render_y != stock_render_y):
+            return True
+        return False
 
 
 class Pacman(Entities):
@@ -56,6 +63,8 @@ class Ghost(Entities):
         directions = ["N", "S", "E", "W"]
         for direction in directions:
             if (self.move(direction, maze) is True):
+                self.render_x = self.x
+                self.render_y = self.y
                 return True
         return False
 
