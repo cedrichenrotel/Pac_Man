@@ -16,6 +16,7 @@ class Entities():
         self.y: int = y
         self.render_x: float = x
         self.render_y: float = y
+        self.key_direction: str | None = None
 
     def move(self, direction: str, maze: MazeGenerator) -> bool:
         """ allows entities to move through the maze without
@@ -70,8 +71,8 @@ class Ghost(Entities):
 
     def path_to_pacman(self, maze: MazeGenerator, pacman: Pacman) -> None:
         """ get the path from ghost to pacman  """
-        pos_pacman: tuple = (pacman.x, pacman.y)
-        pos_ghost: tuple = (self.x, self.y)
+        pos_pacman: tuple[int, int] = (pacman.x, pacman.y)
+        pos_ghost: tuple[int, int] = (self.x, self.y)
 
         algo = Pathfinding(maze)
         algo.bfs(pos_pacman, pos_ghost)

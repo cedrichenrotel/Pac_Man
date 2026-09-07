@@ -141,8 +141,11 @@ class LevelScene:
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
         pacman: Pacman | None = self.level_engine.init_maze.pacman
         assert pacman is not None
-        if pacman.move_render() is True:
-            self.render()
+
+        if pacman.key_direction is not None:
+            pacman.move(pacman.key_direction, self.level_engine.generator)
+            if pacman.move_render() is True:
+                self.render()
         for ghost in ghosts:
             if ghost.move_render() is True:
                 self.render()
@@ -162,13 +165,13 @@ class LevelScene:
                 self.width, self.height, self.config)
             self.GameRender.current_scene.launch()
         elif keycode == XK_UP:
-            pacman.move('N', self.level_engine.generator)
+            pacman.key_direction = 'N'
         elif keycode == XK_DOWN:
-            pacman.move('S', self.level_engine.generator)
+            pacman.key_direction = 'S'
         elif keycode == XK_LEFT:
-            pacman.move('W', self.level_engine.generator)
+            pacman.key_direction = 'W'
         elif keycode == XK_RIGHT:
-            pacman.move('E', self.level_engine.generator)
+            pacman.key_direction = 'E'
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
