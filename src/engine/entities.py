@@ -22,11 +22,11 @@ class Entities():
             passing through walls """
 
         dx, dy, code = DIRECTIONS[direction]
-
         if maze.maze[self.y][self.x] & code == 0:
-            self.x += dx
-            self.y += dy
-            return True
+            if self.render_x == self.x and self.render_y == self.y:
+                self.x += dx
+                self.y += dy
+                return True
         return False
 
     def move_render(self) -> bool:

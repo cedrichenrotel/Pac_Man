@@ -118,7 +118,7 @@ def get_center_maze(maze: MazeGenerator) -> tuple[int, int]:
 def algo_fixed_walk(render: float, x: int) -> float:
     """ Fixed-point method for fluid displacement """
 
-    vitesse: float = 0.1
+    vitesse: float = 0.2
     if render < x:
         render = min(render + vitesse, x)
     elif render > x:
