@@ -30,6 +30,7 @@ class MenuScene:
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
         self.selected: int = 0
+        self.active: bool = True
         self.img: Tuple[Optional[int], int, int] = (0, 0, 0)
         self.entries: List[Tuple[str, Callable[[], None]]] = [
               ("Start GameRender", self.start_game),
@@ -95,6 +96,8 @@ class MenuScene:
         key up to go up, key down to go down,
         enter to select the title'''
 
+        if not self.active:
+            return
         if keycode == XK_UP:
             self.selected = (self.selected - 1) % len(self.entries)
             self.draw_menu()
@@ -116,6 +119,7 @@ class MenuScene:
 
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
+        self.active = False
         self.GameRender.current_scene = LevelScene(
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
@@ -127,6 +131,7 @@ class MenuScene:
 
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
+        self.active = False
         self.GameRender.current_scene = ScoreScene(
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
@@ -138,6 +143,7 @@ class MenuScene:
 
         if self.img[0]:
             self.mlx.mlx_destroy_image(self.mlx_init, self.img[0])
+        self.active = False
         self.GameRender.current_scene = InstructionScene(
             self.GameRender, self.mlx,
             self.mlx_init,
