@@ -38,6 +38,29 @@ XK_LEFT: int = 65361
 XK_RIGHT = 65363
 
 
+def transform_all_coord_to_cardinal(coords: list[tuple[int,
+                                                       int]]) -> list[str]:
+    # print(coords)
+    cardinal_list: list[str] = []
+    for i in range(0, len(coords)-1):
+        cardinal_list.append(get_cardinal_directions(coords[i], coords[i+1]))
+    # print(cardinal_list)
+    return cardinal_list
+
+
+def get_cardinal_directions(from_coord: tuple[int, int],
+                            to: tuple[int, int]) -> str:
+    """get cardinal coordinate from coord (x, y) to (x, y) """
+    if from_coord[0] > to[0] and from_coord[1] == to[1]:
+        return 'W'
+    elif from_coord[0] < to[0] and from_coord[1] == to[1]:
+        return 'E'
+    elif from_coord[1] > to[1] and from_coord[0] == to[0]:
+        return 'N'
+    else:
+        return 'S'
+
+
 def get_asset_path(path: str) -> str:
     """ convert a relative path to 'assets/’ into a usable absolute path,
         regardless of where the programme is launched from """
