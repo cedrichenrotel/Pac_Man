@@ -116,29 +116,41 @@ class LevelScene:
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          self.maze_img_ptr, 0, 0)
+        # self.check_positioning()
         self.draw_pacman()
+
         self.draw_ghost()
         if self.check_positioning() is False:
             return False
         return True
-        # print(f"position ghost: ({self.ghosts[0].render_x} {self.ghosts[0].render_y})")
-        # print(f"position pacman: ({self.pacman.render_x} {self.pacman.render_y})")
+
+    def check_range(self, from_val: int, to_val: int):
+        range_from = [from_val + 1, from_val - 1]
+        for val in range_from:
+            if to_val == val:
+                return True
+        range_to = [to_val + 1, to_val - 1]
+        for val in range_to:
+            if from_val == val:
+                return True
+        return False
 
     def check_positioning(self):
-        # print(f"position ghost: ({self.ghosts[0].render_x} {self.ghosts[0].render_y})")
-        # print(f"position pacman: ({self.pacman.render_x} {self.pacman.render_y})")
+
         for ghost in self.ghosts:
-            if (ghost.render_x == self.pacman.render_x and
-               ghost.render_y == self.pacman.render_y):
+            print(f"ghost_render {ghost.render_x}, ghost_x {ghost.x} et "
+                  f" pacman_render {self.pacman.render_x}"
+                  f" pacman.x {self.pacman.x} ")
+            if ((ghost.render_x == self.pacman.render_x and
+               ghost.render_y == self.pacman.render_y) or
+               (self.check_range(ghost.render_x, self.pacman.render_x) is True
+               and self.check_range(ghost.render_y, self.pacman.render_y))):
                 self.pacman.decrease_life()
                 print("toucher")
                 print(f"plus que {self.pacman.lives}")
                 self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                # x, y = self.level_engine.init_maze.get_center_maze(self.maze)
-                # self.pacman.render_x = x
-                # self.pacman.render_y = y
-                # x, y = get_center_maze(self.maze)
                 self.launch()
+
         if (self.pacman.lives == 0):
             print("game over")
             from src.render.scenes.menu import MenuScene
@@ -179,7 +191,9 @@ class LevelScene:
         if self.pacman.key_direction is not None:
             self.pacman.move(self.pacman.key_direction, self.level_engine.generator)
             if self.pacman.move_render(0.150) is True:
+                self.check_positioning()
                 self.render()
+                self.check_positioning()
 
         for ghost in self.ghosts:
             if ghost.path_to_goal:
@@ -191,7 +205,9 @@ class LevelScene:
                     ghost.path_to_pacman(self.level_engine.generator,
                                          self.pacman))
             if ghost.move_render(0.100) is True:
+                self.check_positioning()
                 self.render()
+                self.check_positioning()
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
@@ -200,6 +216,7 @@ class LevelScene:
         # assert pacman is not None
         from src.render.scenes.menu import MenuScene
         if keycode == XK_ESCAPE:
+            print("ECHAPPEMENT")
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             self.GameRender.current_scene = MenuScene(
                 self.GameRender, self.mlx,
@@ -252,7 +269,6 @@ class LevelScene:
 
         px: int = int(margin_x + self.pacman.render_x * cell_size)
         py: int = int(margin_y + self.pacman.render_y * cell_size)
-
         img_ptr, width, height = (self.GameRender.sprites_stores.
                                   sprites['pacman'][0])
         self.mlx.mlx_put_image_to_window(self.mlx_init,
@@ -262,11 +278,13 @@ class LevelScene:
                                          py + cell_size // 2 - height // 2)
 
     def draw_ghost(self) -> None:
-
+        # if self.draw_ghost:
+        #     self.check_positioning()
         self.ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
         cell_size, margin_x, margin_y = self._grid()
         img_ptr, width, height = (self.GameRender.sprites_stores.
                                   sprites['ghost_red'][0])
+        # self.check_positioning()
 
         assert self.pacman is not None
         for ghost in self.ghosts:
@@ -277,6 +295,7 @@ class LevelScene:
                                              img_ptr,
                                              px + cell_size // 2 - width // 2,
                                              py + cell_size // 2 - height // 2)
+            self.check_positioning()
 
     def draw_pacgum(self) -> None:
         """ Draw the Pacgum sprite on the maze. """

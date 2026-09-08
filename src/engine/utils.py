@@ -123,4 +123,9 @@ def algo_fixed_walk(render: float, x: int, vitesse: float) -> float:
         render = min(render + vitesse, x)
     elif render > x:
         render = max(render - vitesse, x)
+    print(f"render {render}")
     return render
+
+
+def between_two_values(from_val: int, to_val):
+    print(f"from_val : {from_val} , to_val {to_val}")
