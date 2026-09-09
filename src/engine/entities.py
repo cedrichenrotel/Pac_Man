@@ -2,7 +2,6 @@ import sys
 from src.colors import COLORS
 from src.engine.utils import DIRECTIONS, algo_fixed_walk
 try:
-    from src.engine.utils import between_two_values
     from mazegenerator import MazeGenerator
     from src.engine.pathfinding import Pathfinding
 except ImportError as e:
@@ -52,7 +51,7 @@ class Pacman(Entities):
         self.lives: int = lives
         self.frame_index: int = 0
 
-    def decrease_life(self):
+    def decrease_life(self) -> None:
         self.lives -= 1
 
 
