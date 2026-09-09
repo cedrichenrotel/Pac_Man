@@ -40,6 +40,7 @@ XK_RIGHT = 65363
 
 def transform_all_coord_to_cardinal(coords: list[tuple[int,
                                                        int]]) -> list[str]:
+    """transform list of coord tuple to list of coordinate cardinal (NSEW)"""
     cardinal_list: list[str] = []
     for i in range(0, len(coords)-1):
         cardinal_list.append(get_cardinal_directions(coords[i], coords[i+1]))
