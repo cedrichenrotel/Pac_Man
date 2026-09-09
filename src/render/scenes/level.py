@@ -265,7 +265,7 @@ class LevelScene:
                   self.GameRender, self.mlx,
                   self.mlx_init,
                   self.mlx_window,
-                  self.width, self.height, self.config)
+                  self.width, self.height, self.config, self.highscore)
             self.GameRender.current_scene.launch()
             print(f"[ERROR] draw_pacgum: path error -> {e}")
             return False
@@ -297,7 +297,7 @@ class LevelScene:
                   self.GameRender, self.mlx,
                   self.mlx_init,
                   self.mlx_window,
-                  self.width, self.height, self.config)
+                  self.width, self.height, self.config, self.highscore)
             self.GameRender.current_scene.launch()
             print(f"[ERROR] draw_super_pacgum: path error -> {e}")
             return False
