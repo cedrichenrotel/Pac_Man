@@ -26,9 +26,9 @@ class Entities():
         dx, dy, code = DIRECTIONS[direction]
         if maze.maze[self.y][self.x] & code == 0:
             if self.render_x == self.x and self.render_y == self.y:
+                self.current_pos = (self.x, self.y)
                 self.x += dx
                 self.y += dy
-                self.current_pos = (self.x, self.y)
                 return True
         return False
 

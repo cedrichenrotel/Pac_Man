@@ -123,6 +123,7 @@ class LevelScene:
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          self.maze_img_ptr, 0, 0)
+        self.draw_super_pacgum()
         self.draw_pacgum()
         self.draw_pacman()
         self.draw_ghost()
@@ -173,6 +174,8 @@ class LevelScene:
             return
 
         if keycode == XK_ESCAPE:
+            self.mlx.mlx_loop_hook(self.mlx_init, None, self)
+            self.mlx.mlx_expose_hook(self.mlx_window, None, self)
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             self.GameRender.current_scene = MenuScene(
                 self.GameRender, self.mlx,
@@ -201,6 +204,8 @@ class LevelScene:
             # au menu. egalement on devrait plus tard ajouter le score
             # au highscore
             from src.render.scenes.menu import MenuScene
+            self.mlx.mlx_loop_hook(self.mlx_init, None, self)
+            self.mlx.mlx_expose_hook(self.mlx_window, None, self)
             self.GameRender.current_scene = MenuScene(
                 self.GameRender, self.mlx,
                 self.mlx_init,
@@ -253,22 +258,8 @@ class LevelScene:
     def draw_pacgum(self) -> bool:
         """ Draw the Pacgum sprite on the maze. """
 
-        try:
-            image_path: str = get_asset_path("sprites/pacgum/pacgum.png")
-            self.pacgum_sprite = Image.open(image_path).convert("RGBA")
-        except FileNotFoundError as e:
-            from src.render.scenes.menu import MenuScene
-            self.GameRender.current_scene = MenuScene(
-                  self.GameRender, self.mlx,
-                  self.mlx_init,
-                  self.mlx_window,
-                  self.width, self.height, self.config)
-            self.GameRender.current_scene.launch()
-            print(f"[ERROR] draw_pacgum: path error -> {e}")
-            return False
-
-        width, height = self.pacgum_sprite.size
-
+        img_ptr, width, height = (self.GameRender.sprites_stores.
+                                  sprites['pacgum'][0])
         pacgums: list[tuple[int, int]] = self.level_engine.init_maze.pacgum_pos
 
         cell_size, margin_x, margin_y = self._grid()
@@ -278,7 +269,7 @@ class LevelScene:
             py: int = margin_y + pacgum[1] * cell_size
             self.mlx.mlx_put_image_to_window(self.mlx_init,
                                              self.mlx_window,
-                                             self.pacgum_sprite,
+                                             img_ptr,
                                              px + cell_size // 2 - width // 2,
                                              py + cell_size // 2 - height // 2)
         return True
@@ -286,21 +277,8 @@ class LevelScene:
     def draw_super_pacgum(self) -> bool:
         """ Draw the Super Pacgum sprite on the maze. """
 
-        try:
-            image_path: str = get_asset_path("sprites/pacgum/super_pacgum.png")
-            self.super_pacgum_sprite = Image.open(image_path).convert("RGBA")
-        except FileNotFoundError as e:
-            from src.render.scenes.menu import MenuScene
-            self.GameRender.current_scene = MenuScene(
-                  self.GameRender, self.mlx,
-                  self.mlx_init,
-                  self.mlx_window,
-                  self.width, self.height, self.config)
-            self.GameRender.current_scene.launch()
-            print(f"[ERROR] draw_super_pacgum: path error -> {e}")
-            return False
-
-        super_pacgum_width, super_pacgum_height = self.super_pacgum_sprite.size
+        img_ptr, width, height = (self.GameRender.sprites_stores.
+                                  sprites['super_pacgum'][0])
 
         super_pacgums: list[tuple[int, int]] = (
             self.level_engine.init_maze.superpacgum_pos)
@@ -310,21 +288,21 @@ class LevelScene:
         for super_pacgum in super_pacgums:
             px: int = margin_x + super_pacgum[0] * cell_size
             py: int = margin_y + super_pacgum[1] * cell_size
-            self.canvas.paste(self.super_pacgum_sprite,
-                              (px + cell_size // 2 - super_pacgum_width // 2,
-                               py + cell_size // 2 - super_pacgum_height // 2),
-                              self.super_pacgum_sprite)
+            self.mlx.mlx_put_image_to_window(self.mlx_init,
+                                             self.mlx_window,
+                                             img_ptr,
+                                             px + cell_size // 2 - width // 2,
+                                             py + cell_size // 2 - height // 2)
         return True
 
     def add_point_score(self, pacman: Pacman) -> None:
-        """ajout les point des super et pacgum quand pacman les 
+        """ajout les point des super et pacgum quand pacman les
            amanger et remet a jourles super/pacgum dans le labyrinthe"""
 
         pacgum_pos: list[tuple[int, int]] = (self.level_engine.
                                              init_maze.pacgum_pos)
         super_pacgum_pos: list[tuple[int, int]] = (self.level_engine.
-                                                   init_maze.
-                                                   superpacgum_pos)
+                                                   init_maze.superpacgum_pos)
 
         if pacman.current_pos in pacgum_pos:
             pacgum_pos.remove(pacman.current_pos)
