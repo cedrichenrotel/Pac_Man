@@ -17,6 +17,7 @@ class Entities():
         self.render_x: float = x
         self.render_y: float = y
         self.key_direction: str | None = None
+        self.current_pos: tuple[int, int] = (self.x, self.y)
 
     def move(self, direction: str, maze: MazeGenerator) -> bool:
         """ allows entities to move through the maze without
@@ -27,6 +28,7 @@ class Entities():
             if self.render_x == self.x and self.render_y == self.y:
                 self.x += dx
                 self.y += dy
+                self.current_pos = (self.x, self.y)
                 return True
         return False
 
