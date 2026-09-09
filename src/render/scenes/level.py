@@ -242,7 +242,13 @@ class LevelScene:
 
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
         cell_size, margin_x, margin_y = self._grid()
-
+        color_ghost: dict[str, str] = {
+            'R': 'ghost_red',
+            'B': 'ghost_blue'
+        }
+        sprite_ghost: str = color_ghost.get(self.GameRender.sprites_stores.
+                                            sprites['ghost_red']
+                                            [ghost.frame_index % 4])
         for ghost in ghosts:
             img_ptr, width, height = (self.GameRender.sprites_stores.
                                       sprites['ghost_red']
@@ -303,10 +309,13 @@ class LevelScene:
                                              init_maze.pacgum_pos)
         super_pacgum_pos: list[tuple[int, int]] = (self.level_engine.
                                                    init_maze.superpacgum_pos)
+        ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
 
         if pacman.current_pos in pacgum_pos:
             pacgum_pos.remove(pacman.current_pos)
             self.score += self.config.points_per_pacgum
         elif pacman.current_pos in super_pacgum_pos:
             super_pacgum_pos.remove(pacman.current_pos)
+            for ghost in ghosts:
+                ghost.is_edible = True
             self.score += self.config.points_per_super_pacgum
