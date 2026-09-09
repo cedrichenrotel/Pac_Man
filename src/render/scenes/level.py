@@ -194,16 +194,26 @@ class LevelScene:
             render_x/y moves one step in the x/y direction, drawing the
             intermediate positions """
 
-        pacman = self.pacman
-        assert pacman is not None
+        self.pacman_moving()
+        self.ghost_moving()
 
-        if pacman.key_direction is not None:
-            pacman.move(pacman.key_direction,
-                        self.level_engine.generator)
-            pacman.frame_index += 1
-            if pacman.move_render(0.150) is True:
+    def pacman_moving(self) -> None:
+        """handle pacman moving in the maze"""
+
+        assert self.pacman is not None
+
+        if self.pacman.key_direction is not None:
+            self.pacman.move(self.pacman.key_direction,
+                             self.level_engine.generator)
+            self.pacman.frame_index += 1
+            if self.pacman.move_render(0.150) is True:
                 self.render()
                 self.check_positioning()
+
+    def ghost_moving(self) -> None:
+        """handle all ghost moving in the maze"""
+
+        assert self.pacman is not None
 
         for ghost in self.ghosts:
             if ghost.path_to_goal:
@@ -213,7 +223,7 @@ class LevelScene:
             elif len(ghost.path_to_goal) == 0:
                 ghost.path_to_goal = transform_all_coord_to_cardinal(
                     ghost.path_to_pacman(self.level_engine.generator,
-                                         pacman))
+                                         self.pacman))
             if ghost.move_render(0.100) is True:
                 self.render()
                 self.check_positioning()
