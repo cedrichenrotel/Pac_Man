@@ -164,10 +164,8 @@ def install_score_system(path: str, file: Path) -> dict[str, int]:
     return highscores
 
 
-def algo_fixed_walk(render: float, x: int) -> float:
+def algo_fixed_walk(render: float, x: int, vitesse: float) -> float:
     """ Fixed-point method for fluid displacement """
-
-    vitesse: float = 0.1
 
     if render < x:
         render = min(render + vitesse, x)

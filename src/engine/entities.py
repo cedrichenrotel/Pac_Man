@@ -30,13 +30,13 @@ class Entities():
                 return True
         return False
 
-    def move_render(self) -> bool:
+    def move_render(self, vitesse: float) -> bool:
         """ Smooth movement via the fixed pitch """
-
         stock_render_x: float = self.render_x
         stock_render_y: float = self.render_y
-        self.render_x = algo_fixed_walk(self.render_x, self.x)
-        self.render_y = algo_fixed_walk(self.render_y, self.y)
+
+        self.render_x = algo_fixed_walk(self.render_x, self.x, vitesse)
+        self.render_y = algo_fixed_walk(self.render_y, self.y, vitesse)
 
         if (self.render_x != stock_render_x or
            self.render_y != stock_render_y):
@@ -51,6 +51,9 @@ class Pacman(Entities):
         self.lives: int = lives
         self.frame_index: int = 0
 
+    def decrease_life(self) -> None:
+        self.lives -= 1
+
 
 class Ghost(Entities):
 
@@ -58,6 +61,7 @@ class Ghost(Entities):
         super().__init__(x, y)
         self.eaten: bool = False  # mangé
         self.is_edible: bool = False  # est comestible
+        self.path_to_goal: list[str] = []
         self.frame_index: int = 0
 
     def moving_position_initial(self, maze: MazeGenerator) -> bool:
@@ -71,10 +75,11 @@ class Ghost(Entities):
                 return True
         return False
 
-    def path_to_pacman(self, maze: MazeGenerator, pacman: Pacman) -> None:
+    def path_to_pacman(self, maze: MazeGenerator,
+                       pacman: Pacman) -> list[tuple[int, int]]:
         """ get the path from ghost to pacman  """
         pos_pacman: tuple[int, int] = (pacman.x, pacman.y)
         pos_ghost: tuple[int, int] = (self.x, self.y)
 
         algo = Pathfinding(maze)
-        algo.bfs(pos_pacman, pos_ghost)
+        return [pos_ghost] + algo.bfs(pos_pacman, pos_ghost)

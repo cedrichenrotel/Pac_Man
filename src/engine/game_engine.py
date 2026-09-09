@@ -24,7 +24,7 @@ class GameEngine():
             launches the render """
 
         self.highscore = install_score_system(self.path, self.file)
-        self.game_render: GameRender = GameRender(1000, 1000, self,
+        self.game_render: GameRender = GameRender(1000, 1100, self,
                                                   self.config, self.highscore)
         self.game_render.run()
 

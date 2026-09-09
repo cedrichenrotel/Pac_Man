@@ -101,5 +101,5 @@ class Pathfinding():
             if next_pos is None:
                 raise RuntimeError("Pathfinding: no path found to pacman")
             actual_pos = next_pos
-        print(self.real_path)
+
         return self.real_path

@@ -111,6 +111,8 @@ class MenuScene:
 
     def launch(self) -> None:
         self.get_calc()
+        self.mlx.mlx_loop_hook(self.mlx_init, None, self)
+        self.mlx.mlx_expose_hook(self.mlx_window, None, self)
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.install_menu_image()
         self.draw_menu()
