@@ -39,6 +39,7 @@ def main() -> None:
     except (Exception, KeyboardInterrupt) as e:
         print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
               "The program was stopped manually")
+        print(f"[DEBUG] {type(e).__name__}: {e}")
         if isinstance(e, GameError):
             print(e)
         sys.exit()

@@ -1,5 +1,5 @@
 from __future__ import annotations
-import sys
+import os
 from typing import Optional, TYPE_CHECKING
 from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_DOWN, XK_LEFT,
@@ -52,12 +52,34 @@ class LevelScene:
         margin_y: int = (self.height - self.maze_height * cell_size) // 2
         return cell_size, margin_x, margin_y
 
+    def _paste_wall_segment(self, x: int, y: int, dx: int, dy: int) -> None:
+
+        wall_width, wall_height = self.wall_sprite.size
+        cell_size, margin_x, margin_y = self._grid()
+
+        px: int = margin_x + x * cell_size
+        py: int = margin_y + y * cell_size
+        for i in range(0, cell_size, wall_width):
+            if dx == 0:
+                if dy == -1:
+                    py_pos: int = py - wall_height // 2
+                else:
+                    py_pos = py + cell_size - wall_height // 2
+                self.canvas.paste(self.wall_sprite, (px + i, py_pos),
+                                  self.wall_sprite)
+            else:
+                if dx == -1:
+                    px_pos: int = px - wall_width // 2
+                else:
+                    px_pos = px + cell_size - wall_width // 2
+                self.canvas.paste(self.wall_sprite,
+                                  (px_pos, py + i),
+                                  self.wall_sprite)
+
     def draw_wall(self, x: int, y: int) -> None:
         """allows the pixel size to be standardised and the walls of the maze
             to be displayed pixel by pixel"""
 
-        wall_width, wall_height = self.wall_sprite.size
-        cell_size, margin_x, margin_y = self._grid()
         val: int = self.maze[y][x]
 
         directions_to_draw: list[str] = ['N', 'W']
@@ -69,26 +91,9 @@ class LevelScene:
         for direction in directions_to_draw:
             dx, dy, code = DIRECTIONS[direction]
             if val & code != 0:
-                px: int = margin_x + x * cell_size
-                py: int = margin_y + y * cell_size
-                for i in range(0, cell_size, wall_width):
-                    if dx == 0:
-                        if dy == -1:
-                            py_pos: int = py - wall_height // 2
-                        else:
-                            py_pos = py + cell_size - wall_height // 2
-                        self.canvas.paste(self.wall_sprite, (px + i, py_pos),
-                                          self.wall_sprite)
-                    else:
-                        if dx == -1:
-                            px_pos: int = px - wall_width // 2
-                        else:
-                            px_pos = px + cell_size - wall_width // 2
-                        self.canvas.paste(self.wall_sprite,
-                                          (px_pos, py + i),
-                                          self.wall_sprite)
+                self._paste_wall_segment(x, y, dx, dy)
 
-    def draw_maze(self) -> None:
+    def draw_maze(self) -> bool:
         """ As you navigate the maze, the y and x coordinates are sent to
             `draw_wall` to display the walls """
 
@@ -100,13 +105,15 @@ class LevelScene:
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
                 self.draw_wall(x, y)
-        self.draw_pacgum()
-        self.draw_super_pacgum()
-
-        tmp_path: str = "maze_cache.png"
+        if (self.draw_pacgum() is False or
+           self.draw_super_pacgum() is False):
+            return False
+        os.makedirs(".cache", exist_ok=True)
+        tmp_path: str = os.path.join(".cache", "maze_cache.png")
         self.canvas.save(tmp_path)
         self.maze_img_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init,
                                                                  tmp_path)
+        return True
 
     def on_expose(self, param: object) -> None:
         self.render()
@@ -173,7 +180,8 @@ class LevelScene:
         self.maze = self.level_engine.generator.maze
         self.maze_width: int = self.level_engine.config.level.width
         self.maze_height: int = self.level_engine.config.level.height
-        self.draw_maze()
+        if self.draw_maze() is False:
+            return
         if self.render() is False:
             return
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
@@ -185,13 +193,10 @@ class LevelScene:
             render_x/y moves one step in the x/y direction, drawing the
             intermediate positions """
 
-        # pacman: Pacman | None = self.level_engine.init_maze.pacman
-        # assert pacman is not None
-
         if self.pacman.key_direction is not None:
             self.pacman.move(self.pacman.key_direction, self.level_engine.generator)
+            self.pacman.frame_index += 1
             if self.pacman.move_render(0.150) is True:
-                self.check_positioning()
                 self.render()
                 self.check_positioning()
 
@@ -211,10 +216,14 @@ class LevelScene:
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
+        pacman: Pacman | None = self.level_engine.init_maze.pacman
+        assert pacman is not None
+        try:
+            from src.render.scenes.menu import MenuScene
+        except ImportError as e:
+            print(f"[ERROR] level.py: {e}")
+            return
 
-        # pacman: Pacman | None = self.level_engine.init_maze.pacman
-        # assert pacman is not None
-        from src.render.scenes.menu import MenuScene
         if keycode == XK_ESCAPE:
             print("ECHAPPEMENT")
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
@@ -269,8 +278,18 @@ class LevelScene:
 
         px: int = int(margin_x + self.pacman.render_x * cell_size)
         py: int = int(margin_y + self.pacman.render_y * cell_size)
+        direction_sprites: dict[str, str] = {
+            'N': 'pacman_chomp_n',
+            'S': 'pacman_chomp_s',
+            'W': 'pacman_chomp_w',
+            'E': 'pacman_chomp'
+        }
+        sprite_name: str = direction_sprites.get(self.pacman.key_direction or 'E',
+                                                 'pacman_chomp')
+
         img_ptr, width, height = (self.GameRender.sprites_stores.
-                                  sprites['pacman'][0])
+                                  sprites[sprite_name]
+                                  [self.pacman.frame_index % 4])
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          img_ptr,
@@ -287,7 +306,11 @@ class LevelScene:
         # self.check_positioning()
 
         assert self.pacman is not None
+
         for ghost in self.ghosts:
+            img_ptr, width, height = (self.GameRender.sprites_stores.
+                                      sprites['ghost_red']
+                                      [ghost.frame_index % 4])
             px: int = int(margin_x + ghost.render_x * cell_size)
             py: int = int(margin_y + ghost.render_y * cell_size)
             self.mlx.mlx_put_image_to_window(self.mlx_init,
@@ -297,15 +320,22 @@ class LevelScene:
                                              py + cell_size // 2 - height // 2)
             self.check_positioning()
 
-    def draw_pacgum(self) -> None:
+    def draw_pacgum(self) -> bool:
         """ Draw the Pacgum sprite on the maze. """
 
         try:
             image_path: str = get_asset_path("sprites/pacgum/pacgum.png")
             self.pacgum_sprite = Image.open(image_path).convert("RGBA")
         except FileNotFoundError as e:
+            from src.render.scenes.menu import MenuScene
+            self.GameRender.current_scene = MenuScene(
+                  self.GameRender, self.mlx,
+                  self.mlx_init,
+                  self.mlx_window,
+                  self.width, self.height, self.config)
+            self.GameRender.current_scene.launch()
             print(f"[ERROR] draw_pacgum: path error -> {e}")
-            sys.exit()
+            return False
 
         pacgum_width, pacgum_height = self.pacgum_sprite.size
 
@@ -320,16 +350,24 @@ class LevelScene:
                               (px + cell_size // 2 - pacgum_width // 2,
                                py + cell_size // 2 - pacgum_height // 2),
                               self.pacgum_sprite)
+        return True
 
-    def draw_super_pacgum(self) -> None:
+    def draw_super_pacgum(self) -> bool:
         """ Draw the Super Pacgum sprite on the maze. """
 
         try:
             image_path: str = get_asset_path("sprites/pacgum/super_pacgum.png")
             self.super_pacgum_sprite = Image.open(image_path).convert("RGBA")
         except FileNotFoundError as e:
+            from src.render.scenes.menu import MenuScene
+            self.GameRender.current_scene = MenuScene(
+                  self.GameRender, self.mlx,
+                  self.mlx_init,
+                  self.mlx_window,
+                  self.width, self.height, self.config)
+            self.GameRender.current_scene.launch()
             print(f"[ERROR] draw_super_pacgum: path error -> {e}")
-            sys.exit()
+            return False
 
         super_pacgum_width, super_pacgum_height = self.super_pacgum_sprite.size
 
@@ -345,3 +383,4 @@ class LevelScene:
                               (px + cell_size // 2 - super_pacgum_width // 2,
                                py + cell_size // 2 - super_pacgum_height // 2),
                               self.super_pacgum_sprite)
+        return True

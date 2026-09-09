@@ -54,6 +54,7 @@ class Pacman(Entities):
     def __init__(self, x: int, y: int, lives: int) -> None:
         super().__init__(x, y)
         self.lives: int = lives
+        self.frame_index: int = 0
 
     def decrease_life(self):
         self.lives -= 1
@@ -66,6 +67,7 @@ class Ghost(Entities):
         self.eaten: bool = False  # mangé
         self.is_edible: bool = False  # est comestible
         self.path_to_goal: list[str] = []
+        self.frame_index: int = 0
 
     def moving_position_initial(self, maze: MazeGenerator) -> bool:
         """ change ghost position next to super_pacgum """

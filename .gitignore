@@ -11,7 +11,7 @@ __pycache__/
 .vscode
 .mypy_cache
 .mypy
- maze_cache.png
+.cache/
 
 # C extensions
 *.so
