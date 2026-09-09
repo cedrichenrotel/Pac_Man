@@ -11,6 +11,7 @@ from mlx import Mlx
 from src.engine.model import Config_json
 from src.engine.level import Level
 from PIL import Image
+import numpy as np
 # guarded to avoid a circular import: GameRender.py imports LevelScene at
 # module level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
@@ -131,27 +132,23 @@ class LevelScene:
             return False
         return True
 
-    def check_range(self, from_val: int, to_val: int):
-        range_from = [from_val + 1, from_val - 1]
-        for val in range_from:
-            if to_val == val:
-                return True
-        range_to = [to_val + 1, to_val - 1]
-        for val in range_to:
-            if from_val == val:
-                return True
+    def check_range(self, from_val: float, to_val: float):
+
+        from_val = round(from_val, 2)
+        to_val = round(to_val, 2)
+        distance = abs(from_val - to_val)
+
+        if distance <= 0.1:
+            return True
+
         return False
 
     def check_positioning(self):
 
         for ghost in self.ghosts:
-            print(f"ghost_render {ghost.render_x}, ghost_x {ghost.x} et "
-                  f" pacman_render {self.pacman.render_x}"
-                  f" pacman.x {self.pacman.x} ")
-            if ((ghost.render_x == self.pacman.render_x and
-               ghost.render_y == self.pacman.render_y) or
-               (self.check_range(ghost.render_x, self.pacman.render_x) is True
-               and self.check_range(ghost.render_y, self.pacman.render_y))):
+            if (self.check_range(ghost.render_x, self.pacman.render_x) is True
+                and self.check_range(ghost.render_y,
+                                     self.pacman.render_y) is True):
                 self.pacman.decrease_life()
                 print("toucher")
                 print(f"plus que {self.pacman.lives}")
@@ -194,9 +191,11 @@ class LevelScene:
             intermediate positions """
 
         if self.pacman.key_direction is not None:
-            self.pacman.move(self.pacman.key_direction, self.level_engine.generator)
+            self.pacman.move(self.pacman.key_direction,
+                             self.level_engine.generator)
             self.pacman.frame_index += 1
             if self.pacman.move_render(0.150) is True:
+                self.check_positioning()
                 self.render()
                 self.check_positioning()
 

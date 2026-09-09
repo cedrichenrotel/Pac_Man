@@ -36,13 +36,9 @@ class Entities():
         stock_render_x: float = self.render_x
         stock_render_y: float = self.render_y
 
-        # between_two_values(self.render_x, self.x)
-
         self.render_x = algo_fixed_walk(self.render_x, self.x, vitesse)
         self.render_y = algo_fixed_walk(self.render_y, self.y, vitesse)
 
-        print(f"stock_render_x {stock_render_x} et ducoup {self.render_x}")
-        print(f"stock_render_x {stock_render_y} et ducoup {self.render_y}")
         if (self.render_x != stock_render_x or
            self.render_y != stock_render_y):
             return True
