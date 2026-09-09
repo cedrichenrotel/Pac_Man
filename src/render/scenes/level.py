@@ -4,7 +4,8 @@ from typing import Optional, TYPE_CHECKING
 from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_DOWN, XK_LEFT,
                               XK_RIGHT, get_cell_size,
-                              get_asset_path, transform_all_coord_to_cardinal)
+                              get_asset_path, transform_all_coord_to_cardinal,
+                              YELLOW)
 from src.engine.utils import DIRECTIONS, get_center_maze
 from src.engine.entities import Ghost, Pacman
 from mlx import Mlx
@@ -181,9 +182,16 @@ class LevelScene:
             return
         if self.render() is False:
             return
+        self.show_life()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
         self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
+
+    def show_life(self):
+        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                100,
+                                1200,
+                                YELLOW, "Press ESC to return to menu")
 
     def on_loop(self, param: object) -> None:
         """ is automatically called by mlx_loop to move forward
@@ -224,7 +232,6 @@ class LevelScene:
             return
 
         if keycode == XK_ESCAPE:
-            print("ECHAPPEMENT")
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             self.GameRender.current_scene = MenuScene(
                 self.GameRender, self.mlx,
