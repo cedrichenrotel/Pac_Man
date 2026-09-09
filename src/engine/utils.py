@@ -168,6 +168,7 @@ def algo_fixed_walk(render: float, x: int) -> float:
     """ Fixed-point method for fluid displacement """
 
     vitesse: float = 0.1
+
     if render < x:
         render = min(render + vitesse, x)
     elif render > x:
