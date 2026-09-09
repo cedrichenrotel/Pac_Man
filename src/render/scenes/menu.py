@@ -21,7 +21,9 @@ class MenuScene:
                  mlx_window: Optional[int],
                  width: int,
                  height: int,
-                 config: Config_json) -> None:
+                 config: Config_json,
+                 highscore: dict[str, int]) -> None:
+        self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
         self.width = width
@@ -125,7 +127,8 @@ class MenuScene:
         self.GameRender.current_scene = LevelScene(
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
-            self.width, self.height, self.config)
+            self.width, self.height, self.config,
+            self.highscore)
         self.GameRender.current_scene.launch()
 
     def show_highscores(self) -> None:
@@ -137,7 +140,8 @@ class MenuScene:
         self.GameRender.current_scene = ScoreScene(
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
-            self.width, self.height, self.config)
+            self.width, self.height, self.config,
+            self.highscore)
         self.GameRender.current_scene.launch()
 
     def show_instructions(self) -> None:
@@ -150,7 +154,8 @@ class MenuScene:
             self.GameRender, self.mlx,
             self.mlx_init,
             self.mlx_window,
-            self.width, self.height, self.config)
+            self.width, self.height, self.config,
+            self.highscore)
         self.GameRender.current_scene.launch()
 
     def quit_game(self) -> None:
