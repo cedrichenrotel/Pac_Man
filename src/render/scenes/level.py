@@ -131,12 +131,13 @@ class LevelScene:
         self.draw_pacman()
 
         self.draw_ghost()
+        self.show_life()
         if self.check_positioning() is False:
             return False
         return True
 
     def check_range(self, from_val: float, to_val: float):
-
+        # deplacer dans utils
         from_val = round(from_val, 2)
         to_val = round(to_val, 2)
         distance = abs(from_val - to_val)
@@ -166,7 +167,7 @@ class LevelScene:
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height, self.config)
+                self.width, self.height, self.config, self.highscore)
             self.GameRender.current_scene.launch()
             return False
         else:
@@ -184,16 +185,15 @@ class LevelScene:
             return
         if self.render() is False:
             return
-        self.show_life()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
         self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
 
     def show_life(self):
         self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                100,
-                                1200,
-                                YELLOW, "Press ESC to return to menu")
+                                10,
+                                self.height - 40,
+                                YELLOW, f"life: {self.pacman.lives}")
 
     def on_loop(self, param: object) -> None:
         """ is automatically called by mlx_loop to move forward
