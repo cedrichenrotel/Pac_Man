@@ -37,6 +37,7 @@ class LevelScene:
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
         self.pacman: Optional[Pacman] = None
+        self.game_over: bool = False
 
     def _grid(self) -> tuple[int, int, int]:
         """ cell size, snapped to a multiple of the wall sprite so tiling
@@ -122,6 +123,8 @@ class LevelScene:
         self.render()
 
     def render(self) -> bool:
+        if self.game_over:
+            return False
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
@@ -142,6 +145,9 @@ class LevelScene:
         and return to menu scene
         """
 
+        if self.game_over:
+            return False
+
         pacman = self.pacman
         assert pacman is not None
 
@@ -154,8 +160,10 @@ class LevelScene:
                 self.launch()
 
         if (pacman.lives == 0):
+            self.game_over = True
             from src.render.scenes.player import PlayerScene
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+
             player = PlayerScene(
                 self.GameRender, self.mlx,
                 self.mlx_init,
@@ -268,14 +276,14 @@ class LevelScene:
             # si jamais le nombre de level max etait atteind, on reviens
             # au menu. egalement on devrait plus tard ajouter le score
             # au highscore
-            from src.render.scenes.menu import MenuScene
-            self.GameRender.current_scene = MenuScene(
+            from src.render.scenes.player import PlayerScene
+
+            player = PlayerScene(
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height,
-                self.config, self.highscore)
-            self.GameRender.current_scene.launch()
+                self.width, self.height, self.config, self.highscore)
+            player.launch()
 
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""

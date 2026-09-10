@@ -17,6 +17,7 @@ def make_color(r: int, g: int, b: int, a: int = 255,
 
 '''basics color for mlx'''
 RED: int = make_color(255, 0, 0, )
+CREAM: int = make_color(233, 218, 223)
 green: int = make_color(0, 255, 0)
 BLUE: int = make_color(0, 0, 255)
 black: int = make_color(0, 0, 0)
@@ -96,7 +97,7 @@ def get_cardinal_directions(from_coord: tuple[int, int],
 
 
 def clear_rect(mlx: "Mlx", mlx_ptr: int, win_ptr: int, x: int, y: int,
-               width: int, height: int, color: int = black) -> None:
+               width: int, height: int, color: int = CREAM) -> None:
     '''erase a rectangular area of the window by overpainting it, so only
     part of the display needs to be redrawn instead of the whole window'''
 
