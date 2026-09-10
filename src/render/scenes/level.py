@@ -398,8 +398,8 @@ class LevelScene:
         return True
 
     def add_point_score(self, pacman: Pacman) -> None:
-        """ajout les point des super et pacgum quand pacman les
-           amanger et remet a jourles super/pacgum dans le labyrinthe"""
+        """ Add the Super and Pacgum points when Pacman
+           eats them and update the Super/Pacgum counts in the maze """
 
         pacgum_pos: list[tuple[int, int]] = (self.level_engine.
                                              init_maze.pacgum_pos)
