@@ -163,9 +163,15 @@ class LevelScene:
             if (check_range(ghost.render_x, pacman.render_x) is True
                 and check_range(ghost.render_y,
                                 pacman.render_y) is True):
-                pacman.decrease_life()
-                self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                self.launch()
+                if ghost.is_edible is False:
+                    pacman.decrease_life()
+                    self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+                    self.launch()
+                else:
+                    ghost.eaten = True
+                    ghost.start_init_ghost_eaten = time()
+                    self.score += self.config.points_per_ghost
+                    ghost.init_ghost_eaten()
 
         if (pacman.lives == 0):
             from src.render.scenes.menu import MenuScene
