@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
-from src.render.utils import LIGHT_GRAY, XK_ESCAPE
+from src.render.utils import XK_ESCAPE
 from mlx import Mlx
 from src.engine.model import Config_json
+from PIL import Image
+import os
 
 
 # guarded to avoid a circular import: GameRender.py imports InstructionScene at
@@ -30,15 +32,32 @@ class InstructionScene:
 
     def launch(self) -> None:
         '''display the instructions scene'''
+
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                int(self.width / 2) - 100,
-                                int(self.height / 2) + 40,
-                                LIGHT_GRAY, "Press ESC to return to menu")
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        image_path = os.path.join(current_dir, "./../../../"
+                                               "assets/instruction/rules.png")
+        image_path = os.path.normpath(image_path)
+        Image.open(image_path).convert("RGBA").save(image_path)
+
+        self.img = self.mlx.mlx_png_file_to_image(
+            self.mlx_init, image_path)
+        img_ptr, img_width, img_height = self.img
+
+        x = self.width - img_width
+        y = self.height - img_height
+
+        if img_ptr:
+            self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                             img_ptr, int(x / 2),
+                                             int(y / 2))
+
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
+
         if keycode == XK_ESCAPE:
             from src.render.scenes.menu import MenuScene
             self.GameRender.current_scene = MenuScene(
