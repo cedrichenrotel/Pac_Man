@@ -32,6 +32,7 @@ class InstructionScene:
 
     def launch(self) -> None:
         '''display the instructions scene'''
+
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,17 +45,19 @@ class InstructionScene:
             self.mlx_init, image_path)
         img_ptr, img_width, img_height = self.img
 
-        left_space = self.width - img_width
+        x = self.width - img_width
+        y = self.height - img_height
 
         if img_ptr:
             self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
-                                             img_ptr, int(left_space / 2),
-                                             int(left_space / 2))
+                                             img_ptr, int(x / 2),
+                                             int(y / 2))
 
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
+
         if keycode == XK_ESCAPE:
             from src.render.scenes.menu import MenuScene
             self.GameRender.current_scene = MenuScene(
