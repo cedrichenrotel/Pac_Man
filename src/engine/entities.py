@@ -69,14 +69,16 @@ class Ghost(Entities):
         self.start_time_is_edible: int = None
         self.start_pos: tuple[int, int] = (x, y)
 
-    def time_is_edible(self) -> None:
+    def time_is_edible(self) -> float | None:
         """ Vulnerability window for ghosts """
 
         if self.is_edible:
             vulnerability_time: int = time() - self.start_time_is_edible
-            if vulnerability_time >= 5.00:
+            if vulnerability_time >= 10:
                 self.is_edible = False
                 self.eaten = False
+            return vulnerability_time
+        return None
 
     def init_ghost_eaten(self) -> None:
         """ resets the ghost to its original position """
@@ -86,6 +88,7 @@ class Ghost(Entities):
             self.x, self.y = self.start_pos
             self.render_x, self.render_y = self.start_pos
             self.path_to_goal = []
+            self.eaten = False
 
     def moving_position_initial(self, maze: MazeGenerator) -> bool:
         """ change ghost position next to super_pacgum """

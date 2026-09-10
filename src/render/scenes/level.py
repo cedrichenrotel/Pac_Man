@@ -350,8 +350,12 @@ class LevelScene:
             sprite_ghost: str
             if ghost.is_edible is False:
                 sprite_ghost = color_ghost['R']
-            else:
+            elif ghost.is_edible is True:
                 sprite_ghost = color_ghost['B']
+                vulnerability_time: int = int(ghost.time_is_edible())
+                if (vulnerability_time >= 5 and
+                   vulnerability_time % 2 == 0):
+                    sprite_ghost = color_ghost['R']
             img_ptr, width, height = (self.GameRender.sprites_stores.
                                       sprites[sprite_ghost]
                                       [ghost.frame_index % 4])
