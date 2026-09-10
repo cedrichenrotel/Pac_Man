@@ -4,6 +4,7 @@ from src.engine.utils import DIRECTIONS, algo_fixed_walk
 try:
     from mazegenerator import MazeGenerator
     from src.engine.pathfinding import Pathfinding
+    from time import time
 except ImportError as e:
     print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()
@@ -65,6 +66,15 @@ class Ghost(Entities):
         self.is_edible: bool = False  # est comestible
         self.path_to_goal: list[str] = []
         self.frame_index: int = 0
+        self.start_time_is_edible: int = None
+
+    def time_is_edible(self) -> None:
+        """ Vulnerability window for ghosts """
+
+        if self.is_edible:
+            vulnerability_time: int = time() - self.start_time_is_edible
+            if vulnerability_time >= 5.00:
+                self.is_edible = False
 
     def moving_position_initial(self, maze: MazeGenerator) -> bool:
         """ change ghost position next to super_pacgum """

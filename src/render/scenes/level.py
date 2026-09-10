@@ -12,6 +12,7 @@ from mlx import Mlx
 from src.engine.model import Config_json
 from src.engine.level import Level
 from PIL import Image
+from time import time
 # guarded to avoid a circular import: GameRender.py imports LevelScene at
 # module level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
@@ -230,6 +231,7 @@ class LevelScene:
         assert self.pacman is not None
 
         for ghost in self.ghosts:
+            ghost.time_is_edible()
             if ghost.path_to_goal:
                 if ghost.move(ghost.path_to_goal[0],
                               self.level_engine.generator) is True:
@@ -406,4 +408,5 @@ class LevelScene:
             super_pacgum_pos.remove(pacman.current_pos)
             for ghost in ghosts:
                 ghost.is_edible = True
+                ghost.start_time_is_edible = time()
             self.score += self.config.points_per_super_pacgum
