@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from mlx import Mlx
+from src.engine.level import Level
 from src.render.scenes.menu import MenuScene
 from src.render.utils import (XK_RETURN, list_key, RED, XK_BACK,
                               clear_rect, install_menu_image)
@@ -20,7 +21,9 @@ class PlayerScene:
                  height: int,
                  config: Config_json,
                  highscore: dict[str, int],
-                 player_name: str) -> None:
+                 player_name: str,
+                 score: int) -> None:
+        self.score = score
         self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
@@ -88,7 +91,12 @@ class PlayerScene:
                     self.mlx_init,
                     self.mlx_window,
                     self.width, self.height,
-                    self.config, self.highscore, self.player_name)
+                    self.config, self.highscore, self.player_name, self.score)
+                self.level_engine: Level = Level(self.config)
+                self.level_engine.add_player_name(self.player_name)
+                self.level_engine.add_score(self.score)
+                self.level_engine.push_new_score("./highscore", self.highscore)
+                print("test")
                 self.GameRender.current_scene.launch()
         if keycode == XK_BACK:
             self.delete_letter()
@@ -102,5 +110,6 @@ class PlayerScene:
             self.mlx_init,
             self.mlx_window,
             self.width, self.height,
-            self.config, self.highscore, self.player_name)
+            self.config, self.highscore, self.player_name,
+            self.score)
         self.GameRender.current_scene.launch()

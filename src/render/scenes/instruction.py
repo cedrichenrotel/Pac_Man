@@ -19,7 +19,8 @@ class InstructionScene:
                  height: int,
                  config: Config_json,
                  highscore: dict[str, int],
-                 player_name: str) -> None:
+                 player_name: str,
+                 score: int) -> None:
         self.player_name = player_name
         self.highscore = highscore
         self.config = config
@@ -29,6 +30,7 @@ class InstructionScene:
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
+        self.score = score
 
     def launch(self) -> None:
         '''display the instructions scene'''
@@ -49,5 +51,6 @@ class InstructionScene:
                 self.mlx_init,
                 self.mlx_window,
                 self.width, self.height,
-                self.config, self.highscore, self.player_name)
+                self.config, self.highscore, self.player_name,
+                self.score)
             self.GameRender.current_scene.launch()

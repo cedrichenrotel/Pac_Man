@@ -53,7 +53,8 @@ class Level():
             order by descending, max 10 best score and write
             in highscore.json
         """
-
-        new_score = {self.player_name: self.score}
-        highscore.update(new_score)
-        order_asc_and_limit(highscore)
+        if len(self.player_name) != 0:
+            print(f"pushons le nouveau score {highscore}, {self.score}, {self.player_name}")
+            self.new_score = {self.player_name: self.score}
+            highscore.update(self.new_score)
+            order_asc_and_limit(highscore)

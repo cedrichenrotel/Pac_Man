@@ -28,7 +28,9 @@ class LevelScene:
                  height: int,
                  config: Config_json,
                  highscore: dict[str, int],
-                 player_name: str) -> None:
+                 player_name: str,
+                 score: int) -> None:
+        self.score = score
         self.player_name = player_name
         self.highscore = highscore
         self.config = config
@@ -146,7 +148,6 @@ class LevelScene:
         self.draw_super_pacgum()
         self.draw_pacgum()
         self.draw_pacman()
-
         self.draw_ghost()
         self.show_life()
         if self.check_positioning() is False:
@@ -188,16 +189,21 @@ class LevelScene:
                     self.mlx_init,
                     self.mlx_window,
                     self.width, self.height,
-                    self.config, self.highscore, self.player_name)
+                    self.config, self.highscore, self.player_name, self.score)
                 self.GameRender.current_scene.launch()
+                return False
             else:
+                if self.score > self.level_engine.score:
+                    self.level_engine.add_score(self.score)
+                    self.level_engine.push_new_score("./highscore",
+                                                     self.highscore)
                 from src.render.scenes.player import PlayerScene
                 player = PlayerScene(
                     self.GameRender, self.mlx,
                     self.mlx_init,
                     self.mlx_window,
                     self.width, self.height, self.config, self.highscore,
-                    self.player_name)
+                    self.player_name, self.score)
                 player.launch()
             return False
         else:
@@ -287,7 +293,7 @@ class LevelScene:
                 self.mlx_init,
                 self.mlx_window,
                 self.width, self.height,
-                self.config, self.highscore, self.player_name)
+                self.config, self.highscore, self.player_name, self.score)
             self.GameRender.current_scene.launch()
         elif keycode == XK_UP:
             pacman.key_direction = 'N'
@@ -302,9 +308,10 @@ class LevelScene:
         # example de si le lvl etait gagner
         self.level_engine.push_new_score("./highscore", self.highscore)
         if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
-            self.level_engine.add_score(self.score)
             if len(self.level_engine.player_name) == 0:
                 self.level_engine.add_player_name(self.player_name)
+            if self.score > self.level_engine.score:
+                self.level_engine.add_score(self.score)
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
             self.render()
@@ -312,6 +319,8 @@ class LevelScene:
             # si jamais le nombre de level max etait atteind, on reviens
             # au menu. egalement on devrait plus tard ajouter le score
             # au highscore
+            if self.score > self.level_engine.score:
+                self.level_engine.add_score(self.score)
             from src.render.scenes.player import PlayerScene
             if len(self.player_name) != 0:
                 from src.render.scenes.menu import MenuScene
@@ -321,7 +330,8 @@ class LevelScene:
                     self.mlx_init,
                     self.mlx_window,
                     self.width, self.height,
-                    self.config, self.highscore, self.player_name)
+                    self.config, self.highscore, self.player_name,
+                    self.score)
                 self.GameRender.current_scene.launch()
             else:
                 player = PlayerScene(
@@ -329,7 +339,7 @@ class LevelScene:
                     self.mlx_init,
                     self.mlx_window,
                     self.width, self.height, self.config, self.highscore,
-                    self.player_name)
+                    self.player_name, self.score)
                 player.launch()
 
     def draw_pacman(self) -> None:
@@ -444,3 +454,4 @@ class LevelScene:
                 ghost.is_edible = True
                 ghost.start_time_is_edible = time()
             self.score += self.config.points_per_super_pacgum
+        print(self.score)

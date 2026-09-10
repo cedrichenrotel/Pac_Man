@@ -22,7 +22,9 @@ class MenuScene:
                  height: int,
                  config: Config_json,
                  highscore: dict[str, int],
-                 player_name: str) -> None:
+                 player_name: str,
+                 score: int) -> None:
+        self.score = score
         self.player_name = player_name
         self.highscore = highscore
         self.config = config
@@ -113,7 +115,8 @@ class MenuScene:
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
             self.width, self.height, self.config,
-            self.highscore, self.player_name)
+            self.highscore, self.player_name,
+            self.score)
         self.GameRender.current_scene.launch()
 
     def show_highscores(self) -> None:
@@ -126,7 +129,7 @@ class MenuScene:
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
             self.width, self.height, self.config,
-            self.highscore, self.player_name)
+            self.highscore, self.player_name, self.score)
         self.GameRender.current_scene.launch()
 
     def show_instructions(self) -> None:
@@ -140,7 +143,8 @@ class MenuScene:
             self.mlx_init,
             self.mlx_window,
             self.width, self.height, self.config,
-            self.highscore, self.player_name)
+            self.highscore, self.player_name,
+            self.score)
         self.GameRender.current_scene.launch()
 
     def quit_game(self) -> None:
