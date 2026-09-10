@@ -169,7 +169,6 @@ class LevelScene:
                     self.launch()
                 else:
                     ghost.eaten = True
-                    ghost.start_init_ghost_eaten = time()
                     self.score += self.config.points_per_ghost
                     ghost.init_ghost_eaten()
 
@@ -352,9 +351,11 @@ class LevelScene:
                 sprite_ghost = color_ghost['R']
             elif ghost.is_edible is True:
                 sprite_ghost = color_ghost['B']
-                vulnerability_time: int = int(ghost.time_is_edible())
-                if (vulnerability_time >= 5 and
-                   vulnerability_time % 2 == 0):
+                vulnerability_time: float | None = ghost.time_is_edible()
+                assert vulnerability_time is not None
+                flashing: int = int(vulnerability_time * 5)
+                if (vulnerability_time >= 8 and
+                   flashing % 2 == 0):
                     sprite_ghost = color_ghost['R']
             img_ptr, width, height = (self.GameRender.sprites_stores.
                                       sprites[sprite_ghost]
