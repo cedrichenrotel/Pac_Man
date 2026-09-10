@@ -154,14 +154,14 @@ class LevelScene:
                 self.launch()
 
         if (pacman.lives == 0):
-            from src.render.scenes.menu import MenuScene
+            from src.render.scenes.player import PlayerScene
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-            self.GameRender.current_scene = MenuScene(
+            player = PlayerScene(
                 self.GameRender, self.mlx,
                 self.mlx_init,
                 self.mlx_window,
                 self.width, self.height, self.config, self.highscore)
-            self.GameRender.current_scene.launch()
+            player.launch()
             return False
         else:
             return True
@@ -192,7 +192,7 @@ class LevelScene:
     def on_loop(self, param: object) -> None:
         """ is automatically called by mlx_loop to move forward
             render_x/y moves one step in the x/y direction, drawing the
-            intermediate positions """
+            intermediate positions, executed every tick """
 
         self.pacman_moving()
         self.ghost_moving()
