@@ -3,10 +3,8 @@ from typing import Optional, TYPE_CHECKING
 from mlx import Mlx
 from src.render.scenes.menu import MenuScene
 from src.render.utils import (XK_RETURN, list_key, RED, XK_BACK,
-                              clear_rect)
+                              clear_rect, install_menu_image)
 from src.engine.model import Config_json
-import os
-from PIL import Image
 
 # guarded to avoid a circular import: GameRender.py imports InstructionScene at
 # module level, so GameRender can only be imported here for type hints
@@ -21,7 +19,8 @@ class PlayerScene:
                  width: int,
                  height: int,
                  config: Config_json,
-                 highscore: dict[str, int]) -> None:
+                 highscore: dict[str, int],
+                 player_name: str) -> None:
         self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
@@ -30,7 +29,7 @@ class PlayerScene:
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
-        self.player_name = ""
+        self.player_name = player_name
 
     def launch(self) -> None:
         '''display the instructions scene'''
@@ -40,7 +39,10 @@ class PlayerScene:
         self.middle_h: int = int(self.height / 2) - 100
         self.name_x: int = self.middle_w + 35
         self.name_y: int = self.middle_h + 120
-        self.install_menu_image()
+        assert self.mlx_init is not None and self.mlx_window is not None
+        self.img = install_menu_image("./assets/player/who_i_am.png",
+                                      self.mlx, self.mlx_init, self.mlx_window,
+                                      self.width, self.height)
         self.mlx.mlx_do_sync(self.mlx_init)
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
@@ -61,26 +63,6 @@ class PlayerScene:
             self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                     self.name_x, self.name_y,
                                     RED, self.player_name)
-
-    def install_menu_image(self) -> None:
-        '''install in the scene an image from assets/'''
-
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        image_path = os.path.join(current_dir, "./../../../"
-                                               "assets/player/who_i_am.png")
-        image_path = os.path.normpath(image_path)
-        Image.open(image_path).convert("RGBA").save(image_path)
-
-        self.img = self.mlx.mlx_png_file_to_image(
-            self.mlx_init, image_path)
-        img_ptr, img_width, img_height = self.img
-
-        x = self.width - img_width
-        y = self.height - img_height
-
-        if img_ptr:
-            self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
-                                             img_ptr, int(x / 2), int(y / 2))
 
     def write_letter(self, key: str) -> None:
         """write name with the new letter"""
@@ -106,7 +88,7 @@ class PlayerScene:
                     self.mlx_init,
                     self.mlx_window,
                     self.width, self.height,
-                    self.config, self.highscore)
+                    self.config, self.highscore, self.player_name)
                 self.GameRender.current_scene.launch()
         if keycode == XK_BACK:
             self.delete_letter()
@@ -120,5 +102,5 @@ class PlayerScene:
             self.mlx_init,
             self.mlx_window,
             self.width, self.height,
-            self.config, self.highscore)
+            self.config, self.highscore, self.player_name)
         self.GameRender.current_scene.launch()

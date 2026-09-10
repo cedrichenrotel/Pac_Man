@@ -18,7 +18,7 @@ class Level():
     def __init__(self, config: Config_json) -> None:
         self.config = config
         self.score: int = 0
-        self.player_name: str
+        self.player_name: str = ""
         self.lvl_max: int = 10
         self.actual_lvl: int = 0
         self.highscore: dict[str, int]
@@ -34,6 +34,9 @@ class Level():
 
         self.init_maze: InitMaze = InitMaze(self.generator, self.config)
         self.init_maze.config_start()
+
+    def add_player_name(self, player_name: str) -> None:
+        self.player_name = player_name
 
     def add_score(self, num: int) -> None:
         self.score += num

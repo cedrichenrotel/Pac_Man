@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Tuple
 
 if TYPE_CHECKING:
     from mlx import Mlx
@@ -143,3 +143,35 @@ def check_range(from_val: float, to_val: float) -> bool:
         return True
 
     return False
+
+
+def install_menu_image(path: str, mlx: "Mlx", mlx_init: int,
+                       mlx_window: int, width: int,
+                       height: int,
+                       center: bool = True) -> Tuple[Optional[int], int, int]:
+    '''install in the scene an image from assets/'''
+
+    from PIL import Image
+    import os
+
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))))
+    image_path = os.path.join(project_root, path)
+    image_path = os.path.normpath(image_path)
+    Image.open(image_path).convert("RGBA").save(image_path)
+
+    img: Tuple[Optional[int], int, int] = mlx.mlx_png_file_to_image(
+          mlx_init, image_path)
+    img_ptr, img_width, img_height = img
+
+    x = width - img_width
+    y = height - img_height
+    if img_ptr:
+        if center is not True:
+            mlx.mlx_put_image_to_window(mlx_init, mlx_window,
+                                        img_ptr, int(x / 2), 0)
+        else:
+            mlx.mlx_put_image_to_window(mlx_init, mlx_window,
+                                        img_ptr, int(x / 2), int(y / 2))
+
+    return img

@@ -18,7 +18,9 @@ class ScoreScene:
                  width: int,
                  height: int,
                  config: Config_json,
-                 highscore: dict[str, int]) -> None:
+                 highscore: dict[str, int],
+                 player_name: str) -> None:
+        self.player_name = player_name
         self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
@@ -63,5 +65,5 @@ class ScoreScene:
                 self.mlx_init,
                 self.mlx_window,
                 self.width, self.height,
-                self.config, self.highscore)
+                self.config, self.highscore, self.player_name)
             self.GameRender.current_scene.launch()

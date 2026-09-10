@@ -26,7 +26,9 @@ class LevelScene:
                  width: int,
                  height: int,
                  config: Config_json,
-                 highscore: dict[str, int]) -> None:
+                 highscore: dict[str, int],
+                 player_name: str) -> None:
+        self.player_name = player_name
         self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
@@ -161,15 +163,28 @@ class LevelScene:
 
         if (pacman.lives == 0):
             self.game_over = True
-            from src.render.scenes.player import PlayerScene
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-
-            player = PlayerScene(
-                self.GameRender, self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width, self.height, self.config, self.highscore)
-            player.launch()
+            if len(self.player_name) != 0:
+                if len(self.level_engine.player_name) == 0:
+                    self.level_engine.add_player_name(self.player_name)
+                from src.render.scenes.menu import MenuScene
+                self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+                self.GameRender.current_scene = MenuScene(
+                    self.GameRender, self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width, self.height,
+                    self.config, self.highscore, self.player_name)
+                self.GameRender.current_scene.launch()
+            else:
+                from src.render.scenes.player import PlayerScene
+                player = PlayerScene(
+                    self.GameRender, self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width, self.height, self.config, self.highscore,
+                    self.player_name)
+                player.launch()
             return False
         else:
             return True
@@ -253,7 +268,7 @@ class LevelScene:
                 self.mlx_init,
                 self.mlx_window,
                 self.width, self.height,
-                self.config, self.highscore)
+                self.config, self.highscore, self.player_name)
             self.GameRender.current_scene.launch()
         elif keycode == XK_UP:
             pacman.key_direction = 'N'
@@ -269,6 +284,8 @@ class LevelScene:
         self.level_engine.push_new_score("./highscore", self.highscore)
         if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
             self.level_engine.add_score(self.score)
+            if len(self.level_engine.player_name) == 0:
+                self.level_engine.add_player_name(self.player_name)
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
             self.render()
@@ -277,13 +294,24 @@ class LevelScene:
             # au menu. egalement on devrait plus tard ajouter le score
             # au highscore
             from src.render.scenes.player import PlayerScene
-
-            player = PlayerScene(
-                self.GameRender, self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width, self.height, self.config, self.highscore)
-            player.launch()
+            if len(self.player_name) != 0:
+                from src.render.scenes.menu import MenuScene
+                self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+                self.GameRender.current_scene = MenuScene(
+                    self.GameRender, self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width, self.height,
+                    self.config, self.highscore, self.player_name)
+                self.GameRender.current_scene.launch()
+            else:
+                player = PlayerScene(
+                    self.GameRender, self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width, self.height, self.config, self.highscore,
+                    self.player_name)
+                player.launch()
 
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""
@@ -349,7 +377,8 @@ class LevelScene:
                   self.GameRender, self.mlx,
                   self.mlx_init,
                   self.mlx_window,
-                  self.width, self.height, self.config, self.highscore)
+                  self.width, self.height, self.config, self.highscore,
+                  self.player_name)
             self.GameRender.current_scene.launch()
             print(f"[ERROR] draw_pacgum: path error -> {e}")
             return False
@@ -381,7 +410,8 @@ class LevelScene:
                   self.GameRender, self.mlx,
                   self.mlx_init,
                   self.mlx_window,
-                  self.width, self.height, self.config, self.highscore)
+                  self.width, self.height, self.config, self.highscore,
+                  self.player_name)
             self.GameRender.current_scene.launch()
             print(f"[ERROR] draw_super_pacgum: path error -> {e}")
             return False
