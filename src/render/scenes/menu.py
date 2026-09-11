@@ -4,10 +4,9 @@ from src.render.scenes.level import LevelScene
 from src.render.scenes.score import ScoreScene
 from src.engine.model import Config_json
 from src.render.scenes.instruction import InstructionScene
-from src.render.utils import YELLOW, LIGHT_GRAY, XK_UP, XK_DOWN, XK_RETURN
+from src.render.utils import (YELLOW, LIGHT_GRAY, XK_UP, XK_DOWN,
+                              XK_RETURN, install_menu_image)
 from mlx import Mlx
-from PIL import Image
-import os
 
 # guarded to avoid a circular import: GameRender.py imports MenuScene at module
 # level, so GameRender can only be imported here for type hints
@@ -22,7 +21,11 @@ class MenuScene:
                  width: int,
                  height: int,
                  config: Config_json,
-                 highscore: dict[str, int]) -> None:
+                 highscore: dict[str, int],
+                 player_name: str,
+                 score: int) -> None:
+        self.score = score
+        self.player_name = player_name
         self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
@@ -74,25 +77,6 @@ class MenuScene:
             self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                     self.middle_w, y, YELLOW, label)
 
-    def install_menu_image(self) -> None:
-        '''install in the scene an image from assets/'''
-
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        image_path = os.path.join(current_dir, "./../../../"
-                                               "assets/menu/menu_logo.png")
-        image_path = os.path.normpath(image_path)
-        Image.open(image_path).convert("RGBA").save(image_path)
-
-        self.img = self.mlx.mlx_png_file_to_image(
-            self.mlx_init, image_path)
-        img_ptr, img_width, img_height = self.img
-
-        left_space = self.width - img_width
-
-        if img_ptr:
-            self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
-                                             img_ptr, int(left_space / 2), 0)
-
     def on_key(self, keycode: int, param: object) -> None:
         '''record the key press and do the action
         key up to go up, key down to go down,
@@ -114,7 +98,10 @@ class MenuScene:
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)
         self.mlx.mlx_expose_hook(self.mlx_window, None, self)
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.install_menu_image()
+        assert self.mlx_init is not None and self.mlx_window is not None
+        self.img = install_menu_image("./assets/menu/menu_logo.png",
+                                      self.mlx, self.mlx_init, self.mlx_window,
+                                      self.width, self.height, False)
         self.draw_menu()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
@@ -128,7 +115,8 @@ class MenuScene:
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
             self.width, self.height, self.config,
-            self.highscore)
+            self.highscore, self.player_name,
+            self.score)
         self.GameRender.current_scene.launch()
 
     def show_highscores(self) -> None:
@@ -141,7 +129,7 @@ class MenuScene:
             self.GameRender, self.mlx,
             self.mlx_init, self.mlx_window,
             self.width, self.height, self.config,
-            self.highscore)
+            self.highscore, self.player_name, self.score)
         self.GameRender.current_scene.launch()
 
     def show_instructions(self) -> None:
@@ -155,7 +143,8 @@ class MenuScene:
             self.mlx_init,
             self.mlx_window,
             self.width, self.height, self.config,
-            self.highscore)
+            self.highscore, self.player_name,
+            self.score)
         self.GameRender.current_scene.launch()
 
     def quit_game(self) -> None:

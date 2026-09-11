@@ -1,4 +1,9 @@
+from __future__ import annotations
 import os
+from typing import TYPE_CHECKING, Optional, Tuple
+
+if TYPE_CHECKING:
+    from mlx import Mlx
 
 
 def make_color(r: int, g: int, b: int, a: int = 255,
@@ -11,7 +16,8 @@ def make_color(r: int, g: int, b: int, a: int = 255,
 
 
 '''basics color for mlx'''
-red: int = make_color(255, 0, 0, )
+RED: int = make_color(255, 0, 0, )
+CREAM: int = make_color(233, 218, 223)
 green: int = make_color(0, 255, 0)
 BLUE: int = make_color(0, 0, 255)
 black: int = make_color(0, 0, 0)
@@ -36,6 +42,36 @@ XK_RETURN: int = 65293
 XK_ESCAPE: int = 65307
 XK_LEFT: int = 65361
 XK_RIGHT = 65363
+XK_BACK: int = 65288
+
+
+'''keyboard code to record event'''
+list_key = [(113, "U"),
+            (119, "W"),
+            (101, "E"),
+            (114, "R"),
+            (116, "T"),
+            (121, "Y"),
+            (117, "U"),
+            (105, "I"),
+            (111, "O"),
+            (112, "P"),
+            (97, "A"),
+            (115, "S"),
+            (100, "D"),
+            (102, "F"),
+            (103, "G"),
+            (104, "H"),
+            (106, "J"),
+            (107, "K"),
+            (108, "L"),
+            (122, "Z"),
+            (120, "X"),
+            (99, "C"),
+            (118, "V"),
+            (98, "B"),
+            (110, "N"),
+            (109, "M")]
 
 
 def transform_all_coord_to_cardinal(coords: list[tuple[int,
@@ -58,6 +94,16 @@ def get_cardinal_directions(from_coord: tuple[int, int],
         return 'N'
     else:
         return 'S'
+
+
+def clear_rect(mlx: "Mlx", mlx_ptr: int, win_ptr: int, x: int, y: int,
+               width: int, height: int, color: int = CREAM) -> None:
+    '''erase a rectangular area of the window by overpainting it, so only
+    part of the display needs to be redrawn instead of the whole window'''
+
+    for dy in range(height):
+        for dx in range(width):
+            mlx.mlx_pixel_put(mlx_ptr, win_ptr, x + dx, y + dy, color)
 
 
 def get_asset_path(path: str) -> str:
@@ -97,3 +143,35 @@ def check_range(from_val: float, to_val: float) -> bool:
         return True
 
     return False
+
+
+def install_menu_image(path: str, mlx: "Mlx", mlx_init: int,
+                       mlx_window: int, width: int,
+                       height: int,
+                       center: bool = True) -> Tuple[Optional[int], int, int]:
+    '''install in the scene an image from assets/'''
+
+    from PIL import Image
+    import os
+
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))))
+    image_path = os.path.join(project_root, path)
+    image_path = os.path.normpath(image_path)
+    Image.open(image_path).convert("RGBA").save(image_path)
+
+    img: Tuple[Optional[int], int, int] = mlx.mlx_png_file_to_image(
+          mlx_init, image_path)
+    img_ptr, img_width, img_height = img
+
+    x = width - img_width
+    y = height - img_height
+    if img_ptr:
+        if center is not True:
+            mlx.mlx_put_image_to_window(mlx_init, mlx_window,
+                                        img_ptr, int(x / 2), 0)
+        else:
+            mlx.mlx_put_image_to_window(mlx_init, mlx_window,
+                                        img_ptr, int(x / 2), int(y / 2))
+
+    return img

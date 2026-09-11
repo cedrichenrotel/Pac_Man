@@ -50,7 +50,8 @@ class GameRender():
                                                   self.width,
                                                   self.height,
                                                   self.config,
-                                                  self.highscore)
+                                                  self.highscore,
+                                                  "", 0)
         self.current_scene.launch()
         self.mlx.mlx_loop(self.mlx_init)
         self.mlx.mlx_release(self.mlx_init)

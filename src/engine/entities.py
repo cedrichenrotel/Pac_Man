@@ -66,13 +66,14 @@ class Ghost(Entities):
         self.is_edible: bool = False  # est comestible
         self.path_to_goal: list[str] = []
         self.frame_index: int = 0
-        self.start_time_is_edible: int = None
+        self.start_time_is_edible: float | None = None
 
     def time_is_edible(self) -> None:
         """ Vulnerability window for ghosts """
 
         if self.is_edible:
-            vulnerability_time: int = time() - self.start_time_is_edible
+            assert self.start_time_is_edible is not None
+            vulnerability_time: float = time() - self.start_time_is_edible
             if vulnerability_time >= 5.00:
                 self.is_edible = False
 
