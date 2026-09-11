@@ -173,14 +173,7 @@ class LevelScene:
                     ghost.init_ghost_eaten()
 
         if pacman.lives == 0 and pacman.dead is True:
-            from src.render.scenes.menu import MenuScene
-            self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-            self.GameRender.current_scene = MenuScene(
-                self.GameRender, self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width, self.height, self.config, self.highscore)
-            self.GameRender.current_scene.launch()
+            self.go_to_menu()
             return False
         else:
             return True
@@ -256,25 +249,12 @@ class LevelScene:
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
+
         pacman: Pacman | None = self.level_engine.init_maze.pacman
         assert pacman is not None
-        try:
-            from src.render.scenes.menu import MenuScene
-        except ImportError as e:
-            print(f"[ERROR] level.py: {e}")
-            return
 
         if keycode == XK_ESCAPE:
-            self.mlx.mlx_loop_hook(self.mlx_init, None, self)
-            self.mlx.mlx_expose_hook(self.mlx_window, None, self)
-            self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-            self.GameRender.current_scene = MenuScene(
-                self.GameRender, self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width, self.height,
-                self.config, self.highscore)
-            self.GameRender.current_scene.launch()
+            self.go_to_menu()
         elif keycode == XK_UP:
             pacman.key_direction = 'N'
         elif keycode == XK_DOWN:
@@ -293,19 +273,7 @@ class LevelScene:
             self.maze = self.level_engine.generator.maze
             self.render()
         else:
-            # si jamais le nombre de level max etait atteind, on reviens
-            # au menu. egalement on devrait plus tard ajouter le score
-            # au highscore
-            from src.render.scenes.menu import MenuScene
-            self.mlx.mlx_loop_hook(self.mlx_init, None, self)
-            self.mlx.mlx_expose_hook(self.mlx_window, None, self)
-            self.GameRender.current_scene = MenuScene(
-                self.GameRender, self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width, self.height,
-                self.config, self.highscore)
-            self.GameRender.current_scene.launch()
+            self.go_to_menu()
 
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""
@@ -435,3 +403,20 @@ class LevelScene:
                 ghost.is_edible = True
                 ghost.start_time_is_edible = time()
             self.score += self.config.points_per_super_pacgum
+
+    def go_to_menu(self) -> None:
+        """ exits the current level and returns to the menu screen
+            clears the window and deactivates the hooks before
+            the transition """
+
+        self.mlx.mlx_loop_hook(self.mlx_init, None, self)
+        self.mlx.mlx_expose_hook(self.mlx_window, None, self)
+
+        from src.render.scenes.menu import MenuScene
+        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+        self.GameRender.current_scene = MenuScene(
+            self.GameRender, self.mlx,
+            self.mlx_init,
+            self.mlx_window,
+            self.width, self.height, self.config, self.highscore)
+        self.GameRender.current_scene.launch()
