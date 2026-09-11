@@ -172,7 +172,7 @@ class LevelScene:
                     self.score += self.config.points_per_ghost
                     ghost.init_ghost_eaten()
 
-        if (pacman.lives == 0):
+        if pacman.lives == 0 and pacman.dead is True:
             from src.render.scenes.menu import MenuScene
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             self.GameRender.current_scene = MenuScene(
@@ -213,8 +213,12 @@ class LevelScene:
             render_x/y moves one step in the x/y direction, drawing the
             intermediate positions """
 
-        self.pacman_moving()
-        self.ghost_moving()
+        assert self.pacman is not None
+        if self.pacman.lives == 0:
+            self.render()
+        else:
+            self.pacman_moving()
+            self.ghost_moving()
 
     def pacman_moving(self) -> None:
         """handle pacman moving in the maze"""
@@ -308,7 +312,6 @@ class LevelScene:
         life = None
         if self.pacman is not None:
             life = self.pacman.lives
-
         self.pacman = self.level_engine.init_maze.pacman
         assert self.pacman is not None
         if life is not None:
@@ -326,9 +329,20 @@ class LevelScene:
         sprite_name: str = direction_sprites.get(self.pacman.key_direction
                                                  or 'E', 'pacman_chomp')
 
-        img_ptr, width, height = (self.GameRender.sprites_stores.
-                                  sprites[sprite_name]
-                                  [self.pacman.frame_index % 4])
+        if self.pacman.lives == 0:
+            if self.pacman.time_dead is None:
+                self.pacman.time_dead = time()
+            death_frame = int((time() - self.pacman.time_dead) // 0.15)
+            img_ptr, width, height = (self.GameRender.sprites_stores.
+                                      sprites['pacman_death']
+                                      [death_frame % 7])
+            if death_frame >= 7:
+                self.pacman.dead = True
+
+        else:
+            img_ptr, width, height = (self.GameRender.sprites_stores.
+                                      sprites[sprite_name]
+                                      [self.pacman.frame_index % 4])
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          img_ptr,

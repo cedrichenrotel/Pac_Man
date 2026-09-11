@@ -53,9 +53,18 @@ class Pacman(Entities):
         super().__init__(x, y)
         self.lives: int = lives
         self.frame_index: int = 0
+        self.dead: bool = False
+        self.time_dead: float | None = None
 
     def decrease_life(self) -> None:
-        self.lives -= 1
+
+        if self.lives == 0:
+            if self.time_dead is not None:
+                elapsed_time: float = time() - self.time_dead
+                elapsed_time // 0.15
+            self.frame_index = 0
+        else:
+            self.lives -= 1
 
 
 class Ghost(Entities):
@@ -74,11 +83,11 @@ class Ghost(Entities):
 
         if self.is_edible:
             assert self.start_time_is_edible is not None
-            vulnerability_time: float = time() - self.start_time_is_edible
-            if vulnerability_time >= 10:
+            elapsed_time: float = time() - self.start_time_is_edible
+            if elapsed_time >= 10:
                 self.is_edible = False
                 self.eaten = False
-            return vulnerability_time
+            return elapsed_time
         return None
 
     def init_ghost_eaten(self) -> None:
