@@ -4,7 +4,7 @@ from mlx import Mlx
 from src.engine.level import Level
 from src.render.scenes.menu import MenuScene
 from src.render.utils import (XK_RETURN, list_key, RED, XK_BACK,
-                              clear_rect, install_menu_image)
+                              clear_rect, install_menu_image, YELLOW)
 from src.engine.model import Config_json
 
 # guarded to avoid a circular import: GameRender.py imports InstructionScene at
@@ -85,6 +85,20 @@ class PlayerScene:
             self.write_letter(record[0][1])
         if keycode == XK_RETURN:
             if (len(self.player_name) > 2):
+                self.level_engine: Level = Level(self.config)
+                self.level_engine.highscore = self.highscore
+                if self.level_engine.add_player_name(self.player_name) is True:
+                    self.level_engine.add_score(self.score)
+                    self.level_engine.push_new_score("./highscore",
+                                                     self.highscore)
+                else:
+                    self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                            int(self.width / 2),
+                                            int(self.height / 2),
+                                            YELLOW,
+                                            "player allready "
+                                            "exist cannot progress")
+                    return
                 self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
                 self.GameRender.current_scene = MenuScene(
                     self.GameRender, self.mlx,
@@ -92,11 +106,7 @@ class PlayerScene:
                     self.mlx_window,
                     self.width, self.height,
                     self.config, self.highscore, self.player_name, self.score)
-                self.level_engine: Level = Level(self.config)
-                self.level_engine.add_player_name(self.player_name)
-                self.level_engine.add_score(self.score)
-                self.level_engine.push_new_score("./highscore", self.highscore)
-                print("test")
+
                 self.GameRender.current_scene.launch()
         if keycode == XK_BACK:
             self.delete_letter()

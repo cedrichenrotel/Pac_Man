@@ -181,7 +181,12 @@ class LevelScene:
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             if len(self.player_name) != 0:
                 if len(self.level_engine.player_name) == 0:
+                    self.level_engine.highscore = self.highscore
                     self.level_engine.add_player_name(self.player_name)
+                    self.level_engine.add_score(self.score)
+                    self.level_engine.push_new_score("./highscore",
+                                                     self.highscore)
+
                 from src.render.scenes.menu import MenuScene
                 self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
                 self.GameRender.current_scene = MenuScene(
@@ -193,10 +198,6 @@ class LevelScene:
                 self.GameRender.current_scene.launch()
                 return False
             else:
-                if self.score > self.level_engine.score:
-                    self.level_engine.add_score(self.score)
-                    self.level_engine.push_new_score("./highscore",
-                                                     self.highscore)
                 from src.render.scenes.player import PlayerScene
                 player = PlayerScene(
                     self.GameRender, self.mlx,
