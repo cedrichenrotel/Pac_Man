@@ -93,11 +93,11 @@ class PlayerScene:
                                                      self.highscore)
                 else:
                     self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                            int(self.width / 2),
+                                            int(self.width / 3),
                                             int(self.height / 2),
                                             YELLOW,
                                             "player allready "
-                                            "exist cannot progress")
+                                            "exist cannot enter")
                     return
                 self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
                 self.GameRender.current_scene = MenuScene(
