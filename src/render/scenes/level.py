@@ -4,7 +4,7 @@ from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_DOWN, XK_LEFT,
                               XK_RIGHT,
                               transform_all_coord_to_cardinal,
-                              check_range)
+                              check_range, list_key)
 from src.render.draw import Draw
 from src.engine.entities import Ghost, Pacman
 from src.engine.model import Config_json
@@ -117,6 +117,23 @@ class LevelScene(Draw):
         self.level_engine: Level = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
+        self.test()
+        # self.maze = self.level_engine.generator.maze
+        # self.maze_width: int = self.level_engine.config.level.width
+        # self.maze_height: int = self.level_engine.config.level.height
+        # self.cell_size, self.margin_x, self.margin_y = self._grid()
+        # if self.draw_maze() is False:
+        #     return
+        # if self.render() is False:
+        #     return
+        # self.show_life()
+        # self.show_score()
+        # self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
+        # self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
+        # self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
+
+    def test(self):
+        # self.maze = self.level_engine.generator.maze
         self.maze_width: int = self.level_engine.config.level.width
         self.maze_height: int = self.level_engine.config.level.height
         self.cell_size, self.margin_x, self.margin_y = self._grid()
@@ -184,7 +201,18 @@ class LevelScene(Draw):
         assert pacman is not None
 
         if keycode == XK_ESCAPE:
-            self.go_to_menu()
+            from src.render.scenes.player import PlayerScene
+            if len(self.player_name) != 0:
+                self.go_to_menu()
+            else:
+                player = PlayerScene(
+                    self.GameRender, self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width, self.height, self.config,
+                    self.highscore,
+                    self.player_name, self.score)
+                player.launch()
         elif keycode == XK_UP:
             pacman.key_direction = 'N'
         elif keycode == XK_DOWN:
@@ -193,18 +221,27 @@ class LevelScene(Draw):
             pacman.key_direction = 'W'
         elif keycode == XK_RIGHT:
             pacman.key_direction = 'E'
+        elif keycode == 113:
+            ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
+            for ghost in ghosts:
+                # ghost.time_edible = float('inf')
+                ghost.is_edible = True
+                ghost.start_time_is_edible = time()
+            print("changement du temps de edible")
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
-        self.level_engine.push_new_score("./highscore", self.highscore)
+        # self.level_engine.push_new_score("./highscore", self.highscore)
+        # il faut garder le score
         if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
-            if len(self.level_engine.player_name) == 0:
-                self.level_engine.add_player_name(self.player_name)
-            if self.score > self.level_engine.score:
-                self.level_engine.add_score(self.score)
+            # if len(self.level_engine.player_name) == 0:
+            #     self.level_engine.add_player_name(self.player_name)
+            # if self.score > self.level_engine.score:
+            #     self.level_engine.add_score(self.score)
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
-            self.render()
+            self.test()
+            print("next level")
         else:
             # si jamais le nombre de level max etait atteind, on reviens
             # au menu. egalement on devrait plus tard ajouter le score
@@ -229,6 +266,7 @@ class LevelScene(Draw):
 
         pacgum_pos: list[tuple[int, int]] = (self.level_engine.
                                              init_maze.pacgum_pos)
+
         super_pacgum_pos: list[tuple[int, int]] = (self.level_engine.
                                                    init_maze.superpacgum_pos)
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
@@ -242,6 +280,8 @@ class LevelScene(Draw):
                 ghost.is_edible = True
                 ghost.start_time_is_edible = time()
             self.score += self.config.points_per_super_pacgum
+        if len(pacgum_pos) == 0 and len(super_pacgum_pos) == 0:
+            self.winning()
 
     def go_to_menu(self) -> None:
         """ exits the current level and returns to the menu screen

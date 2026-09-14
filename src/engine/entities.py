@@ -77,6 +77,7 @@ class Ghost(Entities):
         self.frame_index: int = 0
         self.start_time_is_edible: float | None = None
         self.start_pos: tuple[int, int] = (x, y)
+        self.time_edible = 10
 
     def time_is_edible(self) -> float | None:
         """ Vulnerability window for ghosts """
@@ -84,7 +85,7 @@ class Ghost(Entities):
         if self.is_edible:
             assert self.start_time_is_edible is not None
             elapsed_time: float = time() - self.start_time_is_edible
-            if elapsed_time >= 10:
+            if elapsed_time >= self.time_edible:
                 self.is_edible = False
                 self.eaten = False
             return elapsed_time
