@@ -1,13 +1,33 @@
 from __future__ import annotations
 import os
 from src.engine.entities import Ghost, Pacman
+from src.engine.level import Level
 from src.engine.utils import DIRECTIONS
+from src.render.utils import get_cell_size, get_asset_path
+from typing import Optional
+from mlx import Mlx
 from PIL import Image
 from time import time
-from src.render.utils import get_cell_size, get_asset_path
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    # noqa import: flake8 can't see the use below because the attribute
+    # is named the same as the type (GameRender: GameRender)
+    from src.render.game import GameRender  # noqa: F401
 
 
 class Draw:
+
+    mlx: Mlx
+    mlx_init: Optional[int]
+    mlx_window: Optional[int]
+    maze: list[list[int]]
+    maze_width: int
+    maze_height: int
+    GameRender: GameRender
+    height: int
+    width: int
+    level_engine: Level
+    pacman: Optional[Pacman]
 
     def _put_sprite_centered(self, x: float, y: float, img_ptr: int,
                              height: int, width: int) -> None:
@@ -105,7 +125,7 @@ class Draw:
         life = None
         if self.pacman is not None:
             life = self.pacman.lives
-        self.pacman: Pacman = self.level_engine.init_maze.pacman
+        self.pacman = self.level_engine.init_maze.pacman
         assert self.pacman is not None
         if life is not None:
             self.pacman.lives = life

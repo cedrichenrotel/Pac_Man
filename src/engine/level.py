@@ -18,7 +18,7 @@ class Level():
     def __init__(self, config: Config_json) -> None:
         self.config = config
         self.score: int = 0
-        self.player_name: str
+        self.player_name: str = ""
         self.lvl_max: int = 10
         self.actual_lvl: int = 0
         self.highscore: dict[str, int]
@@ -35,6 +35,13 @@ class Level():
         self.init_maze: InitMaze = InitMaze(self.generator, self.config)
         self.init_maze.config_start()
 
+    def add_player_name(self, player_name: str) -> bool:
+        self.player_name = player_name
+
+        if player_name in self.highscore.keys():
+            return False
+        return True
+
     def add_score(self, num: int) -> None:
         self.score += num
 
@@ -50,7 +57,13 @@ class Level():
             order by descending, max 10 best score and write
             in highscore.json
         """
+        if len(self.player_name) != 0:
 
-        new_score = {self.player_name: self.score}
-        highscore.update(new_score)
-        order_asc_and_limit(highscore)
+            if self.player_name in self.highscore.keys():
+                if (self.highscore[self.player_name] < self.score or
+                   self.highscore[self.player_name] is None):
+                    self.highscore[self.player_name] = self.score
+            else:
+                self.new_score = {self.player_name: self.score}
+                highscore.update(self.new_score)
+            order_asc_and_limit(highscore)

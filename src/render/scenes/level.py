@@ -25,7 +25,11 @@ class LevelScene(Draw):
                  width: int,
                  height: int,
                  config: Config_json,
-                 highscore: dict[str, int]) -> None:
+                 highscore: dict[str, int],
+                 player_name: str,
+                 score: int) -> None:
+        self.score = score
+        self.player_name = player_name
         self.highscore = highscore
         self.config = config
         self.GameRender = GameRender
@@ -36,11 +40,14 @@ class LevelScene(Draw):
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
         self.pacman: Optional[Pacman] = None
+        self.game_over: bool = False
 
     def on_expose(self, param: object) -> None:
         self.render()
 
     def render(self) -> bool:
+        if self.game_over:
+            return False
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
@@ -62,6 +69,9 @@ class LevelScene(Draw):
         and return to menu scene
         """
 
+        if self.game_over:
+            return False
+
         pacman = self.pacman
         assert pacman is not None
 
@@ -79,7 +89,25 @@ class LevelScene(Draw):
                     ghost.init_ghost_eaten()
 
         if pacman.lives == 0 and pacman.dead is True:
-            self.go_to_menu()
+            self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+            if len(self.player_name) != 0:
+                if len(self.level_engine.player_name) == 0:
+                    self.level_engine.highscore = self.highscore
+                    self.level_engine.add_player_name(self.player_name)
+                    self.level_engine.add_score(self.score)
+                    self.level_engine.push_new_score("./highscore",
+                                                     self.highscore)
+                self.go_to_menu()
+                return False
+            else:
+                from src.render.scenes.player import PlayerScene
+                player = PlayerScene(
+                    self.GameRender, self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width, self.height, self.config, self.highscore,
+                    self.player_name, self.score)
+                player.launch()
             return False
         else:
             return True
@@ -110,7 +138,7 @@ class LevelScene(Draw):
     def on_loop(self, param: object) -> None:
         """ is automatically called by mlx_loop to move forward
             render_x/y moves one step in the x/y direction, drawing the
-            intermediate positions """
+            intermediate positions, executed every tick """
 
         assert self.pacman is not None
         if self.pacman.lives == 0:
@@ -174,12 +202,30 @@ class LevelScene(Draw):
         # example de si le lvl etait gagner
         self.level_engine.push_new_score("./highscore", self.highscore)
         if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
-            self.level_engine.add_score(self.score)
+            if len(self.level_engine.player_name) == 0:
+                self.level_engine.add_player_name(self.player_name)
+            if self.score > self.level_engine.score:
+                self.level_engine.add_score(self.score)
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
             self.render()
         else:
-            self.go_to_menu()
+            # si jamais le nombre de level max etait atteind, on reviens
+            # au menu. egalement on devrait plus tard ajouter le score
+            # au highscore
+            if self.score > self.level_engine.score:
+                self.level_engine.add_score(self.score)
+            from src.render.scenes.player import PlayerScene
+            if len(self.player_name) != 0:
+                self.go_to_menu()
+            else:
+                player = PlayerScene(
+                    self.GameRender, self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width, self.height, self.config, self.highscore,
+                    self.player_name, self.score)
+                player.launch()
 
     def add_point_score(self, pacman: Pacman) -> None:
         """ Add the Super and Pacgum points when Pacman
@@ -215,5 +261,6 @@ class LevelScene(Draw):
             self.GameRender, self.mlx,
             self.mlx_init,
             self.mlx_window,
-            self.width, self.height, self.config, self.highscore)
+            self.width, self.height, self.config, self.highscore,
+            self.player_name, self.score)
         self.GameRender.current_scene.launch()
