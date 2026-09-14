@@ -56,8 +56,6 @@ class LevelScene(Draw):
         self.draw_pacgum()
         self.draw_pacman()
         self.draw_ghost()
-        self.show_life()
-        self.show_score()
         if self.check_positioning() is False:
             return False
         return True
@@ -121,10 +119,13 @@ class LevelScene(Draw):
         self.maze = self.level_engine.generator.maze
         self.maze_width: int = self.level_engine.config.level.width
         self.maze_height: int = self.level_engine.config.level.height
+        self.cell_size, self.margin_x, self.margin_y = self._grid()
         if self.draw_maze() is False:
             return
         if self.render() is False:
             return
+        self.show_life()
+        self.show_score()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
         self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
@@ -135,11 +136,16 @@ class LevelScene(Draw):
             intermediate positions, executed every tick """
 
         assert self.pacman is not None
+
         if self.pacman.lives == 0:
             self.render()
-        else:
-            self.pacman_moving()
-            self.ghost_moving()
+            return
+
+        self.pacman_moving()
+        self.ghost_moving()
+
+        self.render()
+        self.check_positioning()
 
     def pacman_moving(self) -> None:
         """handle pacman moving in the maze"""
@@ -152,8 +158,6 @@ class LevelScene(Draw):
             self.pacman.frame_index += 1
             if self.pacman.move_render(0.150) is True:
                 self.add_point_score(self.pacman)
-                self.render()
-                self.check_positioning()
 
     def ghost_moving(self) -> None:
         """handle all ghost moving in the maze"""
@@ -171,9 +175,7 @@ class LevelScene(Draw):
                 ghost.path_to_goal = transform_all_coord_to_cardinal(
                     ghost.path_to_pacman(self.level_engine.generator,
                                          self.pacman))
-            if ghost.move_render(0.100) is True:
-                self.render()
-                self.check_positioning()
+            ghost.move_render(0.100)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
