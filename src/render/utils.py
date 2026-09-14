@@ -46,7 +46,7 @@ XK_BACK: int = 65288
 
 
 '''keyboard code to record event'''
-list_key = [(113, "U"),
+list_key = [(113, "Q"),
             (119, "W"),
             (101, "E"),
             (114, "R"),
