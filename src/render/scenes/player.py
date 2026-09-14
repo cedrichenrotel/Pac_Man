@@ -47,6 +47,11 @@ class PlayerScene:
                                       self.mlx, self.mlx_init, self.mlx_window,
                                       self.width, self.height)
         self.mlx.mlx_do_sync(self.mlx_init)
+        # self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+        #                         int(self.width / 3) + 50,
+        #                         int(self.height / 4),
+        #                         YELLOW,
+        #                         "write your name")
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
     def clear_name(self) -> None:

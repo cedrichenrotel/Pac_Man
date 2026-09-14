@@ -35,6 +35,7 @@ class LevelScene(Draw):
         self.GameRender = GameRender
         self.width = width
         self.score = 0
+        self.actual_lvl = 1
         self.height = height
         self.mlx = mlx
         self.mlx_init = mlx_init
@@ -56,6 +57,7 @@ class LevelScene(Draw):
         self.draw_pacgum()
         self.draw_pacman()
         self.draw_ghost()
+        self.draw_hud_on_canvas()
         if self.check_positioning() is False:
             return False
         return True
@@ -117,23 +119,9 @@ class LevelScene(Draw):
         self.level_engine: Level = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
-        self.test()
-        # self.maze = self.level_engine.generator.maze
-        # self.maze_width: int = self.level_engine.config.level.width
-        # self.maze_height: int = self.level_engine.config.level.height
-        # self.cell_size, self.margin_x, self.margin_y = self._grid()
-        # if self.draw_maze() is False:
-        #     return
-        # if self.render() is False:
-        #     return
-        # self.show_life()
-        # self.show_score()
-        # self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
-        # self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
-        # self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
+        self.process_render()
 
-    def test(self):
-        # self.maze = self.level_engine.generator.maze
+    def process_render(self):
         self.maze_width: int = self.level_engine.config.level.width
         self.maze_height: int = self.level_engine.config.level.height
         self.cell_size, self.margin_x, self.margin_y = self._grid()
@@ -141,8 +129,6 @@ class LevelScene(Draw):
             return
         if self.render() is False:
             return
-        self.show_life()
-        self.show_score()
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
         self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
@@ -233,15 +219,15 @@ class LevelScene(Draw):
         # example de si le lvl etait gagner
         # self.level_engine.push_new_score("./highscore", self.highscore)
         # il faut garder le score
-        if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
+        if (self.actual_lvl != self.level_engine.lvl_max):
             # if len(self.level_engine.player_name) == 0:
             #     self.level_engine.add_player_name(self.player_name)
             # if self.score > self.level_engine.score:
             #     self.level_engine.add_score(self.score)
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
-            self.test()
-            print("next level")
+            self.process_render()
+            self.actual_lvl += 1
         else:
             # si jamais le nombre de level max etait atteind, on reviens
             # au menu. egalement on devrait plus tard ajouter le score

@@ -29,6 +29,7 @@ class Draw:
     level_engine: Level
     pacman: Optional[Pacman]
     score: int
+    actual_lvl: int
 
     def _put_sprite_centered(self, x: float, y: float, img_ptr: int,
                              height: int, width: int) -> None:
@@ -225,19 +226,35 @@ class Draw:
                                       width)
         return True
 
-    def show_life(self) -> None:
-        assert self.pacman is not None
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                10,
-                                self.height - 40,
-                                YELLOW, f"life: {self.pacman.lives}")
+    def draw_hud_on_canvas(self) -> None:
+        """Display on HUD text with score and life"""
+        from PIL import ImageDraw, ImageFont
 
-    def show_score(self) -> None:
-        """ display the score when Pac-Man eats the Pac-Gums during
-            the current game """
+        hud_height = 50
+        hud_canvas = Image.new("RGBA", (self.width, hud_height),
+                               (0, 0, 0, 255))
+        draw = ImageDraw.Draw(hud_canvas)
 
-        assert self.pacman is not None
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                self.width - 150,
-                                self.height - 40,
-                                YELLOW, f"score: {self.score}")
+        try:
+            font = ImageFont.load_default(size=22)
+        except TypeError:
+            font = ImageFont.load_default()
+
+        life_count = self.pacman.lives if self.pacman else 0
+        text_life = f"LIFE: {life_count}"
+        text__level = f"LEVEL  {self.actual_lvl}"
+        text_score = f"SCORE: {self.score}"
+
+        draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
+        draw.text((self.width - 600, 12), text__level, fill=(255, 255, 0, 255),
+                  font=font)
+        draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
+                  font=font)
+
+        os.makedirs(".cache", exist_ok=True)
+        hud_path = os.path.join(".cache", "hud_cache.png")
+        hud_canvas.save(hud_path)
+
+        hud_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, hud_path)
+        self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                         hud_ptr, 0, self.height - hud_height)
