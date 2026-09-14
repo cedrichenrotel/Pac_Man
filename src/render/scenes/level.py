@@ -210,39 +210,31 @@ class LevelScene(Draw):
         elif keycode == 113:
             ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
             for ghost in ghosts:
-                # ghost.time_edible = float('inf')
                 ghost.is_edible = True
                 ghost.start_time_is_edible = time()
             print("changement du temps de edible")
 
     def winning(self) -> None:
-        # example de si le lvl etait gagner
-        # self.level_engine.push_new_score("./highscore", self.highscore)
-        # il faut garder le score
         if (self.actual_lvl != self.level_engine.lvl_max):
-            # if len(self.level_engine.player_name) == 0:
-            #     self.level_engine.add_player_name(self.player_name)
-            # if self.score > self.level_engine.score:
-            #     self.level_engine.add_score(self.score)
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
             self.process_render()
             self.actual_lvl += 1
         else:
-            # si jamais le nombre de level max etait atteind, on reviens
-            # au menu. egalement on devrait plus tard ajouter le score
-            # au highscore
-            if self.score > self.level_engine.score:
-                self.level_engine.add_score(self.score)
             from src.render.scenes.player import PlayerScene
             if len(self.player_name) != 0:
-                self.go_to_menu()
+                if self.score > self.level_engine.score:
+                    self.level_engine.add_player_name(self.player_name)
+                    self.level_engine.add_score(self.score)
+                    self.level_engine.push_new_score("./highscore",
+                                                     self.highscore)
             else:
                 player = PlayerScene(
                     self.GameRender, self.mlx,
                     self.mlx_init,
                     self.mlx_window,
-                    self.width, self.height, self.config, self.highscore,
+                    self.width, self.height, self.config,
+                    self.highscore,
                     self.player_name, self.score)
                 player.launch()
 

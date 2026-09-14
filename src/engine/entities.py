@@ -77,7 +77,7 @@ class Ghost(Entities):
         self.frame_index: int = 0
         self.start_time_is_edible: float | None = None
         self.start_pos: tuple[int, int] = (x, y)
-        self.time_edible = 10
+        self.time_edible = 100000000
 
     def time_is_edible(self) -> float | None:
         """ Vulnerability window for ghosts """
