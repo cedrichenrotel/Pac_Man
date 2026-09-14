@@ -4,7 +4,7 @@ from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_DOWN, XK_LEFT,
                               XK_RIGHT,
                               transform_all_coord_to_cardinal,
-                              YELLOW, check_range)
+                              check_range)
 from src.render.draw import Draw
 from src.engine.entities import Ghost, Pacman
 from src.engine.model import Config_json
@@ -57,6 +57,7 @@ class LevelScene(Draw):
         self.draw_pacman()
         self.draw_ghost()
         self.show_life()
+        self.show_score()
         if self.check_positioning() is False:
             return False
         return True
@@ -127,13 +128,6 @@ class LevelScene(Draw):
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
         self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
-
-    def show_life(self) -> None:
-        assert self.pacman is not None
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                10,
-                                self.height - 40,
-                                YELLOW, f"life: {self.pacman.lives}")
 
     def on_loop(self, param: object) -> None:
         """ is automatically called by mlx_loop to move forward

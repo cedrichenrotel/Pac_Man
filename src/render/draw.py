@@ -3,7 +3,7 @@ import os
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.utils import DIRECTIONS
-from src.render.utils import get_cell_size, get_asset_path
+from src.render.utils import get_cell_size, get_asset_path, YELLOW
 from typing import Optional
 from mlx import Mlx
 from PIL import Image
@@ -28,6 +28,7 @@ class Draw:
     width: int
     level_engine: Level
     pacman: Optional[Pacman]
+    score: int
 
     def _put_sprite_centered(self, x: float, y: float, img_ptr: int,
                              height: int, width: int) -> None:
@@ -227,3 +228,20 @@ class Draw:
                                       height,
                                       width)
         return True
+
+    def show_life(self) -> None:
+        assert self.pacman is not None
+        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                10,
+                                self.height - 40,
+                                YELLOW, f"life: {self.pacman.lives}")
+
+    def show_score(self) -> None:
+        """ display the score when Pac-Man eats the Pac-Gums during
+            the current game """
+
+        assert self.pacman is not None
+        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                self.width - 150,
+                                self.height - 40,
+                                YELLOW, f"score: {self.score}")
