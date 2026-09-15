@@ -159,7 +159,7 @@ class LevelScene(Draw):
         if self.pacman.key_direction is not None:
             self.pacman.move(self.pacman.key_direction,
                              self.level_engine.generator)
-            if self.pacman.move_render(2) is True:
+            if self.pacman.move_render(3) is True:
                 self.add_point_score(self.pacman)
 
     def ghost_moving(self) -> None:
@@ -178,7 +178,7 @@ class LevelScene(Draw):
                     ghost.path_to_goal = transform_all_coord_to_cardinal(
                         ghost.path_to_pacman(self.level_engine.generator,
                                              self.pacman))
-                if ghost.move_render(1) is True:
+                if ghost.move_render(2) is True:
                     self.render()
                     self.check_positioning()
 
