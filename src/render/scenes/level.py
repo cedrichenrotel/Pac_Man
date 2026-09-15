@@ -174,13 +174,13 @@ class LevelScene(Draw):
                     if ghost.move(ghost.path_to_goal[0],
                                   self.level_engine.generator) is True:
                         ghost.path_to_goal.pop(0)
-                elif len(ghost.path_to_goal) == 0:
+                elif (len(ghost.path_to_goal) == 0 and
+                      time() - ghost.last_path_time >= 1):
                     ghost.path_to_goal = transform_all_coord_to_cardinal(
                         ghost.path_to_pacman(self.level_engine.generator,
                                              self.pacman))
-                if ghost.move_render(2) is True:
-                    self.render()
-                    self.check_positioning()
+                    ghost.last_path_time = time()
+                ghost.move_render(2)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''

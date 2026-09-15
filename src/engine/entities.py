@@ -88,6 +88,7 @@ class Ghost(Entities):
         self.path_to_goal: list[str] = []
         self.start_time_is_edible: float | None = None
         self.start_pos: tuple[int, int] = (x, y)
+        self.last_path_time: float = time()
 
     def time_is_edible(self) -> float | None:
         """ Vulnerability window for ghosts """
