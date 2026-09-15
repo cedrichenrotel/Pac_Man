@@ -103,7 +103,15 @@ class MenuScene:
                                       self.mlx, self.mlx_init, self.mlx_window,
                                       self.width, self.height, False)
         self.draw_menu()
+
+        self.mlx.mlx_hook(self.mlx_window, 33, 131072, self.on_close, self)
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
+
+    def on_close(self, param: object = None) -> None:
+        """close window from the arrow"""
+
+        self.mlx.mlx_destroy_window(self.mlx_init, self.mlx_window)
+        self.quit_game()
 
     def start_game(self) -> None:
         '''redirect to the level scene'''

@@ -34,14 +34,14 @@ class Draw:
                              height: int, width: int) -> None:
         """ centres the sprites in the middle of the tile """
 
-        cell_size, margin_x, margin_y = self._grid()
-        px: int = int(margin_x + x * cell_size)
-        py: int = int(margin_y + y * cell_size)
+        px: int = int(self.margin_x + x * self.cell_size)
+        py: int = int(self.margin_y + y * self.cell_size)
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          img_ptr,
-                                         px + cell_size // 2 - width // 2,
-                                         py + cell_size // 2 - height // 2)
+                                         px + self.cell_size // 2 - width // 2,
+                                         py + self.cell_size // 2
+                                         - height // 2)
 
     def _grid(self) -> tuple[int, int, int]:
         """ cell size, snapped to a multiple of the wall sprite so tiling
@@ -50,37 +50,38 @@ class Draw:
 
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
         reserve: int = wall_width // 2
-        cell_size: int = get_cell_size(self.width,
-                                       self.height,
-                                       self.maze_width,
-                                       self.maze_height,
-                                       reserve,
-                                       wall_width)
-        margin_x: int = (self.width - self.maze_width * cell_size) // 2
-        margin_y: int = (self.height - self.maze_height * cell_size) // 2
-        return cell_size, margin_x, margin_y
+        self.cell_size: int = get_cell_size(self.width,
+                                            self.height,
+                                            self.maze_width,
+                                            self.maze_height,
+                                            reserve,
+                                            wall_width)
+        self.margin_x: int = (self.width - self.maze_width
+                              * self.cell_size) // 2
+        self.margin_y: int = (self.height - self.maze_height
+                              * self.cell_size) // 2
+        return self.cell_size, self.margin_x, self.margin_y
 
     def _paste_wall_segment(self, x: float, y: float, dx: int,
                             dy: int) -> None:
 
         wall_width, wall_height = self.wall_sprite.size
-        cell_size, margin_x, margin_y = self._grid()
 
-        px: int = int(margin_x + x * cell_size)
-        py: int = int(margin_y + y * cell_size)
-        for i in range(0, cell_size, wall_width):
+        px: int = int(self.margin_x + x * self.cell_size)
+        py: int = int(self.margin_y + y * self.cell_size)
+        for i in range(0, self.cell_size, wall_width):
             if dx == 0:
                 if dy == -1:
                     py_pos: int = py - wall_height // 2
                 else:
-                    py_pos = py + cell_size - wall_height // 2
+                    py_pos = py + self.cell_size - wall_height // 2
                 self.canvas.paste(self.wall_sprite, (px + i, py_pos),
                                   self.wall_sprite)
             else:
                 if dx == -1:
                     px_pos: int = px - wall_width // 2
                 else:
-                    px_pos = px + cell_size - wall_width // 2
+                    px_pos = px + self.cell_size - wall_width // 2
                 self.canvas.paste(self.wall_sprite,
                                   (px_pos, py + i),
                                   self.wall_sprite)
@@ -130,10 +131,9 @@ class Draw:
         assert self.pacman is not None
         if life is not None:
             self.pacman.lives = life
-        cell_size, margin_x, margin_y = self._grid()
 
-        px: int = int(margin_x + self.pacman.render_x * cell_size)
-        py: int = int(margin_y + self.pacman.render_y * cell_size)
+        px: int = int(self.margin_x + self.pacman.render_x * self.cell_size)
+        py: int = int(self.margin_y + self.pacman.render_y * self.cell_size)
         direction_sprites: dict[str, str] = {
             'N': 'pacman_chomp_n',
             'S': 'pacman_chomp_s',
@@ -159,21 +159,21 @@ class Draw:
         self.mlx.mlx_put_image_to_window(self.mlx_init,
                                          self.mlx_window,
                                          img_ptr,
-                                         px + cell_size // 2 - width // 2,
-                                         py + cell_size // 2 - height // 2)
+                                         px + self.cell_size // 2 - width // 2,
+                                         py + self.cell_size //
+                                         2 - height // 2)
 
     def draw_ghost(self) -> None:
         """Draw the ghost sprite on the maze """
 
         self.ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
-        cell_size, margin_x, margin_y = self._grid()
         color_ghost: dict[str, str] = {
             'R': 'ghost_red',
             'B': 'ghost_blue'
         }
 
         for ghost in self.ghosts:
-            sprite_ghost: str
+            sprite_ghost: str = ""
             if ghost.is_edible is False:
                 sprite_ghost = color_ghost['R']
             elif ghost.is_edible is True:
@@ -200,8 +200,6 @@ class Draw:
                                   sprites['pacgum'][0])
         pacgums = self.level_engine.init_maze.pacgum_pos
 
-        cell_size, margin_x, margin_y = self._grid()
-
         for pacgum in pacgums:
             self._put_sprite_centered(pacgum[0],
                                       pacgum[1],
@@ -218,8 +216,6 @@ class Draw:
 
         super_pacgums: list[tuple[int, int]] = (
             self.level_engine.init_maze.superpacgum_pos)
-
-        cell_size, margin_x, margin_y = self._grid()
 
         for super_pacgum in super_pacgums:
             self._put_sprite_centered(super_pacgum[0],
@@ -245,3 +241,33 @@ class Draw:
                                 self.width - 150,
                                 self.height - 40,
                                 YELLOW, f"score: {self.score}")
+
+    def draw_hud_on_canvas(self) -> None:
+        """Display on HUD text with score and life"""
+        from PIL import ImageDraw, ImageFont
+
+        hud_height = 50
+        hud_canvas = Image.new("RGBA", (self.width, hud_height),
+                               (0, 0, 0, 255))
+        draw = ImageDraw.Draw(hud_canvas)
+
+        try:
+            font = ImageFont.load_default(size=22)
+        except TypeError:
+            font = ImageFont.load_default()
+
+        life_count = self.pacman.lives if self.pacman else 0
+        text_life = f"LIFE: {life_count}"
+        text_score = f"SCORE: {self.score}"
+
+        draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
+        draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
+                  font=font)
+
+        os.makedirs(".cache", exist_ok=True)
+        hud_path = os.path.join(".cache", "hud_cache.png")
+        hud_canvas.save(hud_path)
+
+        hud_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, hud_path)
+        self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                         hud_ptr, 0, self.height - hud_height)
