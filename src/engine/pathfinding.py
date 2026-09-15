@@ -88,9 +88,9 @@ class Pathfinding():
         self.real_path.append(actual_pos)
         return actual_pos
 
-    def bfs(self, pos_pacman: tuple[int, int],
+    def dfs(self, pos_pacman: tuple[int, int],
             pos_ghost: tuple[int, int]) -> list[tuple[int, int]]:
-        """ launch the bfs algo and return the path
+        """ launch the dfs algo and return the path
         from the ghost position to pacman position """
 
         self.visited.append(pos_ghost)

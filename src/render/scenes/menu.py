@@ -5,7 +5,7 @@ from src.render.scenes.score import ScoreScene
 from src.engine.model import Config_json
 from src.render.scenes.instruction import InstructionScene
 from src.render.utils import (YELLOW, LIGHT_GRAY, XK_UP, XK_DOWN,
-                              XK_RETURN, install_menu_image)
+                              XK_RETURN, XK_ESCAPE, install_menu_image)
 from mlx import Mlx
 
 # guarded to avoid a circular import: GameRender.py imports MenuScene at module
@@ -92,6 +92,8 @@ class MenuScene:
             self.draw_menu()
         elif keycode == XK_RETURN:
             self.entries[self.selected][1]()
+        elif keycode == XK_ESCAPE:
+            self.on_close()
 
     def launch(self) -> None:
         self.get_calc()

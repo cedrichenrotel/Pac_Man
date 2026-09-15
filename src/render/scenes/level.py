@@ -42,6 +42,9 @@ class LevelScene(Draw):
         self.mlx_window = mlx_window
         self.pacman: Optional[Pacman] = None
         self.game_over: bool = False
+        self.val_test = 0
+        self.time_eligible = 0
+        self.pacman_last_position = None
 
     def on_expose(self, param: object) -> None:
         self.render()
@@ -77,9 +80,9 @@ class LevelScene(Draw):
         assert pacman is not None
 
         for ghost in self.ghosts:
-            if (check_range(ghost.render_x, pacman.render_x) is True
+            if (check_range(ghost.render_x, pacman.render_x, 0.1) is True
                 and check_range(ghost.render_y,
-                                pacman.render_y) is True):
+                                pacman.render_y, 0.1) is True):
                 if ghost.is_edible is False:
                     pacman.decrease_life()
                     self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
@@ -170,16 +173,42 @@ class LevelScene(Draw):
 
         for ghost in self.ghosts:
             ghost.time_is_edible()
+            # if (check_range(ghost.render_x, self.pacman.render_x, 4) is True
+            #     and check_range(ghost.render_y,
+            #                     self.pacman.render_y, 4) is True):
+            #     print(f"C'est proche {self.val_test}")
+
             if ghost.path_to_goal:
                 if ghost.move(ghost.path_to_goal[0],
                               self.level_engine.generator) is True:
                     ghost.frame_index += 1
                     ghost.path_to_goal.pop(0)
+                elif (check_range(ghost.render_x, self.pacman.render_x, 4)
+                      is True and check_range(ghost.render_y,
+                      self.pacman.render_y, 4) is True and self.is_eligible()):
+                    if (self.pacman_last_position is None or self.pacman_last_position[0] != self.pacman.render_x 
+                        and self.pacman_last_position[1] != self.pacman.render_y):
+                        self.time_eligible = time()
+                        self.pacman_last_position = (self.pacman.render_x, self.pacman.render_y)
+                        ghost.path_to_goal = transform_all_coord_to_cardinal(
+                            ghost.path_to_pacman(self.level_engine.generator,
+                                                 self.pacman))
+                        self.val_test += 1
+                        print(f"C'est proche {self.val_test}")
             elif len(ghost.path_to_goal) == 0:
                 ghost.path_to_goal = transform_all_coord_to_cardinal(
                     ghost.path_to_pacman(self.level_engine.generator,
                                          self.pacman))
             ghost.move_render(0.100)
+
+    def is_eligible(self):
+        actual_time = time()
+        if self.time_eligible == 0:
+            return True
+        # print(actual_time - self.time_eligible)
+        if actual_time - self.time_eligible > 2:
+            return True
+        return False
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
