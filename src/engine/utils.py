@@ -138,10 +138,15 @@ def push_json(highscore: dict[str, int], path: str) -> None:
               f"cannot push new scores in highscores: {e}")
 
 
-def order_asc_and_limit(highscore: dict[str, int]) -> None:
+def order_asc_and_limit(highscore: dict[str, int],
+                        player_name: str = None) -> None:
+    # if player_name is not None:
+
     sorted_items = sorted(highscore.items(),
                           key=lambda item: item[1],
                           reverse=True)[:10]
+    # if player_name is not None:
+    #     sorted_items = {val: key for val, key in sorted_items.items() if }
     highscore.clear()
     highscore.update(sorted_items)
     push_json(highscore, "./highscore.json")

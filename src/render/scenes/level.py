@@ -192,9 +192,9 @@ class LevelScene(Draw):
                               self.level_engine.generator) is True:
                     ghost.frame_index += 1
                     ghost.path_to_goal.pop(0)
-                elif (check_range(ghost.render_x, self.pacman.render_x, 4)
+                elif (check_range(ghost.render_x, self.pacman.render_x, 2)
                       is True and check_range(ghost.render_y,
-                      self.pacman.render_y, 4) is True and self.is_eligible()):
+                      self.pacman.render_y, 2) is True and self.is_eligible()):
                     if (self.pacman_last_position is None or
                         self.pacman_last_position[0] != self.pacman.render_x
                         and self.
