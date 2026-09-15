@@ -35,7 +35,6 @@ class ScoreScene:
     def show_highscores(self) -> None:
         self.marge = 0
         if self.highscore is not None:
-            print(self.highscore)
             time.sleep(1000 / 1_000_000.0)
             for key, value in self.highscore.items():
                 time.sleep(1000 / 1_000_000.0)

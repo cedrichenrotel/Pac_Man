@@ -36,7 +36,6 @@ class PlayerScene:
 
     def launch(self) -> None:
         '''display the instructions scene'''
-
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)
         self.middle_w: int = int(self.width / 2) - 100
         self.middle_h: int = int(self.height / 2) - 100
@@ -47,11 +46,6 @@ class PlayerScene:
                                       self.mlx, self.mlx_init, self.mlx_window,
                                       self.width, self.height)
         self.mlx.mlx_do_sync(self.mlx_init)
-        # self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-        #                         int(self.width / 3) + 50,
-        #                         int(self.height / 4),
-        #                         YELLOW,
-        #                         "write your name")
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
     def clear_name(self) -> None:

@@ -112,7 +112,6 @@ class MenuScene:
     def on_close(self, param: object = None) -> None:
         """close window from the arrow"""
 
-        self.mlx.mlx_destroy_window(self.mlx_init, self.mlx_window)
         self.quit_game()
 
     def start_game(self) -> None:
@@ -159,6 +158,7 @@ class MenuScene:
 
     def quit_game(self) -> None:
         """mlx quitting the GameRender"""
-
         self.running = False
+        self.mlx.mlx_destroy_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_loop_exit(self.mlx_init)
+        # self.quit_game()
