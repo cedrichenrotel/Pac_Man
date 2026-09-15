@@ -44,7 +44,7 @@ class LevelScene(Draw):
         self.pacman: Optional[Pacman] = None
         self.game_over: bool = False
         self.cheat_freeze_ghost: bool = False
-        self.cheat_skype_level: bool = False
+        self.last_time: float = time()
 
     def on_expose(self, param: object) -> None:
         self.render()
@@ -159,8 +159,7 @@ class LevelScene(Draw):
         if self.pacman.key_direction is not None:
             self.pacman.move(self.pacman.key_direction,
                              self.level_engine.generator)
-            self.pacman.frame_index += 1
-            if self.pacman.move_render(0.150) is True:
+            if self.pacman.move_render(2) is True:
                 self.add_point_score(self.pacman)
 
     def ghost_moving(self) -> None:
@@ -174,13 +173,12 @@ class LevelScene(Draw):
                 if ghost.path_to_goal:
                     if ghost.move(ghost.path_to_goal[0],
                                   self.level_engine.generator) is True:
-                        ghost.frame_index += 1
                         ghost.path_to_goal.pop(0)
                 elif len(ghost.path_to_goal) == 0:
                     ghost.path_to_goal = transform_all_coord_to_cardinal(
                         ghost.path_to_pacman(self.level_engine.generator,
                                              self.pacman))
-                if ghost.move_render(0.100) is True:
+                if ghost.move_render(1) is True:
                     self.render()
                     self.check_positioning()
 
@@ -192,13 +190,23 @@ class LevelScene(Draw):
 
         if keycode == XK_ESCAPE:
             self.go_to_menu()
-        elif keycode == XK_UP:
+        if keycode == XK_UP:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'N'
         elif keycode == XK_DOWN:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'S'
         elif keycode == XK_LEFT:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'W'
+            if pacman.key_direction is None:
+                pacman.last_time = time()
         elif keycode == XK_RIGHT:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'E'
         elif keycode == XK_CHEAT_LIFE:
             pacman.cheat_life = True
