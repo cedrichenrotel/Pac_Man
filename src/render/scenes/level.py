@@ -108,16 +108,6 @@ class LevelScene(Draw):
                     self.level_engine.push_new_score("./highscore",
                                                      self.highscore)
                 self.go_to_menu()
-                return False
-            # else:
-            #     from src.render.scenes.player import PlayerScene
-            #     player = PlayerScene(
-            #         self.GameRender, self.mlx,
-            #         self.mlx_init,
-            #         self.mlx_window,
-            #         self.width, self.height, self.config, self.highscore,
-            #         self.player_name, self.score)
-            #     player.launch()
             return False
         else:
             return True
@@ -153,14 +143,17 @@ class LevelScene(Draw):
             render_x/y moves one step in the x/y direction, drawing the
             intermediate positions, executed every tick """
         if self.is_winning is True:
-            from src.render.scenes.player import PlayerScene
-            player = PlayerScene(
-                    self.GameRender, self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width, self.height, self.config, self.highscore,
-                    self.player_name, self.score)
-            player.launch()
+            if len(self.player_name) != 0:
+                self.go_to_menu()
+            else:
+                from src.render.scenes.player import PlayerScene
+                player = PlayerScene(
+                        self.GameRender, self.mlx,
+                        self.mlx_init,
+                        self.mlx_window,
+                        self.width, self.height, self.config, self.highscore,
+                        self.player_name, self.score)
+                player.launch()
         assert self.pacman is not None
 
         if self.pacman.lives == 0:
@@ -254,8 +247,6 @@ class LevelScene(Draw):
         elif keycode == XK_RIGHT:
             pacman.key_direction = 'E'
         elif keycode == 49:
-            self.winning()
-        elif keycode == 50:
             ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
             for ghost in ghosts:
                 ghost.is_edible = True
@@ -276,21 +267,7 @@ class LevelScene(Draw):
                     self.level_engine.push_new_score("./highscore",
                                                      self.highscore)
             else:
-                # from src.render.scenes.player import PlayerScene
                 self.is_winning = True
-                # self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                # self.go_to_menu()
-                # self.mlx.mlx_loop_hook(self.mlx_init, None, self)
-                # self.mlx.mlx_expose_hook(self.mlx_window, None, self)
-                # self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                # player = PlayerScene(
-                #     self.GameRender, self.mlx,
-                #     self.mlx_init,
-                #     self.mlx_window,
-                #     self.width, self.height, self.config,
-                #     self.highscore,
-                #     self.player_name, self.score)
-                # player.launch()
 
     def add_point_score(self, pacman: Pacman) -> None:
         """ Add the Super and Pacgum points when Pacman
@@ -314,7 +291,6 @@ class LevelScene(Draw):
             self.score += self.config.points_per_super_pacgum
         if len(pacgum_pos) == 0 and len(super_pacgum_pos) == 0:
             self.winning()
-            # self.is_winning = True
 
     def go_to_menu(self) -> None:
         """ exits the current level and returns to the menu screen
