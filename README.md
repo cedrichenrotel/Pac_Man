@@ -8,10 +8,9 @@ de soucis
 
 les fantomes parfois touche le pacman mais ne sont pas compter comme toucher 
 
-le dfs crache a cause de lopti
-defois
-
 
 a la fin pour lancer le panneau de nom quand tu a gagner on necessite d'avancer pour lancer la fenetre 
 
 si tout le monde a le meme score et que ya plus de place garder le nouveau score
+
+quand je gagne apres avoir inserer mon nom et que je vais dans highscore le texte de la page est tronquer 

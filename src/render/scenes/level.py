@@ -108,6 +108,15 @@ class LevelScene(Draw):
                     self.level_engine.push_new_score("./highscore",
                                                      self.highscore)
                 self.go_to_menu()
+            else:
+                from src.render.scenes.player import PlayerScene
+                player = PlayerScene(
+                        self.GameRender, self.mlx,
+                        self.mlx_init,
+                        self.mlx_window,
+                        self.width, self.height, self.config, self.highscore,
+                        self.player_name, self.score)
+                player.launch()
             return False
         else:
             return True
@@ -182,7 +191,8 @@ class LevelScene(Draw):
 
     def ghost_moving(self) -> None:
         """handle all ghost moving in the maze"""
-
+        if self.is_winning is True:
+            return
         assert self.pacman is not None
 
         for ghost in self.ghosts:
@@ -192,9 +202,9 @@ class LevelScene(Draw):
                               self.level_engine.generator) is True:
                     ghost.frame_index += 1
                     ghost.path_to_goal.pop(0)
-                elif (check_range(ghost.render_x, self.pacman.render_x, 2)
+                elif (check_range(ghost.render_x, self.pacman.render_x, 1)
                       is True and check_range(ghost.render_y,
-                      self.pacman.render_y, 2) is True and self.is_eligible()):
+                      self.pacman.render_y, 1) is True and self.is_eligible()):
                     if (self.pacman_last_position is None or
                         self.pacman_last_position[0] != self.pacman.render_x
                         and self.

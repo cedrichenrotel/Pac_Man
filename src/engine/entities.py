@@ -119,4 +119,4 @@ class Ghost(Entities):
         pos_ghost: tuple[int, int] = (self.x, self.y)
 
         algo = Pathfinding(maze)
-        return [pos_ghost] + algo.dfs(pos_pacman, pos_ghost)
+        return [pos_ghost] + algo.bfs(pos_pacman, pos_ghost)

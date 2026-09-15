@@ -36,6 +36,7 @@ class PlayerScene:
 
     def launch(self) -> None:
         '''display the instructions scene'''
+
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)
         self.middle_w: int = int(self.width / 2) - 100
         self.middle_h: int = int(self.height / 2) - 100
