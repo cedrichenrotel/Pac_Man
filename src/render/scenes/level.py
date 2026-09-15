@@ -125,10 +125,12 @@ class LevelScene(Draw):
         self.maze_width: int = self.level_engine.config.level.width
         self.maze_height: int = self.level_engine.config.level.height
         self.cell_size, self.margin_x, self.margin_y = self._grid()
+
         if self.draw_maze() is False:
             return
         if self.render() is False:
             return
+
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.mlx.mlx_expose_hook(self.mlx_window, self.on_expose, self)
         self.mlx.mlx_loop_hook(self.mlx_init, self.on_loop, self)
@@ -148,7 +150,6 @@ class LevelScene(Draw):
         self.ghost_moving()
 
         self.render()
-        self.check_positioning()
 
     def pacman_moving(self) -> None:
         """handle pacman moving in the maze"""

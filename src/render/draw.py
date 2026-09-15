@@ -3,7 +3,7 @@ import os
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.utils import DIRECTIONS
-from src.render.utils import get_cell_size, get_asset_path, YELLOW
+from src.render.utils import get_cell_size, get_asset_path
 from typing import Optional
 from mlx import Mlx
 from PIL import Image
@@ -248,6 +248,8 @@ class Draw:
         draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
         draw.text((self.width - 600, 12), text__level, fill=(255, 255, 0, 255),
                   font=font)
+
+        draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
         draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
                   font=font)
 
