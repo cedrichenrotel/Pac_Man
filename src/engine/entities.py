@@ -55,16 +55,19 @@ class Pacman(Entities):
         self.frame_index: int = 0
         self.dead: bool = False
         self.time_dead: float | None = None
+        self.cheat_life: bool = False
 
     def decrease_life(self) -> None:
 
-        if self.lives == 0:
-            if self.time_dead is not None:
-                elapsed_time: float = time() - self.time_dead
-                elapsed_time // 0.15
-            self.frame_index = 0
-        else:
-            self.lives -= 1
+        if self.cheat_life is False:
+            if self.lives == 0:
+                if self.time_dead is not None:
+                    elapsed_time: float = time() - self.time_dead
+                    elapsed_time // 0.15
+                self.frame_index = 0
+
+            else:
+                self.lives -= 1
 
 
 class Ghost(Entities):

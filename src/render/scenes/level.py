@@ -2,7 +2,9 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_DOWN, XK_LEFT,
-                              XK_RIGHT,
+                              XK_RIGHT, XK_CHEAT_LIFE,
+                              XK_CHEAT_FREEZE,
+                              XK_SKIP_LEVEL,
                               transform_all_coord_to_cardinal,
                               check_range)
 from src.render.draw import Draw
@@ -41,6 +43,8 @@ class LevelScene(Draw):
         self.mlx_window = mlx_window
         self.pacman: Optional[Pacman] = None
         self.game_over: bool = False
+        self.cheat_freeze_ghost: bool = False
+        self.cheat_skype_level: bool = False
 
     def on_expose(self, param: object) -> None:
         self.render()
@@ -160,20 +164,21 @@ class LevelScene(Draw):
 
         assert self.pacman is not None
 
-        for ghost in self.ghosts:
-            ghost.time_is_edible()
-            if ghost.path_to_goal:
-                if ghost.move(ghost.path_to_goal[0],
-                              self.level_engine.generator) is True:
-                    ghost.frame_index += 1
-                    ghost.path_to_goal.pop(0)
-            elif len(ghost.path_to_goal) == 0:
-                ghost.path_to_goal = transform_all_coord_to_cardinal(
-                    ghost.path_to_pacman(self.level_engine.generator,
-                                         self.pacman))
-            if ghost.move_render(0.100) is True:
-                self.render()
-                self.check_positioning()
+        if self.cheat_freeze_ghost is False:
+            for ghost in self.ghosts:
+                ghost.time_is_edible()
+                if ghost.path_to_goal:
+                    if ghost.move(ghost.path_to_goal[0],
+                                  self.level_engine.generator) is True:
+                        ghost.frame_index += 1
+                        ghost.path_to_goal.pop(0)
+                elif len(ghost.path_to_goal) == 0:
+                    ghost.path_to_goal = transform_all_coord_to_cardinal(
+                        ghost.path_to_pacman(self.level_engine.generator,
+                                             self.pacman))
+                if ghost.move_render(0.100) is True:
+                    self.render()
+                    self.check_positioning()
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
@@ -191,6 +196,12 @@ class LevelScene(Draw):
             pacman.key_direction = 'W'
         elif keycode == XK_RIGHT:
             pacman.key_direction = 'E'
+        elif keycode == XK_CHEAT_LIFE:
+            pacman.cheat_life = True
+        elif keycode == XK_CHEAT_FREEZE:
+            self.cheat_freeze_ghost = True
+        elif keycode == XK_SKIP_LEVEL:
+            self.winning()
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
