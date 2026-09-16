@@ -179,7 +179,7 @@ class Draw:
                 sprite_ghost = color_ghost['R']
             elif ghost.is_edible is True:
                 sprite_ghost = color_ghost['B']
-                vulnerability_time: float | None = ghost.time_is_edible()
+                vulnerability_time: float | None = ghost.time_is_edible(self.level_engine.generator, self.pacman)
                 assert vulnerability_time is not None
                 flashing: int = int(vulnerability_time * 5)
                 if (vulnerability_time >= 8 and

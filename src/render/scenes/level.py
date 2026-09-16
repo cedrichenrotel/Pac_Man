@@ -199,7 +199,7 @@ class LevelScene(Draw):
         assert self.pacman is not None
 
         for ghost in self.ghosts:
-            ghost.time_is_edible()
+            ghost.time_is_edible(self.level_engine.generator, self.pacman)
             if ghost.path_to_goal:
                 if ghost.move(ghost.path_to_goal[0],
                               self.level_engine.generator) is True:
@@ -215,9 +215,16 @@ class LevelScene(Draw):
                         self.time_eligible = time()
                         self.pacman_last_position = (self.pacman.render_x,
                                                      self.pacman.render_y)
-                        ghost.path_to_goal = transform_all_coord_to_cardinal(
-                            ghost.path_to_pacman(self.level_engine.generator,
-                                                 self.pacman))
+                        if ghost.is_edible is True:
+                            ghost.path_to_goal = transform_all_coord_to_cardinal(
+                                ghost.path_to_pacman(self.level_engine
+                                                     .generator,
+                                                     self.pacman, True))
+                        else:
+                            ghost.path_to_goal = transform_all_coord_to_cardinal(
+                                ghost.path_to_pacman(self.level_engine
+                                                     .generator,
+                                                     self.pacman))
                         self.val_test += 1
             elif len(ghost.path_to_goal) == 0:
                 ghost.path_to_goal = transform_all_coord_to_cardinal(
