@@ -115,11 +115,9 @@ class Draw:
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
                 self.draw_wall(x, y)
-        os.makedirs(".cache", exist_ok=True)
-        tmp_path: str = os.path.join(".cache", "maze_cache.png")
-        self.canvas.save(tmp_path)
-        self.maze_img_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init,
-                                                                 tmp_path)
+
+        self.maze_img_ptr = self._pil_to_mlx_image(self.canvas,
+                                                   "maze_cache.png")
         return True
 
     def draw_pacman(self) -> None:
@@ -242,6 +240,16 @@ class Draw:
                                 self.height - 40,
                                 YELLOW, f"score: {self.score}")
 
+    def _pil_to_mlx_image(self, canvas: Image, filename: str) -> int:
+        """ saves the image to a .cache folder if it does not exist, stores it
+            on the hard drive and displays the image """
+
+        os.makedirs(".cache", exist_ok=True)
+        path = os.path.join(".cache", filename)
+        canvas.save(path)
+        ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, path)
+        return ptr
+
     def draw_hud_on_canvas(self) -> None:
         """Display on HUD text with score and life"""
         from PIL import ImageDraw, ImageFont
@@ -264,20 +272,47 @@ class Draw:
         draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
                   font=font)
 
-        list_text: list[tuple[str, Any]] = [
-            ("(W)FREEZE GHOST: ", self.cheat_freeze_ghost),
-            ("(Q)INVINCIBLE: ", self.cheat_invincible),
-            ("(T)SPEED MOVE: ", self.move_pac)
-        ]
-
-        for i, text in enumerate(list_text):
-            draw.text((15, 12 + i * 16), text[0] + ('ON' if text[1] else 'OFF'), fill=(255, 255, 0, 255), font=font)
-
-        os.makedirs(".cache", exist_ok=True)
-        hud_path = os.path.join(".cache", "hud_cache.png")
-        hud_canvas.save(hud_path)
-
-        hud_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, hud_path)
+        hud_ptr = self._pil_to_mlx_image(hud_canvas, "hud_cache.png")
         self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
                                          hud_ptr, 0, self.height - hud_height)
 
+    def draw_cheat(self) -> None:
+        """ Display of cheat commands with on/off switch to check if active """
+
+        from PIL import ImageDraw, ImageFont
+
+        hud_height = 50
+        hud_canvas = Image.new("RGBA", (self.width, hud_height),
+                               (0, 0, 0, 255))
+        draw = ImageDraw.Draw(hud_canvas)
+
+        try:
+            font = ImageFont.load_default(size=15)
+        except TypeError:
+            font = ImageFont.load_default()
+        list_text: list[tuple[str, Any]] = [
+            ("(W) FREEZE GHOST:  ", self.cheat_freeze_ghost),
+            ("(Q) INVINCIBLE:  ", self.cheat_invincible),
+            ("(T) SPEED MOVE:  ", self.move_pac != 3),
+            ("(R) ADD LIFE POINT", None),
+            ("(E) SKIP LEVEL", None)
+        ]
+
+        max_rows: int = 2
+        for i, text in enumerate(list_text):
+            row: int = i % max_rows
+            col: int = i // max_rows
+            x = 15 + col * 200
+            y = 12 + row * 20
+
+            label, state = text
+            suffix = ('ON' if state else 'OFF') if state is not None else ''
+            draw.text((x, y),
+                      label + suffix,
+                      fill=(255, 255, 0, 255),
+                      font=font
+                      )
+
+        cheat_ptr = self._pil_to_mlx_image(hud_canvas, "cheat_cache.png")
+        self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                         cheat_ptr, 0, 0)

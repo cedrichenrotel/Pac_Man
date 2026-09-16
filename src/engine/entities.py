@@ -67,7 +67,6 @@ class Pacman(Entities):
 
     def decrease_life(self) -> None:
 
-
         if self.lives == 0:
             if self.time_dead is not None:
                 elapsed_time: float = time() - self.time_dead
@@ -75,7 +74,6 @@ class Pacman(Entities):
             self.frame_index = 0
         else:
             self.lives -= 1
-        print(f"Pacman lives: {self.lives}")
 
 
 class Ghost(Entities):

@@ -65,7 +65,7 @@ class LevelScene(Draw):
         self.draw_pacman()
         self.draw_ghost()
         self.draw_hud_on_canvas()
-        self.draw_cheat_on_canvas()
+        self.draw_cheat()
         if self.check_positioning() is False:
             return False
         return True
@@ -91,7 +91,8 @@ class LevelScene(Draw):
                 if ghost.is_edible is False:
                     if self.cheat_invincible is False:
                         pacman.decrease_life()
-                        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+                        self.mlx.mlx_clear_window(self.mlx_init,
+                                                  self.mlx_window)
                         self.launch()
                 else:
                     ghost.eaten = True
@@ -230,12 +231,11 @@ class LevelScene(Draw):
             if self.pacman.lives < self.config.lives:
                 self.pacman.lives += 1
         elif keycode == XK_INCREASE_SPEED:
-            if self.move_pac != 3:
+            if self.move_pac == 3:
                 self.move_pac = 5
             else:
                 self.move_pac = 3
 
-    
     def winning(self) -> None:
         # example de si le lvl etait gagner
         self.level_engine.push_new_score("./highscore", self.highscore)
@@ -248,9 +248,6 @@ class LevelScene(Draw):
             self.maze = self.level_engine.generator.maze
             self.render()
         else:
-            # si jamais le nombre de level max etait atteind, on reviens
-            # au menu. egalement on devrait plus tard ajouter le score
-            # au highscore
             if self.score > self.level_engine.score:
                 self.level_engine.add_score(self.score)
             from src.render.scenes.player import PlayerScene
