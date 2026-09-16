@@ -43,10 +43,11 @@ XK_ESCAPE: int = 65307
 XK_LEFT: int = 65361
 XK_RIGHT = 65363
 XK_BACK: int = 65288
-XK_CHEAT_LIFE: int = 97
-XK_CHEAT_FREEZE: int = 122
+XK_CHEAT_INVINCIBLE: int = 113
+XK_CHEAT_FREEZE: int = 119
 XK_SKIP_LEVEL: int = 101
-
+XK_LIFE_ADD: int = 114
+XK_INCREASE_SPEED: int = 116
 
 '''keyboard code to record event'''
 list_key = [(113, "Q"),

@@ -4,7 +4,7 @@ from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.utils import DIRECTIONS
 from src.render.utils import get_cell_size, get_asset_path, YELLOW
-from typing import Optional
+from typing import Optional, Any
 from mlx import Mlx
 from PIL import Image
 from time import time
@@ -264,6 +264,15 @@ class Draw:
         draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
                   font=font)
 
+        list_text: list[tuple[str, Any]] = [
+            ("(W)FREEZE GHOST: ", self.cheat_freeze_ghost),
+            ("(Q)INVINCIBLE: ", self.cheat_invincible),
+            ("(T)SPEED MOVE: ", self.move_pac)
+        ]
+
+        for i, text in enumerate(list_text):
+            draw.text((15, 12 + i * 16), text[0] + ('ON' if text[1] else 'OFF'), fill=(255, 255, 0, 255), font=font)
+
         os.makedirs(".cache", exist_ok=True)
         hud_path = os.path.join(".cache", "hud_cache.png")
         hud_canvas.save(hud_path)
@@ -271,3 +280,4 @@ class Draw:
         hud_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, hud_path)
         self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
                                          hud_ptr, 0, self.height - hud_height)
+
