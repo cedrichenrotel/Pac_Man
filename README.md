@@ -6,10 +6,7 @@ je pense qu'il faudra quon push le .venv avec au moment de la soutenance pour ne
 de soucis
 
 
-les fantomes parfois touche le pacman mais ne sont pas compter comme toucher 
-
-
-a la fin pour lancer le panneau de nom quand tu a gagner on necessite d'avancer pour lancer la fenetre 
+les fantomes parfois touche le pacman mais ne sont pas compter comme toucher (a tster pas sur)
 
 si tout le monde a le meme score et que ya plus de place garder le nouveau score
 

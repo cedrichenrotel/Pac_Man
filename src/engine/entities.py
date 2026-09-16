@@ -41,6 +41,9 @@ class Entities():
         self.render_x = algo_fixed_walk(self.render_x, self.x, vitesse)
         self.render_y = algo_fixed_walk(self.render_y, self.y, vitesse)
 
+        if self.render_x == self.x and self.render_y == self.y:
+            self.current_pos = (self.x, self.y)
+
         if (self.render_x != stock_render_x or
            self.render_y != stock_render_y):
             return True

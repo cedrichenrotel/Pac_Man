@@ -46,6 +46,8 @@ class LevelScene(Draw):
         self.time_eligible: float = 0
         self.pacman_last_position: tuple[float, float] | None = None
         self.is_winning: bool = False
+        self.pacgum_pos = None
+        self.super_pacgum_pos = None
 
     def on_expose(self, param: object) -> None:
         self.render()
@@ -186,7 +188,7 @@ class LevelScene(Draw):
             self.pacman.move(self.pacman.key_direction,
                              self.level_engine.generator)
             self.pacman.frame_index += 1
-            if self.pacman.move_render(0.150) is True:
+            if self.pacman.move_render(0.050) is True:
                 self.add_point_score(self.pacman)
 
     def ghost_moving(self) -> None:
@@ -220,7 +222,7 @@ class LevelScene(Draw):
                 ghost.path_to_goal = transform_all_coord_to_cardinal(
                     ghost.path_to_pacman(self.level_engine.generator,
                                          self.pacman))
-            ghost.move_render(0.100)
+            ghost.move_render(0.05)
 
     def is_eligible(self) -> bool:
         actual_time = time()
@@ -277,29 +279,37 @@ class LevelScene(Draw):
                     self.level_engine.push_new_score("./highscore",
                                                      self.highscore)
             else:
-                self.is_winning = True
+                from src.render.scenes.player import PlayerScene
+                player = PlayerScene(
+                        self.GameRender, self.mlx,
+                        self.mlx_init,
+                        self.mlx_window,
+                        self.width, self.height, self.config, self.highscore,
+                        self.player_name, self.score)
+                player.launch()
 
     def add_point_score(self, pacman: Pacman) -> None:
         """ Add the Super and Pacgum points when Pacman
            eats them and update the Super/Pacgum counts in the maze """
 
-        pacgum_pos: list[tuple[int, int]] = (self.level_engine.
-                                             init_maze.pacgum_pos)
+        self.pacgum_pos: list[tuple[int, int]] = (self.level_engine.
+                                                  init_maze.pacgum_pos)
 
-        super_pacgum_pos: list[tuple[int, int]] = (self.level_engine.
-                                                   init_maze.superpacgum_pos)
+        self.super_pacgum_pos: list[tuple[int, int]] = (self.level_engine.
+                                                        init_maze
+                                                        .superpacgum_pos)
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
 
-        if pacman.current_pos in pacgum_pos:
-            pacgum_pos.remove(pacman.current_pos)
+        if pacman.current_pos in self.pacgum_pos:
+            self.pacgum_pos.remove(pacman.current_pos)
             self.score += self.config.points_per_pacgum
-        elif pacman.current_pos in super_pacgum_pos:
-            super_pacgum_pos.remove(pacman.current_pos)
+        elif pacman.current_pos in self.super_pacgum_pos:
+            self.super_pacgum_pos.remove(pacman.current_pos)
             for ghost in ghosts:
                 ghost.is_edible = True
                 ghost.start_time_is_edible = time()
             self.score += self.config.points_per_super_pacgum
-        if len(pacgum_pos) == 0 and len(super_pacgum_pos) == 0:
+        if len(self.pacgum_pos) == 0 and len(self.super_pacgum_pos) == 0:
             self.winning()
 
     def go_to_menu(self) -> None:
