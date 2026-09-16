@@ -177,6 +177,7 @@ class LevelScene(Draw):
         self.ghost_moving()
 
         self.render()
+        self.check_positioning()
 
     def pacman_moving(self) -> None:
         """handle pacman moving in the maze"""
