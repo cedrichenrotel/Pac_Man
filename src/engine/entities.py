@@ -74,6 +74,8 @@ class Pacman(Entities):
             self.frame_index = 0
         else:
             self.lives -= 1
+            if self.lives == 0:
+                self.dead = True
 
 
 class Ghost(Entities):

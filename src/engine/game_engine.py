@@ -4,10 +4,13 @@ try:
     from pathlib import Path
     from src.engine.utils import install_score_system
     from src.engine.model import Config_json
+    from src.render.utils import HUD_BOTTOM_HEIGHT, HUD_TOP_HEIGHT
     from src.render.game import GameRender
 except ImportError as e:
     print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()
+
+CELL_SIZE_PX: int = 56
 
 
 class GameEngine():
@@ -23,8 +26,12 @@ class GameEngine():
         """ generates the first maze, initialises its elements and
             launches the render """
 
+        hud: int = HUD_TOP_HEIGHT + HUD_BOTTOM_HEIGHT
+        width: int = self.config.level.width * CELL_SIZE_PX
+        height: int = self.config.level.height * CELL_SIZE_PX + hud
+
         self.highscore = install_score_system(self.path, self.file)
-        self.game_render: GameRender = GameRender(900, 900, self,
+        self.game_render: GameRender = GameRender(width, height, self,
                                                   self.config, self.highscore)
         self.game_render.run()
 

@@ -16,17 +16,33 @@ class Level(BaseModel):
 
     @model_validator(mode="before")
     def check_dimensions(cls, values: dict[str, Any]) -> dict[str, Any]:
+        """ checks that the dimensions of the maze are correct for the
+            display """
+
         if (not isinstance(values.get("width"), int) or
-                values.get("width", 0) < 15):
+           values.get("width", 0) < 15):
             values["width"] = 15
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-                  "invalid width, using default.")
+                  "width too short, using min.")
+
+        if (isinstance(values.get("width"), int) and
+           values.get("width", 0) > 30):
+            values["width"] = 30
+            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                  "width too high, using max.")
 
         if (not isinstance(values.get("height"), int) or
-                values.get("height", 0) < 15):
+           values.get("height", 0) < 15):
             values["height"] = 15
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-                  "invalid height, using default.")
+                  "height too short, using min.")
+
+        if (isinstance(values.get("height"), int) and
+           values.get("height", 0) > 30):
+            values["height"] = 30
+            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                  "height too high, using max.")
+
         return values
 
 
@@ -84,7 +100,7 @@ class Config_json(BaseModel):
                   "Invalid points_per_ghost, using default.")
 
         if (not isinstance(values.get("seed"), int) or
-                values.get("seed", int) < 0):
+                values.get("seed", int) != 42):
             values["seed"] = 42
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                   "Invalid seed, using default.")

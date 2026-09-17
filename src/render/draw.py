@@ -3,7 +3,8 @@ import os
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.utils import DIRECTIONS
-from src.render.utils import get_cell_size, get_asset_path, YELLOW
+from src.render.utils import (get_cell_size, get_asset_path, YELLOW,
+                              HUD_TOP_HEIGHT, HUD_BOTTOM_HEIGHT)
 from typing import Optional, Any
 from mlx import Mlx
 from PIL import Image
@@ -53,16 +54,17 @@ class Draw:
 
         _, wall_width, _ = self.GameRender.sprites_stores.sprites['wall'][0]
         reserve: int = wall_width // 2
+        height_play: int = self.height - HUD_TOP_HEIGHT - HUD_BOTTOM_HEIGHT
         self.cell_size: int = get_cell_size(self.width,
-                                            self.height,
+                                            height_play,
                                             self.maze_width,
                                             self.maze_height,
                                             reserve,
                                             wall_width)
         self.margin_x: int = (self.width - self.maze_width
                               * self.cell_size) // 2
-        self.margin_y: int = (self.height - self.maze_height
-                              * self.cell_size) // 2
+        self.margin_y: int = (HUD_TOP_HEIGHT + (height_play - self.maze_height
+                              * self.cell_size) // 2)
         return self.cell_size, self.margin_x, self.margin_y
 
     def _paste_wall_segment(self, x: float, y: float, dx: int,
@@ -257,8 +259,7 @@ class Draw:
         """Display on HUD text with score and life"""
         from PIL import ImageDraw, ImageFont
 
-        hud_height = 50
-        hud_canvas = Image.new("RGBA", (self.width, hud_height),
+        hud_canvas = Image.new("RGBA", (self.width, HUD_BOTTOM_HEIGHT),
                                (0, 0, 0, 255))
         draw = ImageDraw.Draw(hud_canvas)
 
@@ -277,15 +278,15 @@ class Draw:
 
         hud_ptr: int = self._pil_to_mlx_image(hud_canvas, "hud_cache.png")
         self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
-                                         hud_ptr, 0, self.height - hud_height)
+                                         hud_ptr, 0,
+                                         self.height - HUD_BOTTOM_HEIGHT)
 
     def draw_cheat(self) -> None:
         """ Display of cheat commands with on/off switch to check if active """
 
         from PIL import ImageDraw, ImageFont
 
-        hud_height = 50
-        hud_canvas = Image.new("RGBA", (self.width, hud_height),
+        hud_canvas = Image.new("RGBA", (self.width, HUD_TOP_HEIGHT),
                                (0, 0, 0, 255))
         draw = ImageDraw.Draw(hud_canvas)
 

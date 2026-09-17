@@ -132,6 +132,7 @@ class LevelScene(Draw):
         self.maze_width: int = self.level_engine.config.level.width
         self.maze_height: int = self.level_engine.config.level.height
         self.cell_size, self.margin_x, self.margin_y = self._grid()
+        self.time_start_game: float = time()
 
         if self.draw_maze() is False:
             return
@@ -149,6 +150,10 @@ class LevelScene(Draw):
 
         assert self.pacman is not None
 
+        remaining_time: int = int(time() - self.time_start_game)
+        if remaining_time >= self.config.level_max_time:
+            self.pacman.lives = 0
+            self.pacman.dead = True
         if self.pacman.lives == 0:
             self.render()
             return

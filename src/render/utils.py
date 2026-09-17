@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING, Optional, Tuple
 if TYPE_CHECKING:
     from mlx import Mlx
 
+HUD_TOP_HEIGHT: int = 80
+HUD_BOTTOM_HEIGHT: int = 50
+
 
 def make_color(r: int, g: int, b: int, a: int = 255,
                text: bool = False) -> int:
