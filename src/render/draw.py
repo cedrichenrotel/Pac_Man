@@ -3,8 +3,8 @@ import os
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.utils import DIRECTIONS
-from src.render.utils import get_cell_size, get_asset_path
-from typing import Optional
+from src.render.utils import get_cell_size, get_asset_path, YELLOW
+from typing import Optional, Any
 from mlx import Mlx
 from PIL import Image
 from time import time
@@ -30,6 +30,9 @@ class Draw:
     pacman: Optional[Pacman]
     score: int
     actual_lvl: int
+    cheat_freeze_ghost: bool
+    cheat_invincible: bool
+    move_pac: int
 
     def _put_sprite_centered(self, x: float, y: float, img_ptr: int,
                              height: int, width: int) -> None:
@@ -116,11 +119,9 @@ class Draw:
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
                 self.draw_wall(x, y)
-        os.makedirs(".cache", exist_ok=True)
-        tmp_path: str = os.path.join(".cache", "maze_cache.png")
-        self.canvas.save(tmp_path)
-        self.maze_img_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init,
-                                                                 tmp_path)
+
+        self.maze_img_ptr: int = self._pil_to_mlx_image(self.canvas,
+                                                        "maze_cache.png")
         return True
 
     def draw_pacman(self) -> None:
@@ -228,6 +229,33 @@ class Draw:
                                       width)
         return True
 
+    def show_life(self) -> None:
+        assert self.pacman is not None
+        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                10,
+                                self.height - 40,
+                                YELLOW, f"life: {self.pacman.lives}")
+
+    def show_score(self) -> None:
+        """ display the score when Pac-Man eats the Pac-Gums during
+            the current game """
+
+        assert self.pacman is not None
+        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                self.width - 150,
+                                self.height - 40,
+                                YELLOW, f"score: {self.score}")
+
+    def _pil_to_mlx_image(self, canvas: Image.Image, filename: str) -> Any:
+        """ saves the image to a .cache folder if it does not exist, stores it
+            on the hard drive and displays the image """
+
+        os.makedirs(".cache", exist_ok=True)
+        path = os.path.join(".cache", filename)
+        canvas.save(path)
+        ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, path)
+        return ptr
+
     def draw_hud_on_canvas(self) -> None:
         """Display on HUD text with score and life"""
         from PIL import ImageDraw, ImageFont
@@ -255,10 +283,47 @@ class Draw:
         draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
                   font=font)
 
-        os.makedirs(".cache", exist_ok=True)
-        hud_path = os.path.join(".cache", "hud_cache.png")
-        hud_canvas.save(hud_path)
-
-        hud_ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, hud_path)
+        hud_ptr: int = self._pil_to_mlx_image(hud_canvas, "hud_cache.png")
         self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
                                          hud_ptr, 0, self.height - hud_height)
+
+    def draw_cheat(self) -> None:
+        """ Display of cheat commands with on/off switch to check if active """
+
+        from PIL import ImageDraw, ImageFont
+
+        hud_height = 50
+        hud_canvas = Image.new("RGBA", (self.width, hud_height),
+                               (0, 0, 0, 255))
+        draw = ImageDraw.Draw(hud_canvas)
+
+        try:
+            font = ImageFont.load_default(size=15)
+        except TypeError:
+            font = ImageFont.load_default()
+        list_text: list[tuple[str, Any]] = [
+            ("(1) INVINCIBLE:  ", self.cheat_invincible),
+            ("(2) FREEZE GHOST:  ", self.cheat_freeze_ghost),
+            ("(3) SKIP LEVEL", None),
+            ("(4) ADD LIFE POINT", None),
+            ("(5) SPEED MOVE:  ", self.move_pac != 3)
+        ]
+
+        max_rows: int = 2
+        for i, text in enumerate(list_text):
+            row: int = i % max_rows
+            col: int = i // max_rows
+            x = 15 + col * 200
+            y = 12 + row * 20
+
+            label, state = text
+            suffix = ('ON' if state else 'OFF') if state is not None else ''
+            draw.text((x, y),
+                      label + suffix,
+                      fill=(255, 255, 0, 255),
+                      font=font
+                      )
+
+        cheat_ptr: int = self._pil_to_mlx_image(hud_canvas, "cheat_cache.png")
+        self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                         cheat_ptr, 0, 0)
