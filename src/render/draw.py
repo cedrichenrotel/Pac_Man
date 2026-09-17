@@ -294,11 +294,11 @@ class Draw:
         except TypeError:
             font = ImageFont.load_default()
         list_text: list[tuple[str, Any]] = [
-            ("(W) FREEZE GHOST:  ", self.cheat_freeze_ghost),
-            ("(Q) INVINCIBLE:  ", self.cheat_invincible),
-            ("(T) SPEED MOVE:  ", self.move_pac != 3),
-            ("(R) ADD LIFE POINT", None),
-            ("(E) SKIP LEVEL", None)
+            ("(1) INVINCIBLE:  ", self.cheat_invincible),
+            ("(2) FREEZE GHOST:  ", self.cheat_freeze_ghost),
+            ("(3) SKIP LEVEL", None),
+            ("(4) ADD LIFE POINT", None),
+            ("(5) SPEED MOVE:  ", self.move_pac != 3)
         ]
 
         max_rows: int = 2
