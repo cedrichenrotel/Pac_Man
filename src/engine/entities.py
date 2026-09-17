@@ -124,6 +124,7 @@ class Ghost(Entities):
     def random_pos_away_from_pacman(self,
                                     pacman_pos: tuple[int, int],
                                     maze: 'MazeGenerator') -> tuple[int, int]:
+        """get the oposite position (x,y) from pacman position"""
         oposite_x = 0
         oposite_y = 0
         for x in range(len(maze.maze)):
@@ -147,7 +148,6 @@ class Ghost(Entities):
                        pacman: Pacman,
                        is_flee: bool = False) -> list[tuple[int, int]]:
         """ get the path from ghost to pacman  """
-        # import random
         pos_pacman: tuple[int, int] = (pacman.x, pacman.y)
         pos_ghost: tuple[int, int] = (self.x, self.y)
 
