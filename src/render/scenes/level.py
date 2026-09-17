@@ -2,7 +2,11 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_DOWN, XK_LEFT,
-                              XK_RIGHT,
+                              XK_RIGHT, XK_CHEAT_INVINCIBLE,
+                              XK_CHEAT_FREEZE,
+                              XK_SKIP_LEVEL,
+                              XK_LIFE_ADD,
+                              XK_INCREASE_SPEED,
                               transform_all_coord_to_cardinal,
                               check_range)
 from src.render.draw import Draw
@@ -41,6 +45,10 @@ class LevelScene(Draw):
         self.mlx_window = mlx_window
         self.pacman: Optional[Pacman] = None
         self.game_over: bool = False
+        self.cheat_freeze_ghost: bool = False
+        self.cheat_invincible: bool = False
+        self.last_time: float = time()
+        self.move_pac: int = 3
 
     def on_expose(self, param: object) -> None:
         self.render()
@@ -57,6 +65,7 @@ class LevelScene(Draw):
         self.draw_pacman()
         self.draw_ghost()
         self.draw_hud_on_canvas()
+        self.draw_cheat()
         if self.check_positioning() is False:
             return False
         return True
@@ -80,9 +89,11 @@ class LevelScene(Draw):
                 and check_range(ghost.render_y,
                                 pacman.render_y) is True):
                 if ghost.is_edible is False:
-                    pacman.decrease_life()
-                    self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                    self.launch()
+                    if self.cheat_invincible is False:
+                        pacman.decrease_life()
+                        self.mlx.mlx_clear_window(self.mlx_init,
+                                                  self.mlx_window)
+                        self.launch()
                 else:
                     ghost.eaten = True
                     self.score += self.config.points_per_ghost
@@ -155,8 +166,7 @@ class LevelScene(Draw):
         if self.pacman.key_direction is not None:
             self.pacman.move(self.pacman.key_direction,
                              self.level_engine.generator)
-            self.pacman.frame_index += 1
-            if self.pacman.move_render(0.150) is True:
+            if self.pacman.move_render(self.move_pac) is True:
                 self.add_point_score(self.pacman)
 
     def ghost_moving(self) -> None:
@@ -164,18 +174,20 @@ class LevelScene(Draw):
 
         assert self.pacman is not None
 
-        for ghost in self.ghosts:
-            ghost.time_is_edible()
-            if ghost.path_to_goal:
-                if ghost.move(ghost.path_to_goal[0],
-                              self.level_engine.generator) is True:
-                    ghost.frame_index += 1
-                    ghost.path_to_goal.pop(0)
-            elif len(ghost.path_to_goal) == 0:
-                ghost.path_to_goal = transform_all_coord_to_cardinal(
-                    ghost.path_to_pacman(self.level_engine.generator,
-                                         self.pacman))
-            ghost.move_render(0.100)
+        if self.cheat_freeze_ghost is False:
+            for ghost in self.ghosts:
+                ghost.time_is_edible()
+                if ghost.path_to_goal:
+                    if ghost.move(ghost.path_to_goal[0],
+                                  self.level_engine.generator) is True:
+                        ghost.path_to_goal.pop(0)
+                elif (len(ghost.path_to_goal) == 0 and
+                      time() - ghost.last_path_time >= 1):
+                    ghost.path_to_goal = transform_all_coord_to_cardinal(
+                        ghost.path_to_pacman(self.level_engine.generator,
+                                             self.pacman))
+                    ghost.last_path_time = time()
+                ghost.move_render(2)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''
@@ -185,14 +197,44 @@ class LevelScene(Draw):
 
         if keycode == XK_ESCAPE:
             self.go_to_menu()
-        elif keycode == XK_UP:
+        if keycode == XK_UP:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'N'
         elif keycode == XK_DOWN:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'S'
         elif keycode == XK_LEFT:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'W'
+            if pacman.key_direction is None:
+                pacman.last_time = time()
         elif keycode == XK_RIGHT:
+            if pacman.key_direction is None:
+                pacman.last_time = time()
             pacman.key_direction = 'E'
+        elif keycode == XK_CHEAT_INVINCIBLE:
+            if self.cheat_invincible is False:
+                self.cheat_invincible = True
+            else:
+                self.cheat_invincible = False
+        elif keycode == XK_CHEAT_FREEZE:
+            if self.cheat_freeze_ghost is False:
+                self.cheat_freeze_ghost = True
+            else:
+                self.cheat_freeze_ghost = False
+        elif keycode == XK_SKIP_LEVEL:
+            self.winning()
+        elif keycode == XK_LIFE_ADD:
+            if pacman.lives < self.config.lives:
+                pacman.lives += 1
+        elif keycode == XK_INCREASE_SPEED:
+            if self.move_pac == 3:
+                self.move_pac = 5
+            else:
+                self.move_pac = 3
 
     def winning(self) -> None:
         # example de si le lvl etait gagner
@@ -206,9 +248,6 @@ class LevelScene(Draw):
             self.maze = self.level_engine.generator.maze
             self.render()
         else:
-            # si jamais le nombre de level max etait atteind, on reviens
-            # au menu. egalement on devrait plus tard ajouter le score
-            # au highscore
             if self.score > self.level_engine.score:
                 self.level_engine.add_score(self.score)
             from src.render.scenes.player import PlayerScene

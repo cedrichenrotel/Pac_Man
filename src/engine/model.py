@@ -59,7 +59,8 @@ class Config_json(BaseModel):
                   "invalid lives, using default.")
 
         if (not isinstance(values.get("pacgum"), int) or
-                values.get("pacgum", int) < 0):
+                values.get("pacgum", int) < 0 or
+                values.get("pacgum", int) > 100):
             values["pacgum"] = 42
             print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                   "invalid pacgum, using default.")

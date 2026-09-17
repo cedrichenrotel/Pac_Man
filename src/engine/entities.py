@@ -19,6 +19,9 @@ class Entities():
         self.render_y: float = y
         self.key_direction: str | None = None
         self.current_pos: tuple[int, int] = (self.x, self.y)
+        self.frame_index: int = 0
+        self.last_time: float = time()
+        self.anim_last_time: float = 0.0
 
     def move(self, direction: str, maze: MazeGenerator) -> bool:
         """ allows entities to move through the maze without
@@ -35,11 +38,18 @@ class Entities():
 
     def move_render(self, vitesse: float) -> bool:
         """ Smooth movement via the fixed pitch """
+
+        dt: float = time() - self.last_time
+        self.last_time = time()
+        step: float = vitesse * dt
+        self.anim_last_time += dt
         stock_render_x: float = self.render_x
         stock_render_y: float = self.render_y
-
-        self.render_x = algo_fixed_walk(self.render_x, self.x, vitesse)
-        self.render_y = algo_fixed_walk(self.render_y, self.y, vitesse)
+        self.render_x = algo_fixed_walk(self.render_x, self.x, step)
+        self.render_y = algo_fixed_walk(self.render_y, self.y, step)
+        if self.anim_last_time >= 0.15:
+            self.frame_index += 1
+            self.anim_last_time = 0.0
 
         if (self.render_x != stock_render_x or
            self.render_y != stock_render_y):
@@ -52,7 +62,6 @@ class Pacman(Entities):
     def __init__(self, x: int, y: int, lives: int) -> None:
         super().__init__(x, y)
         self.lives: int = lives
-        self.frame_index: int = 0
         self.dead: bool = False
         self.time_dead: float | None = None
 
@@ -71,12 +80,12 @@ class Ghost(Entities):
 
     def __init__(self, x: int, y: int) -> None:
         super().__init__(x, y)
-        self.eaten: bool = False  # mangé
-        self.is_edible: bool = False  # est comestible
+        self.eaten: bool = False
+        self.is_edible: bool = False
         self.path_to_goal: list[str] = []
-        self.frame_index: int = 0
         self.start_time_is_edible: float | None = None
         self.start_pos: tuple[int, int] = (x, y)
+        self.last_path_time: float = time()
 
     def time_is_edible(self) -> float | None:
         """ Vulnerability window for ghosts """
