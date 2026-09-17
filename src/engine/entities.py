@@ -125,24 +125,23 @@ class Ghost(Entities):
                                     pacman_pos: tuple[int, int],
                                     maze: 'MazeGenerator') -> tuple[int, int]:
         """get the oposite position (x,y) from pacman position"""
-        oposite_x = 0
-        oposite_y = 0
-        for x in range(len(maze.maze)):
-            for y in range(len(maze.maze[x])):
+
+        best_dist: int = 0
+        best_pos: tuple[int, int] = (0, 0)
+
+        for y in range(len(maze.maze)):
+            for x in range(len(maze.maze[y])):
 
                 if maze.maze[y][x] == 42:
                     continue
                 dist_x = abs(pacman_pos[0] - x)
                 dist_y = abs(pacman_pos[1] - y)
 
-                if (dist_x > oposite_x):
-                    oposite_x = dist_x
-                    dist_x_oposite = x
-                if (dist_y > oposite_y):
-                    oposite_y = dist_y
-                    dist_y_oposite = y
+                if (dist_x + dist_y > best_dist):
+                    best_dist = dist_x + dist_y
+                    best_pos = (x, y)
 
-        return (dist_x_oposite, dist_y_oposite)
+        return best_pos
 
     def path_to_pacman(self, maze: MazeGenerator,
                        pacman: Pacman,

@@ -53,7 +53,7 @@ class LevelScene(Draw):
         self.render()
 
     def render(self) -> bool:
-        if self.winning is True:
+        if self.is_winning is True:
             return True
         if self.game_over:
             return False
