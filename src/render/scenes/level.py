@@ -228,8 +228,8 @@ class LevelScene(Draw):
         elif keycode == XK_SKIP_LEVEL:
             self.winning()
         elif keycode == XK_LIFE_ADD:
-            if self.pacman.lives < self.config.lives:
-                self.pacman.lives += 1
+            if pacman.lives < self.config.lives:
+                pacman.lives += 1
         elif keycode == XK_INCREASE_SPEED:
             if self.move_pac == 3:
                 self.move_pac = 5

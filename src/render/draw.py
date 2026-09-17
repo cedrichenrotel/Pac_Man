@@ -29,6 +29,9 @@ class Draw:
     level_engine: Level
     pacman: Optional[Pacman]
     score: int
+    cheat_freeze_ghost: bool
+    cheat_invincible: bool
+    move_pac: int
 
     def _put_sprite_centered(self, x: float, y: float, img_ptr: int,
                              height: int, width: int) -> None:
@@ -116,8 +119,8 @@ class Draw:
             for x in range(len(self.maze[y])):
                 self.draw_wall(x, y)
 
-        self.maze_img_ptr = self._pil_to_mlx_image(self.canvas,
-                                                   "maze_cache.png")
+        self.maze_img_ptr: int = self._pil_to_mlx_image(self.canvas,
+                                                        "maze_cache.png")
         return True
 
     def draw_pacman(self) -> None:
@@ -240,7 +243,7 @@ class Draw:
                                 self.height - 40,
                                 YELLOW, f"score: {self.score}")
 
-    def _pil_to_mlx_image(self, canvas: Image, filename: str) -> int:
+    def _pil_to_mlx_image(self, canvas: Image.Image, filename: str) -> Any:
         """ saves the image to a .cache folder if it does not exist, stores it
             on the hard drive and displays the image """
 
@@ -272,7 +275,7 @@ class Draw:
         draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
                   font=font)
 
-        hud_ptr = self._pil_to_mlx_image(hud_canvas, "hud_cache.png")
+        hud_ptr: int = self._pil_to_mlx_image(hud_canvas, "hud_cache.png")
         self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
                                          hud_ptr, 0, self.height - hud_height)
 
@@ -313,6 +316,6 @@ class Draw:
                       font=font
                       )
 
-        cheat_ptr = self._pil_to_mlx_image(hud_canvas, "cheat_cache.png")
+        cheat_ptr: int = self._pil_to_mlx_image(hud_canvas, "cheat_cache.png")
         self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
                                          cheat_ptr, 0, 0)
