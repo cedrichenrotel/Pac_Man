@@ -91,11 +91,11 @@ class Pathfinding:
                 "Pathfinding: no path found to pacman"
             )
 
-        current = pos_pacman
+        path_node: tuple[int, int] | None = pos_pacman
 
-        while current is not None:
-            self.real_path.append(current)
-            current = parent[current]
+        while path_node is not None:
+            self.real_path.append(path_node)
+            path_node = parent[path_node]
 
         self.real_path.reverse()
 

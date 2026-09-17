@@ -3,7 +3,6 @@ from typing import Optional, TYPE_CHECKING
 from src.render.utils import YELLOW, LIGHT_GRAY, XK_ESCAPE
 from src.engine.model import Config_json
 from mlx import Mlx
-import time
 
 # guarded to avoid a circular import: GameRender.py imports ScoreScene at
 # module level, so GameRender can only be imported here for type hints
@@ -32,28 +31,14 @@ class ScoreScene:
         self.mlx_window = mlx_window
         self.score = score
 
-    # def show_highscores(self) -> None:
-    #     self.marge = 0
-    #     if self.highscore is not None:
-    #         time.sleep(1000 / 1_000_000.0)
-    #         for key, value in self.highscore.items():
-    #             time.sleep(1000 / 1_000_000.0)
-    #             self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-    #                                     int(self.width / 2) - 100,
-    #                                     int(self.height / 4) + self.marge,
-    #                                     YELLOW, f"{key}: {value}")            
-    #             self.marge += 40
-
-    #     time.sleep(3000 / 1_000_000.0)
-
     def show_highscores(self) -> None:
         self.marge = 0
         if self.highscore is not None:
-            max_y = self.height - 80  # laisser de la place pour le message ESC
+            max_y = self.height - 40
             for key, value in self.highscore.items():
                 y = int(self.height / 4) + self.marge
                 if y > max_y:
-                    break  # ou réduire l'espacement / passer en scroll
+                    break
                 self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
                                         int(self.width / 2) - 100,
                                         y, YELLOW, f"{key}: {value}")
@@ -71,19 +56,6 @@ class ScoreScene:
                                 int(self.width / 2) - 100,
                                 int(self.height / 4) + self.marge + 40,
                                 LIGHT_GRAY, "Press ESC to return to menu")
-
-    # def launch(self) -> None:
-    #     '''display the level scene'''
-
-    #     self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-    #     self.show_highscores()
-
-    #     self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-    #                             int(self.width / 2) - 100,
-    #                             int(self.height / 4) + self.marge + 40,
-    #                             LIGHT_GRAY, "Press ESC to return to menu")
-    #     self.mlx.mlx_do_sync(self.mlx_init)
-    #     self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
 
     def on_key(self, keycode: int, param: object) -> None:
         '''go back to the menu scene on escape'''

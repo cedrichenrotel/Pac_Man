@@ -96,6 +96,7 @@ class Ghost(Entities):
             if elapsed_time >= self.time_edible:
                 self.is_edible = False
                 self.eaten = False
+                self.path_to_goal = []
             return elapsed_time
         return None
 
@@ -122,43 +123,25 @@ class Ghost(Entities):
 
     def random_pos_away_from_pacman(self,
                                     pacman_pos: tuple[int, int],
-                                    maze: list) -> tuple[int, int]:
-        print(maze.maze)
-        print(f"nb de ligne {len(maze.maze)}")
-        print(f"nb de col {len(maze.maze[0])}")
-        print(pacman_pos)
+                                    maze: 'MazeGenerator') -> tuple[int, int]:
+        oposite_x = 0
+        oposite_y = 0
+        for x in range(len(maze.maze)):
+            for y in range(len(maze.maze[x])):
 
-        # donc dans pacman pos de 0 a pacgum_pos et pacman_pos a 15
-        # qu'elle est le plus grande ordre de grandeur
+                if maze.maze[y][x] == 42:
+                    continue
+                dist_x = abs(pacman_pos[0] - x)
+                dist_y = abs(pacman_pos[1] - y)
 
-        magnitude_before_x = pacman_pos[0]
-        magnitude_after_x = len(maze.maze[0])
+                if (dist_x > oposite_x):
+                    oposite_x = dist_x
+                    dist_x_oposite = x
+                if (dist_y > oposite_y):
+                    oposite_y = dist_y
+                    dist_y_oposite = y
 
-        print(f"mag1 {magnitude_before_x}")
-        print(f"mag2 {magnitude_after_x}")
-
-        if magnitude_after_x > magnitude_before_x:
-            oposite_x = len(maze.maze[0])
-        else:
-            oposite_x = pacman_pos[0]
-
-        print(f"exact opposer: {oposite_x}")
-
-
-
-        # magnitude_before_y = pacman_pos[1]
-        # magnitude_after_y = len(maze.maze)
-
-
-        # le plus eloigner de la pos du pacman
-        # et si cest le milieu choise une
-        # des quatres position eloigner en random
-
-        # 1 exact opposer de la ou est pacman
-        # 2 dans le maze
-        # 3 pas dans 42
-        # 4 retour en tuple x y
-        pass
+        return (dist_x_oposite, dist_y_oposite)
 
     def path_to_pacman(self, maze: MazeGenerator,
                        pacman: Pacman,
@@ -171,16 +154,7 @@ class Ghost(Entities):
         algo = Pathfinding(maze)
 
         if is_flee is True:
-            # random_pos = (random.randint(0, maze._width-1),
-            #               random.randint(0, maze._height-1))
-            # is_valided = False
-            self.random_pos_away_from_pacman(pos_pacman, maze)
-            # while is_valided is not True:
-            #     # if (maze.maze[random_pos[0]][random_pos[1]]):
-            #     #     is_valided = True
-            #     # else:
-            #         random_pos = (random.randint(0, maze._width-1),
-            #                       random.randint(0, maze._height-1))
-            return [pos_ghost] + algo.bfs((0, 1), pos_ghost)
+            oposite = self.random_pos_away_from_pacman(pos_pacman, maze)
+            return [pos_ghost] + algo.bfs(oposite, pos_ghost)
         else:
             return [pos_ghost] + algo.bfs(pos_pacman, pos_ghost)

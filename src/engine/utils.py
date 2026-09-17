@@ -139,7 +139,7 @@ def push_json(highscore: dict[str, int], path: str) -> None:
 
 
 def order_asc_and_limit(highscore: dict[str, int],
-                        player_name: str = None) -> None:
+                        player_name: str | None = None) -> None:
 
     sorted_items = sorted(highscore.items(),
                           key=lambda item: item[1],
