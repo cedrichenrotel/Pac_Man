@@ -19,7 +19,7 @@ class Level():
         self.config = config
         self.score: int = 0
         self.player_name: str = ""
-        self.lvl_max: int = 10
+        self.lvl_max: int = 1
         self.actual_lvl: int = 0
         self.highscore: dict[str, int]
 
@@ -66,4 +66,4 @@ class Level():
             else:
                 self.new_score = {self.player_name: self.score}
                 highscore.update(self.new_score)
-            order_asc_and_limit(highscore)
+            order_asc_and_limit(highscore, self.player_name)

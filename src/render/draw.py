@@ -3,7 +3,7 @@ import os
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.utils import DIRECTIONS
-from src.render.utils import get_cell_size, get_asset_path, YELLOW
+from src.render.utils import get_cell_size, get_asset_path
 from typing import Optional
 from mlx import Mlx
 from PIL import Image
@@ -29,6 +29,7 @@ class Draw:
     level_engine: Level
     pacman: Optional[Pacman]
     score: int
+    actual_lvl: int
 
     def _put_sprite_centered(self, x: float, y: float, img_ptr: int,
                              height: int, width: int) -> None:
@@ -178,7 +179,9 @@ class Draw:
                 sprite_ghost = color_ghost['R']
             elif ghost.is_edible is True:
                 sprite_ghost = color_ghost['B']
-                vulnerability_time: float | None = ghost.time_is_edible()
+                assert self.pacman is not None
+                vulnerability_time: float | None = ghost.time_is_edible(
+                    self.level_engine.generator, self.pacman)
                 assert vulnerability_time is not None
                 flashing: int = int(vulnerability_time * 5)
                 if (vulnerability_time >= 8 and
@@ -225,23 +228,6 @@ class Draw:
                                       width)
         return True
 
-    def show_life(self) -> None:
-        assert self.pacman is not None
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                10,
-                                self.height - 40,
-                                YELLOW, f"life: {self.pacman.lives}")
-
-    def show_score(self) -> None:
-        """ display the score when Pac-Man eats the Pac-Gums during
-            the current game """
-
-        assert self.pacman is not None
-        self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
-                                self.width - 150,
-                                self.height - 40,
-                                YELLOW, f"score: {self.score}")
-
     def draw_hud_on_canvas(self) -> None:
         """Display on HUD text with score and life"""
         from PIL import ImageDraw, ImageFont
@@ -258,7 +244,12 @@ class Draw:
 
         life_count = self.pacman.lives if self.pacman else 0
         text_life = f"LIFE: {life_count}"
+        text__level = f"LEVEL  {self.actual_lvl}"
         text_score = f"SCORE: {self.score}"
+
+        draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
+        draw.text((self.width - 600, 12), text__level, fill=(255, 255, 0, 255),
+                  font=font)
 
         draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
         draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),

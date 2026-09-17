@@ -5,6 +5,7 @@ try:
     from mazegenerator import MazeGenerator
     from src.engine.pathfinding import Pathfinding
     from time import time
+    from src.render.utils import transform_all_coord_to_cardinal
 except ImportError as e:
     print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
     sys.exit()
@@ -40,6 +41,9 @@ class Entities():
 
         self.render_x = algo_fixed_walk(self.render_x, self.x, vitesse)
         self.render_y = algo_fixed_walk(self.render_y, self.y, vitesse)
+
+        if self.render_x == self.x and self.render_y == self.y:
+            self.current_pos = (self.x, self.y)
 
         if (self.render_x != stock_render_x or
            self.render_y != stock_render_y):
@@ -77,16 +81,22 @@ class Ghost(Entities):
         self.frame_index: int = 0
         self.start_time_is_edible: float | None = None
         self.start_pos: tuple[int, int] = (x, y)
+        self.time_edible = 10
 
-    def time_is_edible(self) -> float | None:
+    def time_is_edible(self, maze: MazeGenerator,
+                       pacman: Pacman) -> float | None:
         """ Vulnerability window for ghosts """
 
         if self.is_edible:
+            self.path_to_goal = transform_all_coord_to_cardinal(
+                self.path_to_pacman(maze,
+                                    pacman, True))
             assert self.start_time_is_edible is not None
             elapsed_time: float = time() - self.start_time_is_edible
-            if elapsed_time >= 10:
+            if elapsed_time >= self.time_edible:
                 self.is_edible = False
                 self.eaten = False
+                self.path_to_goal = []
             return elapsed_time
         return None
 
@@ -111,11 +121,40 @@ class Ghost(Entities):
                 return True
         return False
 
+    def random_pos_away_from_pacman(self,
+                                    pacman_pos: tuple[int, int],
+                                    maze: 'MazeGenerator') -> tuple[int, int]:
+        """get the oposite position (x,y) from pacman position"""
+        oposite_x = 0
+        oposite_y = 0
+        for x in range(len(maze.maze)):
+            for y in range(len(maze.maze[x])):
+
+                if maze.maze[y][x] == 42:
+                    continue
+                dist_x = abs(pacman_pos[0] - x)
+                dist_y = abs(pacman_pos[1] - y)
+
+                if (dist_x > oposite_x):
+                    oposite_x = dist_x
+                    dist_x_oposite = x
+                if (dist_y > oposite_y):
+                    oposite_y = dist_y
+                    dist_y_oposite = y
+
+        return (dist_x_oposite, dist_y_oposite)
+
     def path_to_pacman(self, maze: MazeGenerator,
-                       pacman: Pacman) -> list[tuple[int, int]]:
+                       pacman: Pacman,
+                       is_flee: bool = False) -> list[tuple[int, int]]:
         """ get the path from ghost to pacman  """
         pos_pacman: tuple[int, int] = (pacman.x, pacman.y)
         pos_ghost: tuple[int, int] = (self.x, self.y)
 
         algo = Pathfinding(maze)
-        return [pos_ghost] + algo.bfs(pos_pacman, pos_ghost)
+
+        if is_flee is True:
+            oposite = self.random_pos_away_from_pacman(pos_pacman, maze)
+            return [pos_ghost] + algo.bfs(oposite, pos_ghost)
+        else:
+            return [pos_ghost] + algo.bfs(pos_pacman, pos_ghost)

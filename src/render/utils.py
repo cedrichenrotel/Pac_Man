@@ -130,7 +130,7 @@ def get_cell_size(width: int, height: int, maze_width: int,
     return cell_size
 
 
-def check_range(from_val: float, to_val: float) -> bool:
+def check_range(from_val: float, to_val: float, range_val: float) -> bool:
     """calcul the distance between from_val and to_val ,
     if distance is less than 0.1 return True,
     otherwise return false """
@@ -139,7 +139,7 @@ def check_range(from_val: float, to_val: float) -> bool:
     to_val = round(to_val, 2)
     distance = abs(from_val - to_val)
 
-    if distance <= 0.1:
+    if distance <= range_val:
         return True
 
     return False
