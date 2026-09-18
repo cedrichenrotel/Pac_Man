@@ -5,6 +5,7 @@ from src.colors import COLORS
 
 try:
     from mazegenerator import MazeGenerator
+
     from src.engine.utils import DIRECTIONS
 except ImportError as e:
     print(f"{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}")
@@ -17,11 +18,7 @@ class Pathfinding:
         self.visited: list[tuple[int, int]] = []
         self.real_path: list[tuple[int, int]] = []
 
-    def can_move(
-        self,
-        direction: str,
-        pos: tuple[int, int]
-    ) -> bool:
+    def can_move(self, direction: str, pos: tuple[int, int]) -> bool:
         """Check if it is possible to move in a direction."""
 
         dx, dy, code = DIRECTIONS[direction]
@@ -34,11 +31,7 @@ class Pathfinding:
 
         return False
 
-    def move(
-        self,
-        direction: str,
-        pos: tuple[int, int]
-    ) -> tuple[int, int]:
+    def move(self, direction: str, pos: tuple[int, int]) -> tuple[int, int]:
         """Move from a position in a direction."""
 
         dx, dy, code = DIRECTIONS[direction]
@@ -46,9 +39,7 @@ class Pathfinding:
         return pos[0] + dx, pos[1] + dy
 
     def bfs(
-        self,
-        pos_pacman: tuple[int, int],
-        pos_ghost: tuple[int, int]
+        self, pos_pacman: tuple[int, int], pos_ghost: tuple[int, int]
     ) -> list[tuple[int, int]]:
         """
         Find the shortest path from ghost to Pacman.
@@ -59,10 +50,7 @@ class Pathfinding:
 
         queue = deque([pos_ghost])
 
-        parent: dict[
-            tuple[int, int],
-            tuple[int, int] | None
-        ] = {
+        parent: dict[tuple[int, int], tuple[int, int] | None] = {
             pos_ghost: None
         }
 
@@ -87,9 +75,7 @@ class Pathfinding:
                 queue.append(next_pos)
 
         if pos_pacman not in parent:
-            raise RuntimeError(
-                "Pathfinding: no path found to pacman"
-            )
+            raise RuntimeError("Pathfinding: no path found to pacman")
 
         path_node: tuple[int, int] | None = pos_pacman
 

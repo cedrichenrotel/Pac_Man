@@ -1,24 +1,26 @@
 import sys
 
 try:
-    from typing import Optional, Any, TYPE_CHECKING
+    import os
+    from typing import TYPE_CHECKING, Any
+
     from mlx import Mlx
+    from PIL import Image
+
     from src.colors import COLORS
     from src.render.utils import get_asset_path
-    import os
-    from PIL import Image
 except ImportError as e:
-    print(f'{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}')
+    print(f"{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}")
     sys.exit(1)
 
 if TYPE_CHECKING:
     from src.render.game import GameRender
 
 
-class SpriteStores():
-
-    def __init__(self, GameRender: 'GameRender', mlx: Mlx,
-                 mlx_init: Optional[int]) -> None:
+class SpriteStores:
+    def __init__(
+        self, GameRender: "GameRender", mlx: Mlx, mlx_init: int | None
+    ) -> None:
 
         self.GameRender = GameRender
         self.mlx = mlx
@@ -26,14 +28,16 @@ class SpriteStores():
         self.sprites: dict[str, list[Any]] = {}
 
     def rotation_and_image(self) -> None:
-        """ allows you to duplicate images and rotate them in the
-            direction of your choice """
+        """allows you to duplicate images and rotate them in the
+        direction of your choice"""
 
         chomp_path: str = get_asset_path("sprites/pacman/chomp/")
         pacman_path: str = get_asset_path("sprites/pacman/")
-        direction_image: tuple[str, str, str] = ('chomp_n/',
-                                                 'chomp_s/',
-                                                 'chomp_w/')
+        direction_image: tuple[str, str, str] = (
+            "chomp_n/",
+            "chomp_s/",
+            "chomp_w/",
+        )
         list_file: list[str] = sorted(os.listdir(chomp_path))
         for direction in direction_image:
             if os.path.exists(os.path.join(pacman_path, direction)):
@@ -41,16 +45,16 @@ class SpriteStores():
             os.makedirs(os.path.join(pacman_path, direction))
             for file in list_file:
                 img = Image.open(os.path.join(chomp_path, file))
-                if direction == 'chomp_n/':
+                if direction == "chomp_n/":
                     trans_img = img.rotate(90)
-                elif direction == 'chomp_s/':
+                elif direction == "chomp_s/":
                     trans_img = img.rotate(-90)
                 else:
                     trans_img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                 trans_img.save(os.path.join(pacman_path, direction, file))
 
     def load(self, name: str, path: str) -> None:
-        """ provides the path so that Python can retrieve the images """
+        """provides the path so that Python can retrieve the images"""
 
         image_path: str = get_asset_path(path)
 
@@ -62,7 +66,7 @@ class SpriteStores():
         self.sprites[name].append(img)
 
     def load_folder(self, name: str, folder: str) -> None:
-        """ list and sort the files in a folder before calling load() """
+        """list and sort the files in a folder before calling load()"""
 
         folder_path: str = get_asset_path(folder)
         list_file: list[str] = sorted(os.listdir(folder_path))
@@ -72,16 +76,16 @@ class SpriteStores():
             self.load(name, full_path)
 
     def load_all(self) -> None:
-        """ The program stores the images in memory """
+        """The program stores the images in memory"""
 
         self.rotation_and_image()
-        self.load('wall', "sprites/wall/wall.png")
-        self.load('pacgum', "sprites/pacgum/pacgum.png")
-        self.load('super_pacgum', "sprites/pacgum/super_pacgum.png")
-        self.load_folder('ghost_red', "sprites/ghost/ghost_red")
-        self.load_folder('ghost_blue', "sprites/ghost/ghost_blue")
-        self.load_folder('pacman_chomp', "sprites/pacman/chomp")
-        self.load_folder('pacman_chomp_n', "sprites/pacman/chomp_n")
-        self.load_folder('pacman_chomp_s', "sprites/pacman/chomp_s")
-        self.load_folder('pacman_chomp_w', "sprites/pacman/chomp_w")
-        self.load_folder('pacman_death', "sprites/pacman/death")
+        self.load("wall", "sprites/wall/wall.png")
+        self.load("pacgum", "sprites/pacgum/pacgum.png")
+        self.load("super_pacgum", "sprites/pacgum/super_pacgum.png")
+        self.load_folder("ghost_red", "sprites/ghost/ghost_red")
+        self.load_folder("ghost_blue", "sprites/ghost/ghost_blue")
+        self.load_folder("pacman_chomp", "sprites/pacman/chomp")
+        self.load_folder("pacman_chomp_n", "sprites/pacman/chomp_n")
+        self.load_folder("pacman_chomp_s", "sprites/pacman/chomp_s")
+        self.load_folder("pacman_chomp_w", "sprites/pacman/chomp_w")
+        self.load_folder("pacman_death", "sprites/pacman/death")

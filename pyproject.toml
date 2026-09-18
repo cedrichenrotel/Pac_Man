@@ -19,6 +19,7 @@ mlx = { path = "lib/mlx-2.2-py3-none-any.whl" }
 dev = [
     "flake8>=7.3.0",
     "mypy>=2.3.1",
+    "ruff>=0.16.8",
 ]
 
 [tool.mypy]
@@ -31,3 +32,10 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "mlx"
 ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+ignore = ["SIM103", "RUF100"]
+

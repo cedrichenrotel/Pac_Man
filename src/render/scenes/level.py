@@ -31,16 +31,19 @@ if TYPE_CHECKING:
 
 
 class LevelScene(Draw):
-
-    def __init__(self, GameRender: GameRender, mlx: Mlx,
-                 mlx_init: int | None,
-                 mlx_window: int | None,
-                 width: int,
-                 height: int,
-                 config: Config_json,
-                 highscore: dict[str, int],
-                 player_name: str,
-                 score: int) -> None:
+    def __init__(
+        self,
+        GameRender: GameRender,
+        mlx: Mlx,
+        mlx_init: int | None,
+        mlx_window: int | None,
+        width: int,
+        height: int,
+        config: Config_json,
+        highscore: dict[str, int],
+        player_name: str,
+        score: int,
+    ) -> None:
         self.score = score
         self.player_name = player_name
         self.highscore = highscore
@@ -75,9 +78,9 @@ class LevelScene(Draw):
         if self.game_over:
             return False
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.mlx.mlx_put_image_to_window(self.mlx_init,
-                                         self.mlx_window,
-                                         self.maze_img_ptr, 0, 0)
+        self.mlx.mlx_put_image_to_window(
+            self.mlx_init, self.mlx_window, self.maze_img_ptr, 0, 0
+        )
         self.draw_super_pacgum()
         self.draw_pacgum()
         self.draw_pacman()
@@ -105,14 +108,16 @@ class LevelScene(Draw):
         assert pacman is not None
 
         for ghost in self.ghosts:
-            if (check_range(ghost.render_x, pacman.render_x, 0.2) is True
-                and check_range(ghost.render_y,
-                                pacman.render_y, 0.2) is True):
+            if (
+                check_range(ghost.render_x, pacman.render_x, 0.2) is True
+                and check_range(ghost.render_y, pacman.render_y, 0.2) is True
+            ):
                 if ghost.is_edible is False:
                     if self.cheat_invincible is False:
                         pacman.decrease_life()
-                        self.mlx.mlx_clear_window(self.mlx_init,
-                                                  self.mlx_window)
+                        self.mlx.mlx_clear_window(
+                            self.mlx_init, self.mlx_window
+                        )
                         self.launch()
                 else:
                     ghost.eaten = True
@@ -127,24 +132,32 @@ class LevelScene(Draw):
                     self.level_engine.highscore = self.highscore
                     self.level_engine.add_player_name(self.player_name)
                     self.level_engine.add_score(self.score)
-                    self.level_engine.push_new_score("./highscore",
-                                                     self.highscore)
+                    self.level_engine.push_new_score(
+                        "./highscore", self.highscore
+                    )
                 self.go_to_menu()
             else:
                 from src.render.scenes.player import PlayerScene
+
                 player = PlayerScene(
-                        self.GameRender, self.mlx,
-                        self.mlx_init,
-                        self.mlx_window,
-                        self.width, self.height, self.config, self.highscore,
-                        self.player_name, self.score)
+                    self.GameRender,
+                    self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width,
+                    self.height,
+                    self.config,
+                    self.highscore,
+                    self.player_name,
+                    self.score,
+                )
                 player.launch()
             return False
         else:
             return True
 
     def launch(self) -> None:
-        '''display the level scene'''
+        """display the level scene"""
 
         self.level_engine = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
@@ -170,20 +183,27 @@ class LevelScene(Draw):
             return
 
     def on_loop(self, param: object) -> None:
-        """ is automatically called by mlx_loop to move forward
-            render_x/y moves one step in the x/y direction, drawing the
-            intermediate positions, executed every tick """
+        """is automatically called by mlx_loop to move forward
+        render_x/y moves one step in the x/y direction, drawing the
+        intermediate positions, executed every tick"""
         if self.is_winning is True:
             if len(self.player_name) != 0:
                 self.go_to_menu()
             else:
                 from src.render.scenes.player import PlayerScene
+
                 player = PlayerScene(
-                        self.GameRender, self.mlx,
-                        self.mlx_init,
-                        self.mlx_window,
-                        self.width, self.height, self.config, self.highscore,
-                        self.player_name, self.score)
+                    self.GameRender,
+                    self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width,
+                    self.height,
+                    self.config,
+                    self.highscore,
+                    self.player_name,
+                    self.score,
+                )
                 player.launch()
         assert self.pacman is not None
 
@@ -206,8 +226,9 @@ class LevelScene(Draw):
         assert self.pacman is not None
 
         if self.pacman.key_direction is not None:
-            self.pacman.move(self.pacman.key_direction,
-                             self.level_engine.generator)
+            self.pacman.move(
+                self.pacman.key_direction, self.level_engine.generator
+            )
             if self.pacman.move_render(self.move_pac) is True:
                 self.add_point_score(self.pacman)
 
@@ -221,40 +242,57 @@ class LevelScene(Draw):
             for ghost in self.ghosts:
                 ghost.time_is_edible(self.level_engine.generator, self.pacman)
                 if ghost.path_to_goal:
-                    if ghost.move(ghost.path_to_goal[0],
-                                  self.level_engine.generator) is True:
+                    if (
+                        ghost.move(
+                            ghost.path_to_goal[0], self.level_engine.generator
+                        )
+                        is True
+                    ):
                         ghost.frame_index += 1
                         ghost.path_to_goal.pop(0)
-                    elif (check_range(ghost.render_x,
-                                      self.pacman.render_x, 2) is True
-                          and check_range(ghost.render_y,
-                                          self.pacman.render_y, 2) is True
-                          and self.is_eligible()):
-                        if (self.pacman_last_position is None or
-                            (self.pacman_last_position[0] !=
-                                self.pacman.render_x and
-                                self.pacman_last_position[1] !=
-                                self.pacman.render_y)):
+                    elif (
+                        check_range(ghost.render_x, self.pacman.render_x, 2)
+                        is True
+                        and check_range(
+                            ghost.render_y, self.pacman.render_y, 2
+                        )
+                        is True
+                        and self.is_eligible()
+                    ):
+                        if self.pacman_last_position is None or (
+                            self.pacman_last_position[0]
+                            != self.pacman.render_x
+                            and self.pacman_last_position[1]
+                            != self.pacman.render_y
+                        ):
                             self.time_eligible = time()
-                            self.pacman_last_position = (self.pacman.render_x,
-                                                         self.pacman.render_y)
+                            self.pacman_last_position = (
+                                self.pacman.render_x,
+                                self.pacman.render_y,
+                            )
                             if ghost.is_edible is True:
                                 path = ghost.path_to_pacman(
                                     self.level_engine.generator,
-                                    self.pacman, True)
-                                ghost.path_to_goal = \
+                                    self.pacman,
+                                    True,
+                                )
+                                ghost.path_to_goal = (
                                     transform_all_coord_to_cardinal(path)
+                                )
                             else:
                                 path = ghost.path_to_pacman(
-                                    self.level_engine.generator,
-                                    self.pacman)
-                                ghost.path_to_goal = \
+                                    self.level_engine.generator, self.pacman
+                                )
+                                ghost.path_to_goal = (
                                     transform_all_coord_to_cardinal(path)
+                                )
                             self.val_test += 1
                 elif len(ghost.path_to_goal) == 0:
                     ghost.path_to_goal = transform_all_coord_to_cardinal(
-                        ghost.path_to_pacman(self.level_engine.generator,
-                                             self.pacman))
+                        ghost.path_to_pacman(
+                            self.level_engine.generator, self.pacman
+                        )
+                    )
                 ghost.move_render(2)
 
     def is_eligible(self) -> bool:
@@ -266,41 +304,47 @@ class LevelScene(Draw):
         return False
 
     def on_key(self, keycode: int, param: object) -> None:
-        '''go back to the menu scene on escape'''
+        """go back to the menu scene on escape"""
 
         pacman: Pacman | None = self.level_engine.init_maze.pacman
         assert pacman is not None
         if keycode == XK_ESCAPE:
             from src.render.scenes.player import PlayerScene
+
             if len(self.player_name) != 0:
                 self.go_to_menu()
             else:
                 player = PlayerScene(
-                    self.GameRender, self.mlx,
+                    self.GameRender,
+                    self.mlx,
                     self.mlx_init,
                     self.mlx_window,
-                    self.width, self.height, self.config,
+                    self.width,
+                    self.height,
+                    self.config,
                     self.highscore,
-                    self.player_name, self.score)
+                    self.player_name,
+                    self.score,
+                )
                 player.launch()
         if keycode == XK_UP:
             if pacman.key_direction is None:
                 pacman.last_time = time()
-            pacman.key_direction = 'N'
+            pacman.key_direction = "N"
         elif keycode == XK_DOWN:
             if pacman.key_direction is None:
                 pacman.last_time = time()
-            pacman.key_direction = 'S'
+            pacman.key_direction = "S"
         elif keycode == XK_LEFT:
             if pacman.key_direction is None:
                 pacman.last_time = time()
-            pacman.key_direction = 'W'
+            pacman.key_direction = "W"
             if pacman.key_direction is None:
                 pacman.last_time = time()
         elif keycode == XK_RIGHT:
             if pacman.key_direction is None:
                 pacman.last_time = time()
-            pacman.key_direction = 'E'
+            pacman.key_direction = "E"
         elif keycode == XK_CHEAT_INVINCIBLE:
             if self.cheat_invincible is False:
                 self.cheat_invincible = True
@@ -328,7 +372,7 @@ class LevelScene(Draw):
                 ghost.start_time_is_edible = time()
 
     def winning(self) -> None:
-        if (self.actual_lvl != self.level_engine.lvl_max):
+        if self.actual_lvl != self.level_engine.lvl_max:
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
             self.process_render()
@@ -339,24 +383,32 @@ class LevelScene(Draw):
                 if self.score > self.level_engine.score:
                     self.level_engine.add_player_name(self.player_name)
                     self.level_engine.add_score(self.score)
-                    self.level_engine.push_new_score("./highscore",
-                                                     self.highscore)
+                    self.level_engine.push_new_score(
+                        "./highscore", self.highscore
+                    )
             else:
                 from src.render.scenes.player import PlayerScene
+
                 player = PlayerScene(
-                        self.GameRender, self.mlx,
-                        self.mlx_init,
-                        self.mlx_window,
-                        self.width, self.height, self.config, self.highscore,
-                        self.player_name, self.score)
+                    self.GameRender,
+                    self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width,
+                    self.height,
+                    self.config,
+                    self.highscore,
+                    self.player_name,
+                    self.score,
+                )
                 player.launch()
 
     def add_point_score(self, pacman: Pacman) -> None:
-        """ Add the Super and Pacgum points when Pacman
-           eats them and update the Super/Pacgum counts in the maze """
+        """Add the Super and Pacgum points when Pacman
+        eats them and update the Super/Pacgum counts in the maze"""
 
-        self.pacgum_pos = (self.level_engine.init_maze.pacgum_pos)
-        self.super_pacgum_pos = (self.level_engine.init_maze.superpacgum_pos)
+        self.pacgum_pos = self.level_engine.init_maze.pacgum_pos
+        self.super_pacgum_pos = self.level_engine.init_maze.superpacgum_pos
         assert self.pacgum_pos is not None
         assert self.super_pacgum_pos is not None
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
@@ -374,19 +426,26 @@ class LevelScene(Draw):
             self.winning()
 
     def go_to_menu(self) -> None:
-        """ exits the current level and returns to the menu screen
-            clears the window and deactivates the hooks before
-            the transition """
+        """exits the current level and returns to the menu screen
+        clears the window and deactivates the hooks before
+        the transition"""
 
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)
         self.mlx.mlx_expose_hook(self.mlx_window, None, self)
 
         from src.render.scenes.menu import MenuScene
+
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.GameRender.current_scene = MenuScene(
-            self.GameRender, self.mlx,
+            self.GameRender,
+            self.mlx,
             self.mlx_init,
             self.mlx_window,
-            self.width, self.height, self.config, self.highscore,
-            self.player_name, self.score)
+            self.width,
+            self.height,
+            self.config,
+            self.highscore,
+            self.player_name,
+            self.score,
+        )
         self.GameRender.current_scene.launch()
