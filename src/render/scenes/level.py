@@ -329,30 +329,6 @@ class LevelScene(Draw):
                     self.player_name, self.score)
                 player.launch()
 
-    # def winning(self) -> None:
-    #     if (self.actual_lvl != self.level_engine.lvl_max):
-    #         self.level_engine.next_level()
-    #         self.maze = self.level_engine.generator.maze
-    #         self.process_render()
-    #         self.actual_lvl += 1
-    #     else:
-    #         self.is_winning = True
-    #         if len(self.player_name) != 0:
-    #             if self.score > self.level_engine.score:
-    #                 self.level_engine.add_player_name(self.player_name)
-    #                 self.level_engine.add_score(self.score)
-    #                 self.level_engine.push_new_score("./highscore",
-    #                                                  self.highscore)
-    #         else:
-    #             from src.render.scenes.player import PlayerScene
-    #             player = PlayerScene(
-    #                     self.GameRender, self.mlx,
-    #                     self.mlx_init,
-    #                     self.mlx_window,
-    #                     self.width, self.height, self.config, self.highscore,
-    #                     self.player_name, self.score)
-    #             player.launch()
-
     def add_point_score(self, pacman: Pacman) -> None:
         """ Add the Super and Pacgum points when Pacman
            eats them and update the Super/Pacgum counts in the maze """
