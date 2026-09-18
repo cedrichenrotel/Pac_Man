@@ -29,6 +29,7 @@ class Draw:
     level_engine: Level
     pacman: Optional[Pacman]
     score: int
+    actual_lvl: int
     cheat_freeze_ghost: bool
     cheat_invincible: bool
     move_pac: int
@@ -179,7 +180,9 @@ class Draw:
                 sprite_ghost = color_ghost['R']
             elif ghost.is_edible is True:
                 sprite_ghost = color_ghost['B']
-                vulnerability_time: float | None = ghost.time_is_edible()
+                assert self.pacman is not None
+                vulnerability_time: float | None = ghost.time_is_edible(
+                    self.level_engine.generator, self.pacman)
                 assert vulnerability_time is not None
                 flashing: int = int(vulnerability_time * 5)
                 if (vulnerability_time >= 8 and
@@ -269,7 +272,12 @@ class Draw:
 
         life_count = self.pacman.lives if self.pacman else 0
         text_life = f"LIFE: {life_count}"
+        text__level = f"LEVEL  {self.actual_lvl}"
         text_score = f"SCORE: {self.score}"
+
+        draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
+        draw.text((self.width - 600, 12), text__level, fill=(255, 255, 0, 255),
+                  font=font)
 
         draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
         draw.text((self.width - 160, 12), text_score, fill=(255, 255, 0, 255),
