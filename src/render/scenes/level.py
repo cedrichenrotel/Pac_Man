@@ -11,14 +11,15 @@ from src.engine.model import Config_json
 from src.render.draw import Draw
 from src.render.utils import (
     XK_CHEAT_FREEZE,
+    XK_CHEAT_GHOSTS_VULN,
+    XK_CHEAT_INCREASE_SPEED,
     XK_CHEAT_INVINCIBLE,
+    XK_CHEAT_LIFE_ADD,
+    XK_CHEAT_SKIP_LEVEL,
     XK_DOWN,
     XK_ESCAPE,
-    XK_INCREASE_SPEED,
     XK_LEFT,
-    XK_LIFE_ADD,
     XK_RIGHT,
-    XK_SKIP_LEVEL,
     XK_UP,
     check_range,
     transform_all_coord_to_cardinal,
@@ -163,6 +164,7 @@ class LevelScene(Draw):
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
         self.process_render()
+        self.last_time = time()
 
     def process_render(self) -> None:
         if self.is_winning is True:
@@ -186,6 +188,10 @@ class LevelScene(Draw):
         """is automatically called by mlx_loop to move forward
         render_x/y moves one step in the x/y direction, drawing the
         intermediate positions, executed every tick"""
+
+        if time() - self.last_time >= self.config.level_max_time:
+            self.pacman.lives = 0
+
         if self.is_winning is True:
             if len(self.player_name) != 0:
                 self.go_to_menu()
@@ -355,17 +361,17 @@ class LevelScene(Draw):
                 self.cheat_freeze_ghost = True
             else:
                 self.cheat_freeze_ghost = False
-        elif keycode == XK_SKIP_LEVEL:
+        elif keycode == XK_CHEAT_SKIP_LEVEL:
             self.winning()
-        elif keycode == XK_LIFE_ADD:
+        elif keycode == XK_CHEAT_LIFE_ADD:
             if pacman.lives < self.config.lives:
                 pacman.lives += 1
-        elif keycode == XK_INCREASE_SPEED:
+        elif keycode == XK_CHEAT_INCREASE_SPEED:
             if self.move_pac == 3:
                 self.move_pac = 5
             else:
                 self.move_pac = 3
-        elif keycode == 49:
+        elif keycode == XK_CHEAT_GHOSTS_VULN:
             ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
             for ghost in ghosts:
                 ghost.is_edible = True

@@ -51,9 +51,10 @@ XK_RIGHT = 65363
 XK_BACK: int = 65288
 XK_CHEAT_INVINCIBLE: int = 49
 XK_CHEAT_FREEZE: int = 50
-XK_SKIP_LEVEL: int = 51
-XK_LIFE_ADD: int = 52
-XK_INCREASE_SPEED: int = 53
+XK_CHEAT_SKIP_LEVEL: int = 51
+XK_CHEAT_LIFE_ADD: int = 52
+XK_CHEAT_INCREASE_SPEED: int = 53
+XK_CHEAT_GHOSTS_VULN: int = 54
 
 """keyboard code to record event"""
 list_key = [

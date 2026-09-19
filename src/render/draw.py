@@ -276,6 +276,7 @@ class Draw:
         """Display on HUD text with score and life"""
         from PIL import ImageDraw, ImageFont
 
+        size_police = 22
         hud_height = 50
         hud_canvas = Image.new(
             "RGBA", (self.width, hud_height), (0, 0, 0, 255)
@@ -283,30 +284,35 @@ class Draw:
         draw = ImageDraw.Draw(hud_canvas)
 
         try:
-            font = ImageFont.load_default(size=22)
+            font = ImageFont.load_default(size=size_police)
         except TypeError:
             font = ImageFont.load_default()
 
-        life_count = self.pacman.lives if self.pacman else 0
-        text_life = f"LIFE: {life_count}"
-        text__level = f"LEVEL  {self.actual_lvl}"
-        text_score = f"SCORE: {self.score}"
-
-        draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
-        draw.text(
-            (self.width - 600, 12),
-            text__level,
-            fill=(255, 255, 0, 255),
-            font=font,
+        self.countdown: int = int(
+            self.config.level_max_time - (time() - self.last_time)
         )
 
-        draw.text((20, 12), text_life, fill=(255, 255, 0, 255), font=font)
-        draw.text(
-            (self.width - 160, 12),
-            text_score,
-            fill=(255, 255, 0, 255),
-            font=font,
-        )
+        list_text: list[tuple[str, Any]] = [
+            ("LIFE:  ", self.pacman.lives if self.pacman else 0),
+            ("LEVEL:  ", self.actual_lvl),
+            ("SCORE:  ", self.score),
+            ("TIME:  ", self.countdown),
+        ]
+
+        spacing = 40
+        strings: list[str] = [
+            label + str(suffix) for label, suffix in list_text
+        ]
+        widths: list[float] = [
+            draw.textlength(s, font=font) for s in strings
+        ]
+        total_width: float = sum(widths) + spacing * (len(strings) - 1)
+
+        y = (hud_height // 2) - (size_police // 2)
+        x = (self.width - total_width) / 2
+        for s, w in zip(strings, widths):
+            draw.text((x, y), s, fill=(255, 255, 0, 255), font=font)
+            x += w + spacing
 
         hud_ptr: int = self._pil_to_mlx_image(hud_canvas, "hud_cache.png")
         self.mlx.mlx_put_image_to_window(
@@ -322,6 +328,7 @@ class Draw:
 
         from PIL import ImageDraw, ImageFont
 
+        size_police: int = 15
         hud_height = 50
         hud_canvas = Image.new(
             "RGBA", (self.width, hud_height), (0, 0, 0, 255)
@@ -329,7 +336,7 @@ class Draw:
         draw = ImageDraw.Draw(hud_canvas)
 
         try:
-            font = ImageFont.load_default(size=15)
+            font = ImageFont.load_default(size=size_police)
         except TypeError:
             font = ImageFont.load_default()
         list_text: list[tuple[str, Any]] = [
@@ -338,14 +345,18 @@ class Draw:
             ("(3) SKIP LEVEL", None),
             ("(4) ADD LIFE POINT", None),
             ("(5) SPEED MOVE:  ", self.move_pac != 3),
+            (
+                "(6) VULNERABLE GHOSTS:  ",
+                any(ghost.is_edible for ghost in self.ghosts),
+            ),
         ]
 
         max_rows: int = 2
         for i, text in enumerate(list_text):
             row: int = i % max_rows
             col: int = i // max_rows
-            x = 15 + col * 200
-            y = 12 + row * 20
+            x = 20 + col * (self.width // 3)
+            y = 10 + row * (hud_height // 2)
 
             label, state = text
             suffix = ("ON" if state else "OFF") if state is not None else ""
