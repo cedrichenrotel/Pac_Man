@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from time import time
 from typing import TYPE_CHECKING
 
@@ -10,6 +11,7 @@ from src.engine.level import Level
 from src.engine.model import Config_json
 from src.render.draw import Draw
 from src.render.utils import (
+    LIGHT_GRAY,
     XK_CHEAT_FREEZE,
     XK_CHEAT_GHOSTS_VULN,
     XK_CHEAT_INCREASE_SPEED,
@@ -19,8 +21,10 @@ from src.render.utils import (
     XK_DOWN,
     XK_ESCAPE,
     XK_LEFT,
+    XK_RETURN,
     XK_RIGHT,
     XK_UP,
+    YELLOW,
     check_range,
     transform_all_coord_to_cardinal,
 )
@@ -69,8 +73,19 @@ class LevelScene(Draw):
         self.cheat_invincible: bool = False
         self.last_time: float = time()
         self.move_pac: int = 3
+        self.paused: bool = False
+        self.entries: list[tuple[str, Callable[[], None]]] = [
+            ("Return to the main menu", self.quit_game),
+            ("Resume the game", self.return_to_game),
+        ]
+        self.middle_w: int = int(self.width / 2) - 100
+        self.middle_h: int = int(self.height / 2) - 100
+        self.step: int = 40
+        self.selected: int = 0
 
     def on_expose(self, param: object) -> None:
+        if self.paused is True:
+            return
         self.render()
 
     def render(self) -> bool:
@@ -139,7 +154,7 @@ class LevelScene(Draw):
                 self.config,
                 self.highscore,
                 self.player_name,
-                self.score
+                self.score,
             )
             game_over.launch()
             return False
@@ -177,10 +192,27 @@ class LevelScene(Draw):
         """is automatically called by mlx_loop to move forward
         render_x/y moves one step in the x/y direction, drawing the
         intermediate positions, executed every tick"""
+        if self.paused is True:
+            return
+        if self.is_winning is True:
+            if len(self.player_name) != 0:
+                self.go_to_menu()
+            else:
+                from src.render.scenes.player import PlayerScene
 
-        if time() - self.last_time >= self.config.level_max_time:
-            self.pacman.lives = 0
-
+                player = PlayerScene(
+                    self.GameRender,
+                    self.mlx,
+                    self.mlx_init,
+                    self.mlx_window,
+                    self.width,
+                    self.height,
+                    self.config,
+                    self.highscore,
+                    self.player_name,
+                    self.score,
+                )
+                player.launch()
         assert self.pacman is not None
 
         if self.pacman.lives == 0:
@@ -213,7 +245,6 @@ class LevelScene(Draw):
         if self.is_winning is True:
             return
         assert self.pacman is not None
-
         if self.cheat_freeze_ghost is False:
             for ghost in self.ghosts:
                 ghost.time_is_edible(self.level_engine.generator, self.pacman)
@@ -235,8 +266,9 @@ class LevelScene(Draw):
                         is True
                         and self.is_eligible()
                     ):
-                        if self.pacman_last_position is None or (
-                            self.pacman_last_position[0]
+                        if (
+                            self.pacman_last_position is None
+                            or self.pacman_last_position[0]
                             != self.pacman.render_x
                             and self.pacman_last_position[1]
                             != self.pacman.render_y
@@ -285,24 +317,7 @@ class LevelScene(Draw):
         pacman: Pacman | None = self.level_engine.init_maze.pacman
         assert pacman is not None
         if keycode == XK_ESCAPE:
-            from src.render.scenes.player import PlayerScene
-
-            if len(self.player_name) != 0:
-                self.go_to_menu()
-            else:
-                player = PlayerScene(
-                    self.GameRender,
-                    self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
-                )
-                player.launch()
+            self.go_to_menu()
         if keycode == XK_UP:
             if pacman.key_direction is None:
                 pacman.last_time = time()
@@ -393,27 +408,89 @@ class LevelScene(Draw):
         if len(self.pacgum_pos) == 0 and len(self.super_pacgum_pos) == 0:
             self.winning()
 
-    def go_to_menu(self) -> None:
-        """exits the current level and returns to the menu screen
-        clears the window and deactivates the hooks before
-        the transition"""
-
+    def quit_game(self) -> None:
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)
         self.mlx.mlx_expose_hook(self.mlx_window, None, self)
 
-        from src.render.scenes.menu import MenuScene
+        if len(self.player_name) != 0:
+            from src.render.scenes.menu import MenuScene
 
+            self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+            self.GameRender.current_scene = MenuScene(
+                self.GameRender,
+                self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width,
+                self.height,
+                self.config,
+                self.highscore,
+                self.player_name,
+                self.score,
+            )
+            self.GameRender.current_scene.launch()
+        else:
+            from src.render.scenes.player import PlayerScene
+
+            player = PlayerScene(
+                self.GameRender,
+                self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width,
+                self.height,
+                self.config,
+                self.highscore,
+                self.player_name,
+                self.score,
+            )
+            player.launch()
+
+    def go_to_menu(self) -> None:
+        """open the pause menu and hand key control to on_key_break"""
+        self.paused = True
+        self.selected = 0
+        self.draw_menu()
+        self.mlx.mlx_key_hook(self.mlx_window, self.on_key_break, self)
+
+    def return_to_game(self) -> None:
+        """close the pause menu and give control back to on_key"""
+        self.paused = False
+        self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
+        self.render()
+
+    def draw_selector(self, x: int, y: int) -> None:
+        """draw the selector '>' of menu"""
+
+        height = 12
+        for dy in range(-height // 2, height // 2 + 1):
+            width = height // 2 - abs(dy)
+            for dx in range(width):
+                self.mlx.mlx_pixel_put(
+                    self.mlx_init, self.mlx_window, x + dx, y + dy, LIGHT_GRAY
+                )
+
+    def draw_menu(self) -> None:
+        """install the title with them redirections"""
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.GameRender.current_scene = MenuScene(
-            self.GameRender,
-            self.mlx,
-            self.mlx_init,
-            self.mlx_window,
-            self.width,
-            self.height,
-            self.config,
-            self.highscore,
-            self.player_name,
-            self.score,
-        )
-        self.GameRender.current_scene.launch()
+        for i, (label, _action) in enumerate(self.entries):
+            y = self.middle_h + self.step * i
+            if i == self.selected:
+                self.draw_selector(self.middle_w - 20, y + 10)
+            self.mlx.mlx_string_put(
+                self.mlx_init, self.mlx_window, self.middle_w, y, YELLOW, label
+            )
+
+    def on_key_break(self, keycode: int, param: object) -> None:
+        """record the key press and do the action
+        key up to go up, key down to go down,
+        enter to select the title"""
+
+        if keycode == XK_UP:
+            self.selected = (self.selected - 1) % len(self.entries)
+            self.draw_menu()
+        elif keycode == XK_DOWN:
+            self.selected = (self.selected + 1) % len(self.entries)
+            self.draw_menu()
+        elif keycode == XK_RETURN:
+            self.entries[self.selected][1]()

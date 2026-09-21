@@ -13,7 +13,10 @@ dependencies = [
 
 [tool.uv.sources]
 mazegenerator = { path = "lib/mazegenerator-2.1.0-py3-none-any.whl" }
-mlx = { path = "lib/mlx-2.2-py3-none-any.whl" }
+mlx = [
+    { path = "lib/mlx-2.4-py3-none-any.whl", marker = "sys_platform == 'darwin'" },
+    { path = "lib/mlx-2.2-py3-none-any.whl", marker = "sys_platform == 'linux'" },
+]
 
 [dependency-groups]
 dev = [
