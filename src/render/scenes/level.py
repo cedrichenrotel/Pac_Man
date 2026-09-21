@@ -194,25 +194,6 @@ class LevelScene(Draw):
         intermediate positions, executed every tick"""
         if self.paused is True:
             return
-        if self.is_winning is True:
-            if len(self.player_name) != 0:
-                self.go_to_menu()
-            else:
-                from src.render.scenes.player import PlayerScene
-
-                player = PlayerScene(
-                    self.GameRender,
-                    self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
-                )
-                player.launch()
         assert self.pacman is not None
 
         if self.pacman.lives == 0:
