@@ -58,7 +58,7 @@ class LevelScene(Draw):
         self.score = 0
         self.actual_lvl = 1
         self.height = height
-        self.game_over: bool = False
+        self.is_game_over: bool = False
         self.val_test = 0
         self.time_eligible: float = 0
         self.pacman_last_position: tuple[float, float] | None = None
@@ -76,7 +76,7 @@ class LevelScene(Draw):
     def render(self) -> bool:
         if self.is_winning is True:
             return True
-        if self.game_over:
+        if self.is_game_over:
             return False
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
         self.mlx.mlx_put_image_to_window(
@@ -100,7 +100,7 @@ class LevelScene(Draw):
         and return to menu scene
         """
 
-        if self.game_over:
+        if self.is_game_over:
             return False
         if self.is_winning is True:
             return False
@@ -126,33 +126,22 @@ class LevelScene(Draw):
                     ghost.init_ghost_eaten()
 
         if pacman.lives == 0 and pacman.dead is True:
-            self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-            if len(self.player_name) != 0:
-                if len(self.level_engine.player_name) == 0:
-                    self.level_engine = Level(self.config)
-                    self.level_engine.highscore = self.highscore
-                    self.level_engine.add_player_name(self.player_name)
-                    self.level_engine.add_score(self.score)
-                    self.level_engine.push_new_score(
-                        "./highscore", self.highscore
-                    )
-                self.go_to_menu()
-            else:
-                from src.render.scenes.player import PlayerScene
+            from src.render.scenes.game_over import GameOver
 
-                player = PlayerScene(
-                    self.GameRender,
-                    self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
-                )
-                player.launch()
+            self.is_game_over = True
+            game_over = GameOver(
+                self.GameRender,
+                self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width,
+                self.height,
+                self.config,
+                self.highscore,
+                self.player_name,
+                self.score
+            )
+            game_over.launch()
             return False
         else:
             return True

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from src.render.game import GameRender
 
 
-class Winner:
+class GameOver:
     def __init__(
         self,
         GameRender: GameRender,
@@ -49,7 +49,7 @@ class Winner:
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
 
         list_text: list[str] = [
-            "YOU WIN!",
+            "GAME OVER!",
             f"Final score: {self.score}",
             "Press ENTER to continue",
         ]
@@ -67,7 +67,7 @@ class Winner:
             )
 
     def on_key(self, keycode: int, param: object) -> None:
-        """go back to the menu scene on escape"""
+        """save the score and go back to menu or player naming"""
 
         if keycode == XK_RETURN:
             if len(self.player_name) != 0:

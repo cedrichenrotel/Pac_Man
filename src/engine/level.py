@@ -21,7 +21,7 @@ class Level:
         self.config = config
         self.score: int = 0
         self.player_name: str = ""
-        self.lvl_max: int = 1
+        self.lvl_max: int = 10
         self.actual_lvl: int = 0
         self.highscore: dict[str, int]
 
