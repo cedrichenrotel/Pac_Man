@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, Any
+from PIL import Image
 
 if TYPE_CHECKING:
     from mlx import Mlx
@@ -179,3 +180,14 @@ def install_menu_image(path: str, mlx: "Mlx", mlx_init: int,
                                         img_ptr, int(x / 2), int(y / 2))
 
     return img
+
+
+def pil_to_mlx_image(canvas: Image.Image, filename: str,
+                     mlx_init: Optional[int], mlx: Mlx) -> Any:
+    """ saves the image to a .cache folder if it does not exist, stores it
+        on the hard drive and displays the image """
+    os.makedirs(".cache", exist_ok=True)
+    path = os.path.join(".cache", filename)
+    canvas.save(path)
+    ptr, _, _ = mlx.mlx_png_file_to_image(mlx_init, path)
+    return ptr
