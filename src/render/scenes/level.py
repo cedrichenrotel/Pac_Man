@@ -1,21 +1,29 @@
 from __future__ import annotations
-from typing import Callable, List, Optional, Tuple, TYPE_CHECKING
-from src.render.utils import (XK_ESCAPE, XK_UP,
-                              XK_DOWN, XK_LEFT,
-                              XK_RIGHT, XK_CHEAT_INVINCIBLE,
-                              XK_CHEAT_FREEZE,
-                              XK_SKIP_LEVEL,
-                              XK_LIFE_ADD,
-                              XK_INCREASE_SPEED,
-                              YELLOW, LIGHT_GRAY, XK_RETURN,
-                              transform_all_coord_to_cardinal,
-                              check_range)
-from src.render.draw import Draw
-from src.engine.entities import Ghost, Pacman
-from src.engine.model import Config_json
-from src.engine.level import Level
-from mlx import Mlx
 from time import time
+from typing import Callable, List, Tuple, TYPE_CHECKING
+from mlx import Mlx
+from src.engine.entities import Ghost, Pacman
+from src.engine.level import Level
+from src.engine.model import Config_json
+from src.render.draw import Draw
+from src.render.utils import (
+    XK_CHEAT_FREEZE,
+    XK_CHEAT_INVINCIBLE,
+    XK_DOWN,
+    XK_ESCAPE,
+    XK_INCREASE_SPEED,
+    XK_LEFT,
+    XK_LIFE_ADD,
+    XK_RIGHT,
+    XK_SKIP_LEVEL,
+    XK_UP,
+    YELLOW,
+    LIGHT_GRAY,
+    XK_RETURN,
+    check_range,
+    transform_all_coord_to_cardinal,
+)
+
 # guarded to avoid a circular import: GameRender.py imports LevelScene at
 # module level, so GameRender can only be imported here for type hints
 if TYPE_CHECKING:
@@ -24,9 +32,9 @@ if TYPE_CHECKING:
 
 class LevelScene(Draw):
 
-    def __init__(self, GameRender: "GameRender", mlx: Mlx,
-                 mlx_init: Optional[int],
-                 mlx_window: Optional[int],
+    def __init__(self, GameRender: GameRender, mlx: Mlx,
+                 mlx_init: int | None,
+                 mlx_window: int | None,
                  width: int,
                  height: int,
                  config: Config_json,
@@ -45,7 +53,7 @@ class LevelScene(Draw):
         self.mlx = mlx
         self.mlx_init = mlx_init
         self.mlx_window = mlx_window
-        self.pacman: Optional[Pacman] = None
+        self.pacman: Pacman | None = None
         self.game_over: bool = False
         self.val_test = 0
         self.time_eligible: float = 0
@@ -71,7 +79,7 @@ class LevelScene(Draw):
         self.render()
 
     def render(self) -> bool:
-        if self.winning is True:
+        if self.is_winning is True:
             return True
         if self.game_over:
             return False
@@ -313,32 +321,34 @@ class LevelScene(Draw):
                 self.move_pac = 5
             else:
                 self.move_pac = 3
+        elif keycode == 49:
+            ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
+            for ghost in ghosts:
+                ghost.is_edible = True
+                ghost.start_time_is_edible = time()
 
     def winning(self) -> None:
-        # example de si le lvl etait gagner
-        self.level_engine.push_new_score("./highscore", self.highscore)
-        if (self.level_engine.actual_lvl != self.level_engine.lvl_max):
-            if len(self.level_engine.player_name) == 0:
-                self.level_engine.add_player_name(self.player_name)
-            if self.score > self.level_engine.score:
-                self.level_engine.add_score(self.score)
+        if (self.actual_lvl != self.level_engine.lvl_max):
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
-            self.render()
+            self.process_render()
+            self.actual_lvl += 1
         else:
-            if self.score > self.level_engine.score:
-                self.level_engine.add_score(self.score)
-            from src.render.scenes.player import PlayerScene
+            self.is_winning = True
             if len(self.player_name) != 0:
-                self.go_to_menu()
+                if self.score > self.level_engine.score:
+                    self.level_engine.add_player_name(self.player_name)
+                    self.level_engine.add_score(self.score)
+                    self.level_engine.push_new_score("./highscore",
+                                                     self.highscore)
             else:
+                from src.render.scenes.player import PlayerScene
                 player = PlayerScene(
-                    self.GameRender, self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width, self.height, self.config,
-                    self.highscore,
-                    self.player_name, self.score)
+                        self.GameRender, self.mlx,
+                        self.mlx_init,
+                        self.mlx_window,
+                        self.width, self.height, self.config, self.highscore,
+                        self.player_name, self.score)
                 player.launch()
 
     def add_point_score(self, pacman: Pacman) -> None:
@@ -367,15 +377,26 @@ class LevelScene(Draw):
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)
         self.mlx.mlx_expose_hook(self.mlx_window, None, self)
 
-        from src.render.scenes.menu import MenuScene
-        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-        self.GameRender.current_scene = MenuScene(
-            self.GameRender, self.mlx,
-            self.mlx_init,
-            self.mlx_window,
-            self.width, self.height, self.config, self.highscore,
-            self.player_name, self.score)
-        self.GameRender.current_scene.launch()
+        if len(self.player_name) != 0:
+            from src.render.scenes.menu import MenuScene
+            self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+            self.GameRender.current_scene = MenuScene(
+                self.GameRender, self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width, self.height, self.config, self.highscore,
+                self.player_name, self.score)
+            self.GameRender.current_scene.launch()
+        else:
+            from src.render.scenes.player import PlayerScene
+            player = PlayerScene(
+                self.GameRender, self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width, self.height, self.config,
+                self.highscore,
+                self.player_name, self.score)
+            player.launch()
 
     def go_to_menu(self) -> None:
         """ open the pause menu and hand key control to on_key_break """
