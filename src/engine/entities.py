@@ -23,7 +23,6 @@ class Entities():
         self.frame_index: int = 0
         self.last_time: float = time()
         self.anim_last_time: float = 0.0
-        self.new_pos = (0, 0)
 
     def move(self, direction: str, maze: MazeGenerator) -> bool:
         """ allows entities to move through the maze without
@@ -135,7 +134,7 @@ class Ghost(Entities):
 
     def find_walkable_near(self, maze: MazeGenerator,
                            pos: tuple[int, int]) -> tuple[int, int]:
-        """change pos dans les limites du labyrinthe"""
+        """changes pos to stay within the maze's boundaries"""
         rows = len(maze.maze)
         cols = len(maze.maze[0])
         x, y = pos

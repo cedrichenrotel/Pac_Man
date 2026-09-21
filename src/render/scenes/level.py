@@ -76,6 +76,8 @@ class LevelScene(Draw):
         self.selected: int = 0
 
     def on_expose(self, param: object) -> None:
+        if self.paused is True:
+            return
         self.render()
 
     def render(self) -> bool:
