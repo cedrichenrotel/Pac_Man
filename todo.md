@@ -17,3 +17,5 @@ je fait pour l'export et python3 pac-man.py config.json cette commande
 si jai le temps readme
 
 modif des Instructions - Shows the game controls and rules. generer de meilleur instructiuons  dans gemini
+
+cd dist && zip -r pac-man-linux.zip pac-man
