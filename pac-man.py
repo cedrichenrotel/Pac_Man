@@ -10,7 +10,6 @@ def main() -> None:
         config_file = sys.argv[1]
 
         if os.path.exists(config_file):
-            print("Configuration file found. Launching package via UV...")
             cmd = ["uv", "run", "python", "-m", "src", config_file]
 
             try:
@@ -36,4 +35,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (Exception, KeyboardInterrupt):
+        print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+              "The program was stopped manually")
