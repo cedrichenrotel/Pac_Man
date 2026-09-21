@@ -92,8 +92,8 @@ class Ghost(Entities):
         self.start_pos: tuple[int, int] = (x, y)
         self.time_edible = 10
         self.last_path_time: float = time()
-        self.waypoints = []
-        self.waypoint_index = 0
+        self.waypoints: list[tuple[int, int]] = []
+        self.waypoint_index: int = 0
 
     def time_is_edible(self, maze: MazeGenerator,
                        pacman: Pacman) -> float | None:
@@ -133,14 +133,15 @@ class Ghost(Entities):
                 return True
         return False
 
-    def find_walkable_near(self, maze, pos):
+    def find_walkable_near(self, maze: MazeGenerator,
+                           pos: tuple[int, int]) -> tuple[int, int]:
         """change pos dans les limites du labyrinthe"""
         rows = len(maze.maze)
         cols = len(maze.maze[0])
         x, y = pos
         return (max(0, min(x, cols - 1)), max(0, min(y, rows - 1)))
 
-    def found_pos_next_to(self, maze):
+    def found_pos_next_to(self, maze: MazeGenerator) -> None:
         cx, cy = self.start_pos
         raw_waypoints = [
             (cx, cy),
@@ -168,7 +169,8 @@ class Ghost(Entities):
             target = self.waypoints[self.waypoint_index]
 
             if self.current_pos == target:
-                self.waypoint_index = (self.waypoint_index + 1) % len(self.waypoints)
+                self.waypoint_index = ((self.waypoint_index + 1)
+                                       % len(self.waypoints))
                 target = self.waypoints[self.waypoint_index]
 
             return [pos_ghost] + algo.bfs(target, pos_ghost)

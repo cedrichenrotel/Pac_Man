@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import Callable, List, Optional, Tuple, TYPE_CHECKING
 from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_DOWN, XK_LEFT,
                               XK_RIGHT, XK_CHEAT_INVINCIBLE,
@@ -7,6 +7,7 @@ from src.render.utils import (XK_ESCAPE, XK_UP,
                               XK_SKIP_LEVEL,
                               XK_LIFE_ADD,
                               XK_INCREASE_SPEED,
+                              YELLOW, LIGHT_GRAY, XK_RETURN,
                               transform_all_coord_to_cardinal,
                               check_range)
 from src.render.draw import Draw
@@ -56,6 +57,15 @@ class LevelScene(Draw):
         self.cheat_invincible: bool = False
         self.last_time: float = time()
         self.move_pac: int = 3
+        self.paused: bool = False
+        self.entries: List[Tuple[str, Callable[[], None]]] = [
+                            ("Return to the main menu", self.quit_game),
+                            ("Resume the game", self.return_to_game),
+                        ]
+        self.middle_w: int = int(self.width / 2) - 100
+        self.middle_h: int = int(self.height / 2) - 100
+        self.step: int = 40
+        self.selected: int = 0
 
     def on_expose(self, param: object) -> None:
         self.render()
@@ -164,6 +174,8 @@ class LevelScene(Draw):
         """ is automatically called by mlx_loop to move forward
             render_x/y moves one step in the x/y direction, drawing the
             intermediate positions, executed every tick """
+        if self.paused is True:
+            return
         if self.is_winning is True:
             if len(self.player_name) != 0:
                 self.go_to_menu()
@@ -351,11 +363,7 @@ class LevelScene(Draw):
         if len(self.pacgum_pos) == 0 and len(self.super_pacgum_pos) == 0:
             self.winning()
 
-    def go_to_menu(self) -> None:
-        """ exits the current level and returns to the menu screen
-            clears the window and deactivates the hooks before
-            the transition """
-
+    def quit_game(self) -> None:
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)
         self.mlx.mlx_expose_hook(self.mlx_window, None, self)
 
@@ -368,3 +376,50 @@ class LevelScene(Draw):
             self.width, self.height, self.config, self.highscore,
             self.player_name, self.score)
         self.GameRender.current_scene.launch()
+
+    def go_to_menu(self) -> None:
+        """ open the pause menu and hand key control to on_key_break """
+        self.paused = True
+        self.selected = 0
+        self.draw_menu()
+        self.mlx.mlx_key_hook(self.mlx_window, self.on_key_break, self)
+
+    def return_to_game(self) -> None:
+        """ close the pause menu and give control back to on_key """
+        self.paused = False
+        self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
+        self.render()
+
+    def draw_selector(self, x: int, y: int) -> None:
+        '''draw the selector '>' of menu'''
+
+        height = 12
+        for dy in range(-height // 2, height // 2 + 1):
+            width = height // 2 - abs(dy)
+            for dx in range(width):
+                self.mlx.mlx_pixel_put(self.mlx_init, self.mlx_window,
+                                       x + dx, y + dy, LIGHT_GRAY)
+
+    def draw_menu(self) -> None:
+        '''install the title with them redirections'''
+        self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+        for i, (label, _action) in enumerate(self.entries):
+            y = self.middle_h + self.step * i
+            if i == self.selected:
+                self.draw_selector(self.middle_w - 20, y + 10)
+            self.mlx.mlx_string_put(self.mlx_init, self.mlx_window,
+                                    self.middle_w, y, YELLOW, label)
+
+    def on_key_break(self, keycode: int, param: object) -> None:
+        '''record the key press and do the action
+        key up to go up, key down to go down,
+        enter to select the title'''
+
+        if keycode == XK_UP:
+            self.selected = (self.selected - 1) % len(self.entries)
+            self.draw_menu()
+        elif keycode == XK_DOWN:
+            self.selected = (self.selected + 1) % len(self.entries)
+            self.draw_menu()
+        elif keycode == XK_RETURN:
+            self.entries[self.selected][1]()
