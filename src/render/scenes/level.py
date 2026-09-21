@@ -45,19 +45,19 @@ class LevelScene(Draw):
         player_name: str,
         score: int,
     ) -> None:
+        self.pacman: Pacman | None = None
+        self.GameRender = GameRender
+        self.config = config
+        self.mlx = mlx
+        self.mlx_init = mlx_init
+        self.mlx_window = mlx_window
         self.score = score
         self.player_name = player_name
         self.highscore = highscore
-        self.config = config
-        self.GameRender = GameRender
         self.width = width
         self.score = 0
         self.actual_lvl = 1
         self.height = height
-        self.mlx = mlx
-        self.mlx_init = mlx_init
-        self.mlx_window = mlx_window
-        self.pacman: Pacman | None = None
         self.game_over: bool = False
         self.val_test = 0
         self.time_eligible: float = 0
@@ -192,25 +192,6 @@ class LevelScene(Draw):
         if time() - self.last_time >= self.config.level_max_time:
             self.pacman.lives = 0
 
-        if self.is_winning is True:
-            if len(self.player_name) != 0:
-                self.go_to_menu()
-            else:
-                from src.render.scenes.player import PlayerScene
-
-                player = PlayerScene(
-                    self.GameRender,
-                    self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
-                )
-                player.launch()
         assert self.pacman is not None
 
         if self.pacman.lives == 0:
@@ -384,30 +365,22 @@ class LevelScene(Draw):
             self.process_render()
             self.actual_lvl += 1
         else:
-            self.is_winning = True
-            if len(self.player_name) != 0:
-                if self.score > self.level_engine.score:
-                    self.level_engine.add_player_name(self.player_name)
-                    self.level_engine.add_score(self.score)
-                    self.level_engine.push_new_score(
-                        "./highscore", self.highscore
-                    )
-            else:
-                from src.render.scenes.player import PlayerScene
+            from src.render.scenes.win import Winner
 
-                player = PlayerScene(
-                    self.GameRender,
-                    self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
-                )
-                player.launch()
+            self.is_winning = True
+            winner = Winner(
+                self.GameRender,
+                self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width,
+                self.height,
+                self.config,
+                self.highscore,
+                self.player_name,
+                self.score,
+            )
+            winner.launch()
 
     def add_point_score(self, pacman: Pacman) -> None:
         """Add the Super and Pacgum points when Pacman

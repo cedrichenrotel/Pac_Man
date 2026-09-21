@@ -46,13 +46,6 @@ class Level:
     def add_score(self, num: int) -> None:
         self.score += num
 
-    def next_level(self) -> None:
-        """called by the render side when the current level is won,
-        regenerates the maze and reinitialises its elements"""
-
-        self.actual_lvl += 1
-        self.generate_maze(self.config.seed + self.actual_lvl)
-
     def push_new_score(self, path: str, highscore: dict[str, int]) -> None:
         """push the new score from player to all highscore,
         order by descending, max 10 best score and write
@@ -69,3 +62,25 @@ class Level:
                 self.new_score = {self.player_name: self.score}
                 highscore.update(self.new_score)
             order_asc_and_limit(highscore, self.player_name)
+
+    def save_score(
+        self,
+        player_name: str,
+        score: int,
+        path: str,
+        highscore: dict[str, int],
+    ) -> None:
+        """save score and player at the end of a game"""
+
+        self.highscore = highscore
+
+        self.add_score(score)
+        self.add_player_name(player_name)
+        self.push_new_score(path, highscore)
+
+    def next_level(self) -> None:
+        """called by the render side when the current level is won,
+        regenerates the maze and reinitialises its elements"""
+
+        self.actual_lvl += 1
+        self.generate_maze(self.config.seed + self.actual_lvl)
