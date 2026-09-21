@@ -137,6 +137,7 @@ class LevelScene(Draw):
                         self.launch()
                 else:
                     ghost.eaten = True
+                    ghost.time_respawn = time()
                     self.score += self.config.points_per_ghost
                     ghost.init_ghost_eaten()
 
@@ -226,8 +227,19 @@ class LevelScene(Draw):
         if self.is_winning is True:
             return
         assert self.pacman is not None
+
         if self.cheat_freeze_ghost is False:
             for ghost in self.ghosts:
+                if (
+                    ghost.time_respawn is not None
+                    and time() - ghost.time_respawn <= ghost.respawn_delay
+                ):
+                    continue
+                if ghost.time_respawn is not None:
+                    ghost.is_edible = False
+                    ghost.time_respawn = None
+                    ghost.last_time = time()
+
                 ghost.time_is_edible(self.level_engine.generator, self.pacman)
                 if ghost.path_to_goal:
                     if (

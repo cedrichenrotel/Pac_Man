@@ -9,6 +9,7 @@ from PIL import Image
 
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
+from src.engine.model import Config_json
 from src.engine.utils import DIRECTIONS
 from src.render.utils import YELLOW, get_asset_path, get_cell_size
 
@@ -35,6 +36,8 @@ class Draw:
     cheat_freeze_ghost: bool
     cheat_invincible: bool
     move_pac: int
+    config: Config_json
+    last_time: float
 
     def _put_sprite_centered(
         self, x: float, y: float, img_ptr: int, height: int, width: int
@@ -192,12 +195,19 @@ class Draw:
             elif ghost.is_edible is True:
                 sprite_ghost = color_ghost["B"]
                 assert self.pacman is not None
-                vulnerability_time: float | None = ghost.time_is_edible(
+                vulnerability: float | None = ghost.time_is_edible(
                     self.level_engine.generator, self.pacman
                 )
-                assert vulnerability_time is not None
-                flashing: int = int(vulnerability_time * 5)
-                if vulnerability_time >= 8 and flashing % 2 == 0:
+
+                assert vulnerability is not None
+
+                waiting: bool = (
+                    ghost.time_respawn is not None
+                    and time() - ghost.time_respawn <= ghost.respawn_delay
+                )
+                flashing: int = int(vulnerability * 5)
+
+                if (vulnerability >= 8 or waiting) and flashing % 2 == 0:
                     sprite_ghost = color_ghost["R"]
             img_ptr, width, height = self.GameRender.sprites_stores.sprites[
                 sprite_ghost
@@ -303,9 +313,7 @@ class Draw:
         strings: list[str] = [
             label + str(suffix) for label, suffix in list_text
         ]
-        widths: list[float] = [
-            draw.textlength(s, font=font) for s in strings
-        ]
+        widths: list[float] = [draw.textlength(s, font=font) for s in strings]
         total_width: float = sum(widths) + spacing * (len(strings) - 1)
 
         y = (hud_height // 2) - (size_police // 2)

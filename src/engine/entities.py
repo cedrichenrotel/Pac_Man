@@ -90,6 +90,8 @@ class Ghost(Entities):
         self.start_time_is_edible: float | None = None
         self.start_pos: tuple[int, int] = (x, y)
         self.time_edible = 10
+        self.respawn_delay = 5
+        self.time_respawn: float | None = None
         self.last_path_time: float = time()
         self.waypoints: list[tuple[int, int]] = []
         self.waypoint_index: int = 0
