@@ -51,18 +51,10 @@ class GameRender:
             self, self.mlx, self.mlx_init
         )
         self.sprites_stores.load_all()
-        self.current_scene: SceneType = MenuScene(
-            self,
-            self.mlx,
-            self.mlx_init,
-            self.mlx_window,
-            self.width,
-            self.height,
-            self.config,
-            self.highscore,
-            "",
-            0,
-        )
+        self.score = 0
+        self.player_name = ""
+        self.GameRender = self
+        self.current_scene: SceneType = MenuScene(self)
         self.current_scene.launch()
         self.mlx.mlx_loop(self.mlx_init)
         self.mlx.mlx_release(self.mlx_init)

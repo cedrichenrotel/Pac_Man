@@ -1,44 +1,26 @@
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-from mlx import Mlx
-
+from typing import Any
 from src.engine.level import Level
-from src.engine.model import Config_json
 from src.render.utils import XK_RETURN, YELLOW
-
-# guarded to avoid a circular import: GameRender.py imports ScoreScene at
-# module level, so GameRender can only be imported here for type hints
-if TYPE_CHECKING:
-    from src.render.game import GameRender
 
 
 class Winner:
     def __init__(
         self,
-        GameRender: GameRender,
-        mlx: Mlx,
-        mlx_init: int | None,
-        mlx_window: int | None,
-        width: int,
-        height: int,
-        config: Config_json,
-        highscore: dict[str, int],
-        player_name: str,
-        score: int,
+        game: Any
     ) -> None:
-        self.score: int = score
-        self.player_name = player_name
-        self.highscore = highscore
-        self.config = config
-        self.GameRender = GameRender
-        self.width = width
-        self.height = height
-        self.mlx = mlx
-        self.mlx_init = mlx_init
-        self.mlx_window = mlx_window
-        self.score = score
+        self.game = game
+        self.score: int = self.game.score
+        self.player_name = self.game.player_name
+        self.highscore = self.game.highscore
+        self.config = self.game.config
+        self.GameRender = self.game.GameRender
+        self.width = self.game.width
+        self.height = self.game.height
+        self.mlx = self.game.mlx
+        self.mlx_init = self.game.mlx_init
+        self.mlx_window = self.game.mlx_window
+        self.score = self.game.score
 
     def launch(self) -> None:
         self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
@@ -77,32 +59,10 @@ class Winner:
                 )
                 from src.render.scenes.menu import MenuScene
 
-                self.GameRender.current_scene = MenuScene(
-                    self.GameRender,
-                    self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
-                )
+                self.GameRender.current_scene = MenuScene(self)
                 self.GameRender.current_scene.launch()
             else:
                 from src.render.scenes.player import PlayerScene
 
-                player = PlayerScene(
-                    self.GameRender,
-                    self.mlx,
-                    self.mlx_init,
-                    self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
-                )
+                player = PlayerScene(self)
                 player.launch()
