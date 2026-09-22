@@ -133,8 +133,8 @@ def clear_rect(
 
 
 def get_asset_path(path: str) -> str:
-    """ convert a relative path to 'assets/’ into a usable absolute path,
-        regardless of where the programme is launched from """
+    """convert a relative path to 'assets/’ into a usable absolute path,
+    regardless of where the programme is launched from"""
     base_dir: str
     if getattr(sys, "frozen", False):
         base_dir = os.path.join(sys._MEIPASS, "assets")  # type: ignore
@@ -181,6 +181,21 @@ def check_range(from_val: float, to_val: float, range_val: float) -> bool:
     return False
 
 
+def compare_position(
+    pos_ghost: tuple[int, int], pos_pac: tuple[int, int], range_val: float
+) -> bool:
+    """Returns true if the positions of Pac-Man and the ghost are within
+    (range_val) of each other along the x and y axes"""
+
+    x_ghost, y_ghost = pos_ghost
+    x_pac, y_pac = pos_pac
+    if check_range(x_ghost, x_pac, range_val) and check_range(
+        y_ghost, y_pac, range_val
+    ):
+        return True
+    return False
+
+
 def install_menu_image(
     path: str,
     mlx: Mlx,
@@ -223,10 +238,11 @@ def install_menu_image(
     return img
 
 
-def pil_to_mlx_image(canvas: Image.Image, filename: str,
-                     mlx_init: int | None, mlx: Mlx) -> Any:
-    """ saves the image to a .cache folder if it does not exist, stores it
-        on the hard drive and displays the image """
+def pil_to_mlx_image(
+    canvas: Image.Image, filename: str, mlx_init: int | None, mlx: Mlx
+) -> Any:
+    """saves the image to a .cache folder if it does not exist, stores it
+    on the hard drive and displays the image"""
     os.makedirs(".cache", exist_ok=True)
     path = os.path.join(".cache", filename)
     canvas.save(path)

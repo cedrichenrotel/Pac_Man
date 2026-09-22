@@ -26,6 +26,7 @@ from src.render.utils import (
     XK_UP,
     YELLOW,
     check_range,
+    compare_position,
     transform_all_coord_to_cardinal,
 )
 
@@ -221,8 +222,38 @@ class LevelScene(Draw):
             if self.pacman.move_render(self.move_pac) is True:
                 self.add_point_score(self.pacman)
 
+    def _move_ghost_to_goal(self, ghost) -> None:
+        """the ghost’s journey to its destination"""
+
+        pos_pac: tuple[int, int] = (self.pacman.render_x, self.pacman.render_y)
+        pos_ghost: tuple[int, int] = (ghost.render_x, ghost.render_y)
+        range_val: int = 2
+        if (
+            ghost.move(ghost.path_to_goal[0], self.level_engine.generator)
+            is True
+        ):
+            ghost.frame_index += 1
+            ghost.path_to_goal.pop(0)
+        elif (
+            compare_position(pos_ghost, pos_pac, range_val) is True
+            and self.is_eligible()
+        ):
+            if (
+                self.pacman_last_position is None
+                or self.pacman_last_position != pos_pac
+            ):
+                self.time_eligible = time()
+                self.pacman_last_position = pos_pac
+                path = ghost.path_to_pacman(
+                    self.level_engine.generator,
+                    self.pacman,
+                    ghost.is_edible,
+                )
+                ghost.path_to_goal = transform_all_coord_to_cardinal(path)
+
     def ghost_moving(self) -> None:
         """handle all ghost moving in the maze"""
+
         if self.is_winning is True:
             return
         assert self.pacman is not None
@@ -241,51 +272,7 @@ class LevelScene(Draw):
 
                 ghost.time_is_edible(self.level_engine.generator, self.pacman)
                 if ghost.path_to_goal:
-                    if (
-                        ghost.move(
-                            ghost.path_to_goal[0], self.level_engine.generator
-                        )
-                        is True
-                    ):
-                        ghost.frame_index += 1
-                        ghost.path_to_goal.pop(0)
-                    elif (
-                        check_range(ghost.render_x, self.pacman.render_x, 2)
-                        is True
-                        and check_range(
-                            ghost.render_y, self.pacman.render_y, 2
-                        )
-                        is True
-                        and self.is_eligible()
-                    ):
-                        if (
-                            self.pacman_last_position is None
-                            or self.pacman_last_position[0]
-                            != self.pacman.render_x
-                            and self.pacman_last_position[1]
-                            != self.pacman.render_y
-                        ):
-                            self.time_eligible = time()
-                            self.pacman_last_position = (
-                                self.pacman.render_x,
-                                self.pacman.render_y,
-                            )
-                            if ghost.is_edible is True:
-                                path = ghost.path_to_pacman(
-                                    self.level_engine.generator,
-                                    self.pacman,
-                                    True,
-                                )
-                                ghost.path_to_goal = (
-                                    transform_all_coord_to_cardinal(path)
-                                )
-                            else:
-                                path = ghost.path_to_pacman(
-                                    self.level_engine.generator, self.pacman
-                                )
-                                ghost.path_to_goal = (
-                                    transform_all_coord_to_cardinal(path)
-                                )
+                    self._move_ghost_to_goal(ghost)
                 elif len(ghost.path_to_goal) == 0:
                     ghost.path_to_goal = transform_all_coord_to_cardinal(
                         ghost.path_to_pacman(
