@@ -1,24 +1,31 @@
 from __future__ import annotations
+
 import os
-from typing import TYPE_CHECKING, Optional, Tuple, Any
-from PIL import Image
 import sys
+from typing import TYPE_CHECKING, Any
+
+from PIL import Image
 
 if TYPE_CHECKING:
     from mlx import Mlx
 
 
-def make_color(r: int, g: int, b: int, a: int = 255,
-               text: bool = False) -> int:
-    '''Install RGBA components into a single integer color.'''
+def make_color(
+    r: int, g: int, b: int, a: int = 255, text: bool = False
+) -> int:
+    """Install RGBA components into a single integer color."""
 
     if text is True:
         return b | (g << 8) | (r << 16) | (a << 24)
     return r | (g << 8) | (b << 16) | (a << 24)
 
 
-'''basics color for mlx'''
-RED: int = make_color(255, 0, 0, )
+"""basics color for mlx"""
+RED: int = make_color(
+    255,
+    0,
+    0,
+)
 CREAM: int = make_color(233, 218, 223)
 green: int = make_color(0, 255, 0)
 BLUE: int = make_color(0, 0, 255)
@@ -37,7 +44,7 @@ GRAY_PIX: int = make_color(128, 128, 128, text=True)
 DARK_GRAY_PIX: int = make_color(60, 60, 60, text=True)
 YELLOW_PIX: int = make_color(255, 255, 0, text=True)
 
-'''key value to record them event'''
+"""key value to record them event"""
 XK_UP: int = 65362
 XK_DOWN: int = 65364
 XK_RETURN: int = 65293
@@ -47,65 +54,78 @@ XK_RIGHT = 65363
 XK_BACK: int = 65288
 XK_CHEAT_INVINCIBLE: int = 49
 XK_CHEAT_FREEZE: int = 50
-XK_SKIP_LEVEL: int = 51
-XK_LIFE_ADD: int = 52
-XK_INCREASE_SPEED: int = 53
+XK_CHEAT_SKIP_LEVEL: int = 51
+XK_CHEAT_LIFE_ADD: int = 52
+XK_CHEAT_INCREASE_SPEED: int = 53
+XK_CHEAT_GHOSTS_VULN: int = 54
 
-'''keyboard code to record event'''
-list_key = [(113, "Q"),
-            (119, "W"),
-            (101, "E"),
-            (114, "R"),
-            (116, "T"),
-            (121, "Y"),
-            (117, "U"),
-            (105, "I"),
-            (111, "O"),
-            (112, "P"),
-            (97, "A"),
-            (115, "S"),
-            (100, "D"),
-            (102, "F"),
-            (103, "G"),
-            (104, "H"),
-            (106, "J"),
-            (107, "K"),
-            (108, "L"),
-            (122, "Z"),
-            (120, "X"),
-            (99, "C"),
-            (118, "V"),
-            (98, "B"),
-            (110, "N"),
-            (109, "M")]
+"""keyboard code to record event"""
+list_key = [
+    (113, "Q"),
+    (119, "W"),
+    (101, "E"),
+    (114, "R"),
+    (116, "T"),
+    (121, "Y"),
+    (117, "U"),
+    (105, "I"),
+    (111, "O"),
+    (112, "P"),
+    (97, "A"),
+    (115, "S"),
+    (100, "D"),
+    (102, "F"),
+    (103, "G"),
+    (104, "H"),
+    (106, "J"),
+    (107, "K"),
+    (108, "L"),
+    (122, "Z"),
+    (120, "X"),
+    (99, "C"),
+    (118, "V"),
+    (98, "B"),
+    (110, "N"),
+    (109, "M"),
+]
 
 
-def transform_all_coord_to_cardinal(coords: list[tuple[int,
-                                                       int]]) -> list[str]:
+def transform_all_coord_to_cardinal(
+    coords: list[tuple[int, int]],
+) -> list[str]:
     """transform list of coord tuple to list of coordinate cardinal (NSEW)"""
     cardinal_list: list[str] = []
-    for i in range(0, len(coords)-1):
-        cardinal_list.append(get_cardinal_directions(coords[i], coords[i+1]))
+    for i in range(len(coords) - 1):
+        cardinal_list.append(get_cardinal_directions(coords[i], coords[i + 1]))
     return cardinal_list
 
 
-def get_cardinal_directions(from_coord: tuple[int, int],
-                            to: tuple[int, int]) -> str:
-    """get cardinal coordinate from coord (x, y) to (x, y) """
+def get_cardinal_directions(
+    from_coord: tuple[int, int], to: tuple[int, int]
+) -> str:
+    """get cardinal coordinate from coord (x, y) to (x, y)"""
     if from_coord[0] > to[0] and from_coord[1] == to[1]:
-        return 'W'
+        return "W"
     elif from_coord[0] < to[0] and from_coord[1] == to[1]:
-        return 'E'
+        return "E"
     elif from_coord[1] > to[1] and from_coord[0] == to[0]:
-        return 'N'
+        return "N"
     else:
-        return 'S'
+        return "S"
 
 
-def clear_rect(mlx: "Mlx", mlx_ptr: int, win_ptr: int, x: int, y: int,
-               width: int, height: int, color: int = CREAM) -> None:
-    '''erase a rectangular area of the window by overpainting it, so only
-    part of the display needs to be redrawn instead of the whole window'''
+def clear_rect(
+    mlx: Mlx,
+    mlx_ptr: int,
+    win_ptr: int,
+    x: int,
+    y: int,
+    width: int,
+    height: int,
+    color: int = CREAM,
+) -> None:
+    """erase a rectangular area of the window by overpainting it, so only
+    part of the display needs to be redrawn instead of the whole window"""
 
     for dy in range(height):
         for dx in range(width):
@@ -115,21 +135,28 @@ def clear_rect(mlx: "Mlx", mlx_ptr: int, win_ptr: int, x: int, y: int,
 def get_asset_path(path: str) -> str:
     """ convert a relative path to 'assets/’ into a usable absolute path,
         regardless of where the programme is launched from """
+    base_dir: str
     if getattr(sys, "frozen", False):
-        base_dir: str = os.path.join(sys._MEIPASS, "assets")
+        base_dir = os.path.join(sys._MEIPASS, "assets")  # type: ignore
     else:
         current_dir: str = os.path.dirname(os.path.abspath(__file__))
-        base_dir: str = os.path.join(current_dir, "../../assets/")
+        base_dir = os.path.join(current_dir, "../../assets/")
     return os.path.join(base_dir, path)
 
 
-def get_cell_size(width: int, height: int, maze_width: int,
-                  maze_height: int, margin: int = 0, tile: int = 1) -> int:
-    """ calculate the number of pixels in a cell, reserving `margin`
-        pixels on each side so bordering walls can be centered without
-        being clipped by the window edge, and rounded down to a multiple
-        of `tile` (the wall sprite size) so wall tiling never overshoots
-        a cell and misaligns at junctions """
+def get_cell_size(
+    width: int,
+    height: int,
+    maze_width: int,
+    maze_height: int,
+    margin: int = 0,
+    tile: int = 1,
+) -> int:
+    """calculate the number of pixels in a cell, reserving `margin`
+    pixels on each side so bordering walls can be centered without
+    being clipped by the window edge, and rounded down to a multiple
+    of `tile` (the wall sprite size) so wall tiling never overshoots
+    a cell and misaligns at junctions"""
 
     cell_size_x: int = (width - margin * 2) // maze_width
     cell_size_y: int = (height - margin * 2) // maze_height
@@ -142,7 +169,7 @@ def get_cell_size(width: int, height: int, maze_width: int,
 def check_range(from_val: float, to_val: float, range_val: float) -> bool:
     """calcul the distance between from_val and to_val ,
     if distance is less than 0.1 return True,
-    otherwise return false """
+    otherwise return false"""
 
     from_val = round(from_val, 2)
     to_val = round(to_val, 2)
@@ -154,40 +181,50 @@ def check_range(from_val: float, to_val: float, range_val: float) -> bool:
     return False
 
 
-def install_menu_image(path: str, mlx: "Mlx", mlx_init: int,
-                       mlx_window: int, width: int,
-                       height: int,
-                       center: bool = True) -> Tuple[Optional[int], int, int]:
-    '''install in the scene an image from assets/'''
+def install_menu_image(
+    path: str,
+    mlx: Mlx,
+    mlx_init: int,
+    mlx_window: int,
+    width: int,
+    height: int,
+    center: bool = True,
+) -> tuple[int | None, int, int]:
+    """install in the scene an image from assets/"""
 
-    from PIL import Image
     import os
 
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__))))
+    from PIL import Image
+
+    project_root = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
     image_path = os.path.join(project_root, path)
     image_path = os.path.normpath(image_path)
     Image.open(image_path).convert("RGBA").save(image_path)
 
-    img: Tuple[Optional[int], int, int] = mlx.mlx_png_file_to_image(
-          mlx_init, image_path)
+    img: tuple[int | None, int, int] = mlx.mlx_png_file_to_image(
+        mlx_init, image_path
+    )
     img_ptr, img_width, img_height = img
 
     x = width - img_width
     y = height - img_height
     if img_ptr:
         if center is not True:
-            mlx.mlx_put_image_to_window(mlx_init, mlx_window,
-                                        img_ptr, int(x / 2), 0)
+            mlx.mlx_put_image_to_window(
+                mlx_init, mlx_window, img_ptr, int(x / 2), 0
+            )
         else:
-            mlx.mlx_put_image_to_window(mlx_init, mlx_window,
-                                        img_ptr, int(x / 2), int(y / 2))
+            mlx.mlx_put_image_to_window(
+                mlx_init, mlx_window, img_ptr, int(x / 2), int(y / 2)
+            )
 
     return img
 
 
 def pil_to_mlx_image(canvas: Image.Image, filename: str,
-                     mlx_init: Optional[int], mlx: Mlx) -> Any:
+                     mlx_init: int | None, mlx: Mlx) -> Any:
     """ saves the image to a .cache folder if it does not exist, stores it
         on the hard drive and displays the image """
     os.makedirs(".cache", exist_ok=True)

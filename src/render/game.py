@@ -1,12 +1,14 @@
-from typing import Optional, Union, TYPE_CHECKING
-from src.render.sprites_stores import SpriteStores
-from src.render.scenes.menu import MenuScene
-from src.render.scenes.level import LevelScene
-from src.render.scenes.score import ScoreScene
-from src.engine.model import Config_json
-from src.render.scenes.instruction import InstructionScene
+from typing import TYPE_CHECKING, Union
+
 from mlx import Mlx
+
+from src.engine.model import Config_json
 from src.error import GameError
+from src.render.scenes.instruction import InstructionScene
+from src.render.scenes.level import LevelScene
+from src.render.scenes.menu import MenuScene
+from src.render.scenes.score import ScoreScene
+from src.render.sprites_stores import SpriteStores
 
 SceneType = Union[MenuScene, LevelScene, ScoreScene, InstructionScene]
 
@@ -14,14 +16,18 @@ if TYPE_CHECKING:
     from src.engine.game_engine import GameEngine
 
 
-class GameRender():
-    '''Class GameRender on contaim the basics for launch
-    the GameRender and the size of the screen'''
+class GameRender:
+    """Class GameRender on contaim the basics for launch
+    the GameRender and the size of the screen"""
 
-    def __init__(self, width: int, height: int,
-                 game_engine: "GameEngine",
-                 config: Config_json,
-                 highscore: dict[str, int]) -> None:
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        game_engine: "GameEngine",
+        config: Config_json,
+        highscore: dict[str, int],
+    ) -> None:
         self.highscore = highscore
         self.config = config
         self.game_engine = game_engine
@@ -33,25 +39,30 @@ class GameRender():
     def run(self) -> None:
         """launch mlx threw the menu scene"""
 
-        self.mlx_init: Optional[int] = self.mlx.mlx_init()
+        self.mlx_init: int | None = self.mlx.mlx_init()
         if self.mlx_init is None:
             raise GameError("Cannot init properly the mlx")
-        self.mlx_window: Optional[int] = self.mlx.mlx_new_window(
-            self.mlx_init, self.width, self.height, "Pac-Man")
+        self.mlx_window: int | None = self.mlx.mlx_new_window(
+            self.mlx_init, self.width, self.height, "Pac-Man"
+        )
         if self.mlx_window is None:
             raise GameError("Cannot init properly the window of mlx")
-        self.sprites_stores: SpriteStores = SpriteStores(self,
-                                                         self.mlx,
-                                                         self.mlx_init)
+        self.sprites_stores: SpriteStores = SpriteStores(
+            self, self.mlx, self.mlx_init
+        )
         self.sprites_stores.load_all()
-        self.current_scene: SceneType = MenuScene(self, self.mlx,
-                                                  self.mlx_init,
-                                                  self.mlx_window,
-                                                  self.width,
-                                                  self.height,
-                                                  self.config,
-                                                  self.highscore,
-                                                  "", 0)
+        self.current_scene: SceneType = MenuScene(
+            self,
+            self.mlx,
+            self.mlx_init,
+            self.mlx_window,
+            self.width,
+            self.height,
+            self.config,
+            self.highscore,
+            "",
+            0,
+        )
         self.current_scene.launch()
         self.mlx.mlx_loop(self.mlx_init)
         self.mlx.mlx_release(self.mlx_init)

@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
-from src.render.utils import LIGHT_GRAY, XK_ESCAPE
-from src.engine.model import Config_json
-from src.render.utils import pil_to_mlx_image
+
+from typing import TYPE_CHECKING
+
 from mlx import Mlx
+
+from src.engine.model import Config_json
+from src.render.utils import LIGHT_GRAY, XK_ESCAPE, pil_to_mlx_image
 
 # guarded to avoid a circular import: GameRender.py imports ScoreScene at
 # module level, so GameRender can only be imported here for type hints
@@ -12,15 +14,19 @@ if TYPE_CHECKING:
 
 
 class ScoreScene:
-    def __init__(self, GameRender: "GameRender", mlx: Mlx,
-                 mlx_init: Optional[int],
-                 mlx_window: Optional[int],
-                 width: int,
-                 height: int,
-                 config: Config_json,
-                 highscore: dict[str, int],
-                 player_name: str,
-                 score: int) -> None:
+    def __init__(
+        self,
+        GameRender: GameRender,
+        mlx: Mlx,
+        mlx_init: int | None,
+        mlx_window: int | None,
+        width: int,
+        height: int,
+        config: Config_json,
+        highscore: dict[str, int],
+        player_name: str,
+        score: int,
+    ) -> None:
         self.player_name = player_name
         self.highscore = highscore
         self.config = config
@@ -34,7 +40,7 @@ class ScoreScene:
 
     def draw_score_on_canvas(self) -> None:
         """Display on HUD of high score"""
-        from PIL import ImageDraw, ImageFont, Image
+        from PIL import Image, ImageDraw, ImageFont
 
         hud_height = 400
         hud_canvas = Image.new("RGBA", (self.width, hud_height),
@@ -75,11 +81,17 @@ class ScoreScene:
 
         if keycode == XK_ESCAPE:
             from src.render.scenes.menu import MenuScene
+
             self.GameRender.current_scene = MenuScene(
-                self.GameRender, self.mlx,
+                self.GameRender,
+                self.mlx,
                 self.mlx_init,
                 self.mlx_window,
-                self.width, self.height,
-                self.config, self.highscore, self.player_name,
-                self.score)
+                self.width,
+                self.height,
+                self.config,
+                self.highscore,
+                self.player_name,
+                self.score,
+            )
             self.GameRender.current_scene.launch()
