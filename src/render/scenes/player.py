@@ -119,39 +119,38 @@ class PlayerScene:
         record = [item for item in list_key if item[0] == keycode]
         if len(record) > 0:
             self.write_letter(record[0][1])
-        if keycode == XK_RETURN:
-            if len(self.player_name) > 2:
-                self.level_engine: Level = Level(self.config)
-                self.level_engine.highscore = self.highscore
-                if self.level_engine.add_player_name(self.player_name) is True:
-                    self.level_engine.add_score(self.score)
-                    self.level_engine.push_new_score(
-                        "./highscore", self.highscore
-                    )
-                else:
-                    self.mlx.mlx_string_put(
-                        self.mlx_init,
-                        self.mlx_window,
-                        int(self.width / 3),
-                        int(self.height / 2),
-                        YELLOW,
-                        "player allready exist cannot enter",
-                    )
-                    return
-                self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                self.GameRender.current_scene = MenuScene(
-                    self.GameRender,
-                    self.mlx,
+        if keycode == XK_RETURN and len(self.player_name) > 2:
+            self.level_engine: Level = Level(self.config)
+            self.level_engine.highscore = self.highscore
+            if self.level_engine.add_player_name(self.player_name) is True:
+                self.level_engine.add_score(self.score)
+                self.level_engine.push_new_score(
+                    "./highscore", self.highscore
+                )
+            else:
+                self.mlx.mlx_string_put(
                     self.mlx_init,
                     self.mlx_window,
-                    self.width,
-                    self.height,
-                    self.config,
-                    self.highscore,
-                    self.player_name,
-                    self.score,
+                    int(self.width / 3),
+                    int(self.height / 2),
+                    YELLOW,
+                    "player allready exist cannot enter",
                 )
+                return
+            self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
+            self.GameRender.current_scene = MenuScene(
+                self.GameRender,
+                self.mlx,
+                self.mlx_init,
+                self.mlx_window,
+                self.width,
+                self.height,
+                self.config,
+                self.highscore,
+                self.player_name,
+                self.score,
+            )
 
-                self.GameRender.current_scene.launch()
+            self.GameRender.current_scene.launch()
         if keycode == XK_BACK:
             self.delete_letter()

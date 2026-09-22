@@ -1,6 +1,6 @@
 import random
 from collections import deque
-from typing import Iterator
+from collections.abc import Iterator
 
 
 class MazeGenerator:
@@ -25,7 +25,6 @@ class MazeGenerator:
         self._path: list[list[int]] = []
         self._shortest_path: str | bool = False
         self.generate(self._seed)
-        return None
 
     @property
     def maze(self) -> list[list[int]]:
