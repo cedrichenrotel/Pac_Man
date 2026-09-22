@@ -134,7 +134,7 @@ class LevelScene(Draw):
                         self.mlx.mlx_clear_window(
                             self.mlx_init, self.mlx_window
                         )
-                        self.launch()
+                        self.launch(reset_timer=False)
                 else:
                     ghost.eaten = True
                     ghost.time_respawn = time()
@@ -162,14 +162,15 @@ class LevelScene(Draw):
         else:
             return True
 
-    def launch(self) -> None:
+    def launch(self, reset_timer: bool = True) -> None:
         """display the level scene"""
 
         self.level_engine = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
         self.process_render()
-        self.last_time = time()
+        if reset_timer is True:
+            self.last_time = time()
 
     def process_render(self) -> None:
         if self.is_winning is True:
