@@ -27,12 +27,7 @@ RED: int = make_color(
     0,
 )
 CREAM: int = make_color(233, 218, 223)
-green: int = make_color(0, 255, 0)
-BLUE: int = make_color(0, 0, 255)
-black: int = make_color(0, 0, 0)
 LIGHT_GRAY: int = make_color(200, 200, 200)
-GRAY: int = make_color(128, 128, 128)
-DARK_GRAY: int = make_color(60, 60, 60)
 YELLOW: int = make_color(255, 255, 0)
 
 RED_PIX: int = make_color(255, 0, 0, text=True)
