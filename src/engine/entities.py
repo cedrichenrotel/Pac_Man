@@ -162,7 +162,7 @@ class Ghost(Entities):
             ]
 
         for wp in raw_waypoints:
-            waypoint = self.find_walkable_near(maze, wp, self.waypoints)
+            waypoint = self.find_walkable_near(maze, wp)
             self.waypoints.append(waypoint)
 
         self.waypoint_index = 0

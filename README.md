@@ -109,3 +109,11 @@ from mazegenerator import MazeGenerator
 
 ### AI Usage Disclosure
 *Claude AI was used during the development of this project strictly as an advanced search engine and learning assistant to break down complex topics. All AI-generated explanations and suggestions were manually verified, tested, and fully understood by the authors prior to implementation in the codebase.*
+
+## Project Management
+
+The project was organized around extensive peer reviews for each implementation.
+
+Each feature was discussed and agreed upon collectively throughout the development process. Every feature was developed on its own branch and reviewed through a Pull Request before being merged into the `main` branch.
+
+A significant amount of verbal communication and discussion took place throughout the project. This allowed us to coordinate effectively without the need for a formal timeline or project management tools such as Jira.
