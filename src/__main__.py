@@ -1,17 +1,19 @@
 import sys
+
 from src.colors import COLORS
 
 try:
-    from src.error import GameError
-    from src.engine.parse_config import parse_args, valid_type_file
+    import argparse
+    from pathlib import Path
+    from typing import Any
+
+    from src.engine.game_engine import GameEngine
     from src.engine.load_config import load_json, read_json
     from src.engine.model import Config_json
-    from src.engine.game_engine import GameEngine
-    from typing import Any
-    from pathlib import Path
-    import argparse
+    from src.engine.parse_config import parse_args, valid_type_file
+    from src.error import GameError
 except ImportError as e:
-    print(f'{COLORS['bright_red']}[IMPORT ERROR]:{COLORS['reset']} {e}')
+    print(f"{COLORS['bright_red']}[IMPORT ERROR]:{COLORS['reset']} {e}")
     sys.exit()
 
 
@@ -30,15 +32,19 @@ def main() -> None:
         try:
             config: Config_json = Config_json(**load_config_json)
         except Exception as e:
-            print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-                  f"Invalid config values: {e}")
+            print(
+                f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                f"Invalid config values: {e}"
+            )
 
         engine = GameEngine(config)
         engine.run()
 
     except (Exception, KeyboardInterrupt) as e:
-        print(f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-              "The program was stopped manually")
+        print(
+            f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+            "The program was stopped manually"
+        )
         print(f"[DEBUG] {type(e).__name__}: {e}")
         if isinstance(e, GameError):
             print(e)

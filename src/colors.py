@@ -1,4 +1,5 @@
-'''color for print in terminal'''
+"""color for print in terminal"""
+
 COLORS = {
     "reset": "\033[0m",
     "bold": "\033[1m",
