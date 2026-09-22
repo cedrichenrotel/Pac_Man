@@ -360,6 +360,7 @@ class LevelScene(Draw):
             self.level_engine.next_level()
             self.maze = self.level_engine.generator.maze
             self.process_render()
+            self.last_time = time()
             self.actual_lvl += 1
         else:
             from src.render.scenes.win import Winner
