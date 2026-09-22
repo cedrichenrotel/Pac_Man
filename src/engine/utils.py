@@ -143,7 +143,8 @@ def push_json(highscore: dict[str, int], path: str) -> None:
 
 
 def order_asc_and_limit(
-    highscore: dict[str, int], player_name: str | None = None
+    highscore: dict[str, int], file_name: str,
+    player_name: str | None = None,
 ) -> None:
 
     sorted_items = sorted(
@@ -158,7 +159,7 @@ def order_asc_and_limit(
 
     highscore.clear()
     highscore.update(sorted_items)
-    push_json(highscore, "./highscore.json")
+    push_json(highscore, file_name)
 
 
 def install_score_system(path: str, file: Path) -> dict[str, int]:
@@ -174,7 +175,7 @@ def install_score_system(path: str, file: Path) -> dict[str, int]:
         elif os.stat(file).st_size != 0:
             with open(path) as f:
                 highscores = json.load(f)
-            order_asc_and_limit(highscores)
+            order_asc_and_limit(highscores, path)
     return highscores
 
 

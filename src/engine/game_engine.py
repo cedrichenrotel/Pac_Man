@@ -19,7 +19,7 @@ class GameEngine:
 
     def __init__(self, config: Config_json) -> None:
         self.config: Config_json = config
-        self.path = "./highscore.json"
+        self.path = config.highscore_filename
         self.file = Path(self.path)
 
     def initialize(self) -> None:
