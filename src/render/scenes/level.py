@@ -223,11 +223,15 @@ class LevelScene(Draw):
             if self.pacman.move_render(self.move_pac) is True:
                 self.add_point_score(self.pacman)
 
-    def _move_ghost_to_goal(self, ghost) -> None:
+    def _move_ghost_to_goal(self, ghost: Ghost) -> None:
         """the ghost’s journey to its destination"""
 
-        pos_pac: tuple[int, int] = (self.pacman.render_x, self.pacman.render_y)
-        pos_ghost: tuple[int, int] = (ghost.render_x, ghost.render_y)
+        assert self.pacman is not None
+        pos_pac: tuple[float, float] = (
+            self.pacman.render_x,
+            self.pacman.render_y,
+        )
+        pos_ghost: tuple[float, float] = (ghost.render_x, ghost.render_y)
         range_val: int = 2
         if (
             ghost.move(ghost.path_to_goal[0], self.level_engine.generator)

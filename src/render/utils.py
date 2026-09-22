@@ -157,7 +157,9 @@ def check_range(from_val: float, to_val: float, range_val: float) -> bool:
 
 
 def compare_position(
-    pos_ghost: tuple[int, int], pos_pac: tuple[int, int], range_val: float
+    pos_ghost: tuple[float, float],
+    pos_pac: tuple[float, float],
+    range_val: float,
 ) -> bool:
     """Returns true if the positions of Pac-Man and the ghost are within
     (range_val) of each other along the x and y axes"""
