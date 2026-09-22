@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Optional, Tuple, Any
 from PIL import Image
+import sys
 
 if TYPE_CHECKING:
     from mlx import Mlx
@@ -114,9 +115,12 @@ def clear_rect(mlx: "Mlx", mlx_ptr: int, win_ptr: int, x: int, y: int,
 def get_asset_path(path: str) -> str:
     """ convert a relative path to 'assets/’ into a usable absolute path,
         regardless of where the programme is launched from """
-
-    current_dir: str = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(current_dir, "../../assets/", path)
+    if getattr(sys, "frozen", False):
+        base_dir: str = os.path.join(sys._MEIPASS, "assets")
+    else:
+        current_dir: str = os.path.dirname(os.path.abspath(__file__))
+        base_dir: str = os.path.join(current_dir, "../../assets/")
+    return os.path.join(base_dir, path)
 
 
 def get_cell_size(width: int, height: int, maze_width: int,

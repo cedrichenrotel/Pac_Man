@@ -6,7 +6,7 @@ from src.colors import COLORS
 
 
 def main() -> None:
-    if len(sys.argv) > 1:
+    if len(sys.argv) != 1:
         config_file = sys.argv[1]
 
         if os.path.exists(config_file):
