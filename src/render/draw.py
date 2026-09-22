@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from time import time
 from typing import TYPE_CHECKING, Any
 
@@ -11,7 +10,12 @@ from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.model import Config_json
 from src.engine.utils import DIRECTIONS
-from src.render.utils import YELLOW, get_asset_path, get_cell_size
+from src.render.utils import (
+    YELLOW,
+    get_asset_path,
+    get_cell_size,
+    pil_to_mlx_image,
+)
 
 if TYPE_CHECKING:
     # noqa import: flake8 can't see the use below because the attribute
@@ -134,9 +138,10 @@ class Draw:
             for x in range(len(self.maze[y])):
                 self.draw_wall(x, y)
 
-        self.maze_img_ptr: int = self._pil_to_mlx_image(
-            self.canvas, "maze_cache.png"
-        )
+        self.maze_img_ptr: int = pil_to_mlx_image(self.canvas,
+                                                  "maze_cache.png",
+                                                  self.mlx_init,
+                                                  self.mlx)
         return True
 
     def draw_pacman(self) -> None:
@@ -272,16 +277,6 @@ class Draw:
             f"score: {self.score}",
         )
 
-    def _pil_to_mlx_image(self, canvas: Image.Image, filename: str) -> Any:
-        """saves the image to a .cache folder if it does not exist, stores it
-        on the hard drive and displays the image"""
-
-        os.makedirs(".cache", exist_ok=True)
-        path = os.path.join(".cache", filename)
-        canvas.save(path)
-        ptr, _, _ = self.mlx.mlx_png_file_to_image(self.mlx_init, path)
-        return ptr
-
     def draw_hud_on_canvas(self) -> None:
         """Display on HUD text with score and life"""
         from PIL import ImageDraw, ImageFont
@@ -322,14 +317,10 @@ class Draw:
             draw.text((x, y), s, fill=(255, 255, 0, 255), font=font)
             x += w + spacing
 
-        hud_ptr: int = self._pil_to_mlx_image(hud_canvas, "hud_cache.png")
-        self.mlx.mlx_put_image_to_window(
-            self.mlx_init,
-            self.mlx_window,
-            hud_ptr,
-            0,
-            self.height - hud_height,
-        )
+        hud_ptr: int = pil_to_mlx_image(hud_canvas, "hud_cache.png",
+                                        self.mlx_init, self.mlx)
+        self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                         hud_ptr, 0, self.height - hud_height)
 
     def draw_cheat(self) -> None:
         """Display of cheat commands with on/off switch to check if active"""
@@ -372,7 +363,7 @@ class Draw:
                 (x, y), label + suffix, fill=(255, 255, 0, 255), font=font
             )
 
-        cheat_ptr: int = self._pil_to_mlx_image(hud_canvas, "cheat_cache.png")
-        self.mlx.mlx_put_image_to_window(
-            self.mlx_init, self.mlx_window, cheat_ptr, 0, 0
-        )
+        cheat_ptr: int = pil_to_mlx_image(hud_canvas, "cheat_cache.png",
+                                          self.mlx_init, self.mlx)
+        self.mlx.mlx_put_image_to_window(self.mlx_init, self.mlx_window,
+                                         cheat_ptr, 0, 0)

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+import sys
+from typing import TYPE_CHECKING, Any
+
+from PIL import Image
 
 if TYPE_CHECKING:
     from mlx import Mlx
@@ -130,11 +133,15 @@ def clear_rect(
 
 
 def get_asset_path(path: str) -> str:
-    """convert a relative path to 'assets/’ into a usable absolute path,
-    regardless of where the programme is launched from"""
-
-    current_dir: str = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(current_dir, "../../assets/", path)
+    """ convert a relative path to 'assets/’ into a usable absolute path,
+        regardless of where the programme is launched from """
+    base_dir: str
+    if getattr(sys, "frozen", False):
+        base_dir = os.path.join(sys._MEIPASS, "assets")  # type: ignore
+    else:
+        current_dir: str = os.path.dirname(os.path.abspath(__file__))
+        base_dir = os.path.join(current_dir, "../../assets/")
+    return os.path.join(base_dir, path)
 
 
 def get_cell_size(
@@ -214,3 +221,14 @@ def install_menu_image(
             )
 
     return img
+
+
+def pil_to_mlx_image(canvas: Image.Image, filename: str,
+                     mlx_init: int | None, mlx: Mlx) -> Any:
+    """ saves the image to a .cache folder if it does not exist, stores it
+        on the hard drive and displays the image """
+    os.makedirs(".cache", exist_ok=True)
+    path = os.path.join(".cache", filename)
+    canvas.save(path)
+    ptr, _, _ = mlx.mlx_png_file_to_image(mlx_init, path)
+    return ptr
