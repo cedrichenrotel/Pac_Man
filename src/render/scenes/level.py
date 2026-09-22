@@ -63,7 +63,6 @@ class LevelScene(Draw):
         self.actual_lvl = 1
         self.height = height
         self.is_game_over: bool = False
-        self.val_test = 0
         self.time_eligible: float = 0
         self.pacman_last_position: tuple[float, float] | None = None
         self.is_winning: bool = False
@@ -287,7 +286,6 @@ class LevelScene(Draw):
                                 ghost.path_to_goal = (
                                     transform_all_coord_to_cardinal(path)
                                 )
-                            self.val_test += 1
                 elif len(ghost.path_to_goal) == 0:
                     ghost.path_to_goal = transform_all_coord_to_cardinal(
                         ghost.path_to_pacman(

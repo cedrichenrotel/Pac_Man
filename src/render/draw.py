@@ -11,7 +11,7 @@ from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.model import Config_json
 from src.engine.utils import DIRECTIONS
-from src.render.utils import YELLOW, get_asset_path, get_cell_size
+from src.render.utils import get_asset_path, get_cell_size
 
 if TYPE_CHECKING:
     # noqa import: flake8 can't see the use below because the attribute
@@ -246,31 +246,6 @@ class Draw:
                 super_pacgum[0], super_pacgum[1], img_ptr, height, width
             )
         return True
-
-    def show_life(self) -> None:
-        assert self.pacman is not None
-        self.mlx.mlx_string_put(
-            self.mlx_init,
-            self.mlx_window,
-            10,
-            self.height - 40,
-            YELLOW,
-            f"life: {self.pacman.lives}",
-        )
-
-    def show_score(self) -> None:
-        """display the score when Pac-Man eats the Pac-Gums during
-        the current game"""
-
-        assert self.pacman is not None
-        self.mlx.mlx_string_put(
-            self.mlx_init,
-            self.mlx_window,
-            self.width - 150,
-            self.height - 40,
-            YELLOW,
-            f"score: {self.score}",
-        )
 
     def _pil_to_mlx_image(self, canvas: Image.Image, filename: str) -> Any:
         """saves the image to a .cache folder if it does not exist, stores it

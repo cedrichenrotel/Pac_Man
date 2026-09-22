@@ -155,22 +155,3 @@ class PlayerScene:
                 self.GameRender.current_scene.launch()
         if keycode == XK_BACK:
             self.delete_letter()
-
-    def back_menu(self) -> None:
-        """go back to the menu scene"""
-
-        from src.render.scenes.menu import MenuScene
-
-        self.GameRender.current_scene = MenuScene(
-            self.GameRender,
-            self.mlx,
-            self.mlx_init,
-            self.mlx_window,
-            self.width,
-            self.height,
-            self.config,
-            self.highscore,
-            self.player_name,
-            self.score,
-        )
-        self.GameRender.current_scene.launch()
