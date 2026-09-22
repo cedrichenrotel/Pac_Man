@@ -89,6 +89,24 @@ class LevelScene(Draw):
             return False
         return True
 
+    def check_ghost_touch(self, ghost: Ghost, pacman: Pacman) -> None:
+        if (
+            check_range(ghost.render_x, pacman.render_x, 0.2) is True
+            and check_range(ghost.render_y, pacman.render_y, 0.2) is True
+        ):
+            if ghost.is_edible is False:
+                if self.cheat_invincible is False:
+                    pacman.decrease_life()
+                    self.mlx.mlx_clear_window(
+                        self.mlx_init, self.mlx_window
+                    )
+                    self.launch()
+            else:
+                ghost.eaten = True
+                ghost.time_respawn = time()
+                self.score += self.config.points_per_ghost
+                ghost.init_ghost_eaten()
+
     def check_positioning(self) -> bool:
         """check the position of all ghost and pacman
         if a ghost grab pacman , pacman decrease
@@ -106,22 +124,7 @@ class LevelScene(Draw):
         assert pacman is not None
 
         for ghost in self.ghosts:
-            if (
-                check_range(ghost.render_x, pacman.render_x, 0.2) is True
-                and check_range(ghost.render_y, pacman.render_y, 0.2) is True
-            ):
-                if ghost.is_edible is False:
-                    if self.cheat_invincible is False:
-                        pacman.decrease_life()
-                        self.mlx.mlx_clear_window(
-                            self.mlx_init, self.mlx_window
-                        )
-                        self.launch()
-                else:
-                    ghost.eaten = True
-                    ghost.time_respawn = time()
-                    self.score += self.config.points_per_ghost
-                    ghost.init_ghost_eaten()
+            self.check_ghost_touch(ghost, pacman)
 
         if pacman.lives == 0 and pacman.dead is True:
             from src.render.scenes.game_over import GameOver
