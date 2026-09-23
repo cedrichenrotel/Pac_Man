@@ -10,42 +10,22 @@ if TYPE_CHECKING:
     from mlx import Mlx
 
 
-def make_color(
-    r: int, g: int, b: int, a: int = 255, text: bool = False
-) -> int:
+def make_color(r: int, g: int, b: int, a: int = 255) -> int:
     """Install RGBA components into a single integer color."""
 
-    if text is True:
-        return b | (g << 8) | (r << 16) | (a << 24)
     return r | (g << 8) | (b << 16) | (a << 24)
 
-
-"""basics color for mlx"""
-RED: int = make_color(
-    255,
-    0,
-    0,
-)
+RED: int = make_color(255, 0, 0)
 CREAM: int = make_color(233, 218, 223)
 LIGHT_GRAY: int = make_color(200, 200, 200)
 YELLOW: int = make_color(255, 255, 0)
 
-RED_PIX: int = make_color(255, 0, 0, text=True)
-GREEN_PIX: int = make_color(0, 255, 0, text=True)
-BLUE_PIX: int = make_color(0, 0, 255, text=True)
-BLACK_PIX: int = make_color(0, 0, 0, text=True)
-LIGHT_GRAY_PIX: int = make_color(200, 200, 200, text=True)
-GRAY_PIX: int = make_color(128, 128, 128, text=True)
-DARK_GRAY_PIX: int = make_color(60, 60, 60, text=True)
-YELLOW_PIX: int = make_color(255, 255, 0, text=True)
-
-"""key value to record them event"""
 XK_UP: int = 65362
 XK_DOWN: int = 65364
 XK_RETURN: int = 65293
 XK_ESCAPE: int = 65307
 XK_LEFT: int = 65361
-XK_RIGHT = 65363
+XK_RIGHT: int = 65363
 XK_BACK: int = 65288
 XK_CHEAT_INVINCIBLE: int = 49
 XK_CHEAT_FREEZE: int = 50
@@ -54,7 +34,6 @@ XK_CHEAT_LIFE_ADD: int = 52
 XK_CHEAT_INCREASE_SPEED: int = 53
 XK_CHEAT_GHOSTS_VULN: int = 54
 
-"""keyboard code to record event"""
 list_key = [
     (113, "Q"),
     (119, "W"),
@@ -138,8 +117,8 @@ def clear_rect(
 
 
 def get_asset_path(path: str) -> str:
-    """ convert a relative path to 'assets/’ into a usable absolute path,
-        regardless of where the programme is launched from """
+    """convert a relative path to 'assets/’ into a usable absolute path,
+    regardless of where the programme is launched from"""
     base_dir: str
     if getattr(sys, "frozen", False):
         base_dir = os.path.join(sys._MEIPASS, "assets")  # type: ignore
@@ -186,6 +165,23 @@ def check_range(from_val: float, to_val: float, range_val: float) -> bool:
     return False
 
 
+def compare_position(
+    pos_ghost: tuple[float, float],
+    pos_pac: tuple[float, float],
+    range_val: float,
+) -> bool:
+    """Returns true if the positions of Pac-Man and the ghost are within
+    (range_val) of each other along the x and y axes"""
+
+    x_ghost, y_ghost = pos_ghost
+    x_pac, y_pac = pos_pac
+    if check_range(x_ghost, x_pac, range_val) and check_range(
+        y_ghost, y_pac, range_val
+    ):
+        return True
+    return False
+
+
 def install_menu_image(
     path: str,
     mlx: Mlx,
@@ -196,10 +192,6 @@ def install_menu_image(
     center: bool = True,
 ) -> tuple[int | None, int, int]:
     """install in the scene an image from assets/"""
-
-    import os
-
-    from PIL import Image
 
     project_root = os.path.dirname(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -228,10 +220,11 @@ def install_menu_image(
     return img
 
 
-def pil_to_mlx_image(canvas: Image.Image, filename: str,
-                     mlx_init: int | None, mlx: Mlx) -> Any:
-    """ saves the image to a .cache folder if it does not exist, stores it
-        on the hard drive and displays the image """
+def pil_to_mlx_image(
+    canvas: Image.Image, filename: str, mlx_init: int | None, mlx: Mlx
+) -> Any:
+    """saves the image to a .cache folder if it does not exist, stores it
+    on the hard drive and displays the image"""
     os.makedirs(".cache", exist_ok=True)
     path = os.path.join(".cache", filename)
     canvas.save(path)
