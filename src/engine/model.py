@@ -93,6 +93,7 @@ class Config_json(BaseModel):
         if (
             not isinstance(values.get("lives"), int)
             or values.get("lives", int) <= 0
+            or values.get("lives", int) > 30
         ):
             values["lives"] = 3
             print(
@@ -114,6 +115,7 @@ class Config_json(BaseModel):
         if (
             not isinstance(values.get("points_per_pacgum"), int)
             or values.get("points_per_pacgum", int) < 0
+            or values.get("points_per_pacgum", int) > 100
         ):
             values["points_per_pacgum"] = 10
             print(
@@ -124,6 +126,7 @@ class Config_json(BaseModel):
         if (
             not isinstance(values.get("points_per_super_pacgum"), int)
             or values.get("points_per_super_pacgum", int) < 0
+            or values.get("points_per_super_pacgum", int) > 500
         ):
             values["points_per_super_pacgum"] = 50
             print(
@@ -134,6 +137,7 @@ class Config_json(BaseModel):
         if (
             not isinstance(values.get("points_per_ghost"), int)
             or values.get("points_per_ghost", int) < 0
+            or values.get("points_per_ghost", int) > 1000
         ):
             values["points_per_ghost"] = 200
             print(
@@ -154,6 +158,7 @@ class Config_json(BaseModel):
         if (
             not isinstance(values.get("level_max_time"), int)
             or values.get("level_max_time", int) < 0
+            or values.get("level_max_time", int) > 300
         ):
             values["level_max_time"] = 90
             print(

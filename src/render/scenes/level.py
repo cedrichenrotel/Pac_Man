@@ -372,6 +372,8 @@ class LevelScene(Draw):
 
     def go_to_menu(self) -> None:
         """open the pause menu and hand key control to on_key_break"""
+
+        self.time_when_pause = time()
         self.paused = True
         self.selected = 0
         self.draw_menu()
@@ -379,6 +381,10 @@ class LevelScene(Draw):
 
     def return_to_game(self) -> None:
         """close the pause menu and give control back to on_key"""
+
+        time_during_break = time() - self.time_when_pause
+        self.last_time = self.last_time + time_during_break
+
         self.paused = False
         self.mlx.mlx_key_hook(self.mlx_window, self.on_key, self)
         self.render()
