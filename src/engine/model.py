@@ -33,9 +33,9 @@ class Level(BaseModel):
 
         if (
             isinstance(values.get("width"), int)
-            and values.get("width", 0) > 30
+            and values.get("width", 0) > 40
         ):
-            values["width"] = 30
+            values["width"] = 40
             print(
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                 "width too high, using max."
@@ -53,9 +53,9 @@ class Level(BaseModel):
 
         if (
             isinstance(values.get("height"), int)
-            and values.get("height", 0) > 30
+            and values.get("height", 0) > 20
         ):
-            values["height"] = 30
+            values["height"] = 20
             print(
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                 "height too high, using max."
@@ -104,8 +104,7 @@ class Config_json(BaseModel):
         if (
             not isinstance(values.get("pacgum"), int)
             or values.get("pacgum", int) < 0
-            or values.get("pacgum", int) > (values["level"]["width"]
-                                            * values["level"]["width"]) - 20
+            or values.get("pacgum", int) > 50
         ):
             values["pacgum"] = 42
             print(
@@ -148,7 +147,7 @@ class Config_json(BaseModel):
 
         if (
             not isinstance(values.get("seed"), int)
-            or values.get("seed", int) != 42
+            or values.get("seed", int) < 0
         ):
             values["seed"] = 42
             print(

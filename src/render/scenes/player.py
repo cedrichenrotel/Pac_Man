@@ -1,7 +1,9 @@
 from __future__ import annotations
+
+from typing import Any
+
 from src.engine.level import Level
 from src.render.scenes.menu import MenuScene
-from typing import Any
 from src.render.utils import (
     RED,
     XK_BACK,
@@ -14,10 +16,7 @@ from src.render.utils import (
 
 
 class PlayerScene:
-    def __init__(
-        self,
-        game: Any
-    ) -> None:
+    def __init__(self, game: Any) -> None:
         self.game = game
         self.score = self.game.score
         self.highscore = self.game.highscore

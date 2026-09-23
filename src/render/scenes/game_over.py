@@ -1,14 +1,13 @@
 from __future__ import annotations
+
+from typing import Any
+
 from src.engine.level import Level
 from src.render.utils import XK_RETURN, YELLOW
-from typing import Any
 
 
 class GameOver:
-    def __init__(
-        self,
-        game: Any
-    ) -> None:
+    def __init__(self, game: Any) -> None:
         self.game = game
         self.GameRender = self.game.GameRender
         self.score: int = self.game.score
