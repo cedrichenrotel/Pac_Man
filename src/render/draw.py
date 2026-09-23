@@ -192,7 +192,7 @@ class Draw:
 
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
-                pos = (y , x)
+                pos = (x , y)
                 if pos in pacgums:
                     self.draw_pacgum_on_canva(pos, width, height)
 
