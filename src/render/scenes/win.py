@@ -1,14 +1,13 @@
 from __future__ import annotations
+
 from typing import Any
+
 from src.engine.level import Level
 from src.render.utils import XK_RETURN, YELLOW
 
 
 class Winner:
-    def __init__(
-        self,
-        game: Any
-    ) -> None:
+    def __init__(self, game: Any) -> None:
         self.game = game
         self.score: int = self.game.score
         self.player_name = self.game.player_name

@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 from collections.abc import Callable
+from typing import Any
+
 from src.render.scenes.instruction import InstructionScene
 from src.render.scenes.level import LevelScene
 from src.render.scenes.score import ScoreScene
-from typing import Any
 from src.render.utils import (
     LIGHT_GRAY,
     XK_DOWN,
@@ -16,10 +18,7 @@ from src.render.utils import (
 
 
 class MenuScene:
-    def __init__(
-        self,
-        game: Any
-    ) -> None:
+    def __init__(self, game: Any) -> None:
         self.game = game
         self.score = self.game.score
         self.player_name = self.game.player_name
