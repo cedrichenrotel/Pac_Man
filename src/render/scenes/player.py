@@ -1,7 +1,9 @@
 from __future__ import annotations
+
+from typing import Any
+
 from src.engine.level import Level
 from src.render.scenes.menu import MenuScene
-from typing import Any
 from src.render.utils import (
     RED,
     XK_BACK,
@@ -14,10 +16,7 @@ from src.render.utils import (
 
 
 class PlayerScene:
-    def __init__(
-        self,
-        game: Any
-    ) -> None:
+    def __init__(self, game: Any) -> None:
         self.game = game
         self.score = self.game.score
         self.highscore = self.game.highscore
@@ -106,9 +105,7 @@ class PlayerScene:
             self.level_engine.highscore = self.highscore
             if self.level_engine.add_player_name(self.player_name) is True:
                 self.level_engine.add_score(self.score)
-                self.level_engine.push_new_score(
-                    "./highscore", self.highscore
-                )
+                self.level_engine.push_new_score("./highscore", self.highscore)
             else:
                 self.mlx.mlx_string_put(
                     self.mlx_init,

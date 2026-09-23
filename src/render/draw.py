@@ -10,7 +10,13 @@ from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.engine.model import Config_json
 from src.engine.utils import DIRECTIONS
-from src.render.utils import get_asset_path, get_cell_size, pil_to_mlx_image
+from src.render.utils import (
+    HUD_BOTTOM_HEIGHT,
+    HUD_TOP_HEIGHT,
+    get_asset_path,
+    get_cell_size,
+    pil_to_mlx_image,
+)
 
 if TYPE_CHECKING:
     # noqa import: flake8 can't see the use below because the attribute
@@ -37,6 +43,34 @@ class Draw:
     move_pac: int
     config: Config_json
     last_time: float
+    hud_img: int | None
+    cheat_img: int | None
+
+    def _put_canvas(
+        self, canvas: Image.Image, img_ptr: int | None, x: int, y: int
+    ) -> int | None:
+        """copy a PIL canvas into a single reusable mlx image and display
+        it, instead of creating (and leaking) a new image every frame"""
+
+        if img_ptr is None:
+            img_ptr = self.mlx.mlx_new_image(
+                self.mlx_init, canvas.width, canvas.height
+            )
+            if img_ptr is None:
+                return None
+        buf, _, size_line, _ = self.mlx.mlx_get_data_addr(img_ptr)
+        red, green, blue, alpha = canvas.split()
+        pixels: bytes = Image.merge(
+            "RGBA", (blue, green, red, alpha)
+        ).tobytes()
+        row: int = canvas.width * 4
+        for y_row in range(canvas.height):
+            start: int = y_row * size_line
+            buf[start : start + row] = pixels[y_row * row : (y_row + 1) * row]
+        self.mlx.mlx_put_image_to_window(
+            self.mlx_init, self.mlx_window, img_ptr, x, y
+        )
+        return img_ptr
 
     def _put_sprite_centered(
         self, x: float, y: float, img_ptr: int, height: int, width: int
@@ -60,9 +94,10 @@ class Draw:
 
         _, wall_width, _ = self.GameRender.sprites_stores.sprites["wall"][0]
         reserve: int = wall_width // 2
+        height_play: int = self.height - HUD_TOP_HEIGHT - HUD_BOTTOM_HEIGHT
         self.cell_size: int = get_cell_size(
             self.width,
-            self.height,
+            height_play,
             self.maze_width,
             self.maze_height,
             reserve,
@@ -72,8 +107,9 @@ class Draw:
             self.width - self.maze_width * self.cell_size
         ) // 2
         self.margin_y: int = (
-            self.height - self.maze_height * self.cell_size
-        ) // 2
+            HUD_TOP_HEIGHT
+            + (height_play - self.maze_height * self.cell_size) // 2
+        )
         return self.cell_size, self.margin_x, self.margin_y
 
     def _paste_wall_segment(
@@ -251,9 +287,8 @@ class Draw:
         from PIL import ImageDraw, ImageFont
 
         size_police = 22
-        hud_height = 50
         hud_canvas = Image.new(
-            "RGBA", (self.width, hud_height), (0, 0, 0, 255)
+            "RGBA", (self.width, HUD_BOTTOM_HEIGHT), (0, 0, 0, 255)
         )
         draw = ImageDraw.Draw(hud_canvas)
 
@@ -280,21 +315,14 @@ class Draw:
         widths: list[float] = [draw.textlength(s, font=font) for s in strings]
         total_width: float = sum(widths) + spacing * (len(strings) - 1)
 
-        y = (hud_height // 2) - (size_police // 2)
+        y = (HUD_BOTTOM_HEIGHT // 2) - (size_police // 2)
         x = (self.width - total_width) / 2
         for s, w in zip(strings, widths):
             draw.text((x, y), s, fill=(255, 255, 0, 255), font=font)
             x += w + spacing
 
-        hud_ptr: int = pil_to_mlx_image(
-            hud_canvas, "hud_cache.png", self.mlx_init, self.mlx
-        )
-        self.mlx.mlx_put_image_to_window(
-            self.mlx_init,
-            self.mlx_window,
-            hud_ptr,
-            0,
-            self.height - hud_height,
+        self.hud_img = self._put_canvas(
+            hud_canvas, self.hud_img, 0, self.height - HUD_BOTTOM_HEIGHT
         )
 
     def draw_cheat(self) -> None:
@@ -303,9 +331,8 @@ class Draw:
         from PIL import ImageDraw, ImageFont
 
         size_police: int = 15
-        hud_height = 50
         hud_canvas = Image.new(
-            "RGBA", (self.width, hud_height), (0, 0, 0, 255)
+            "RGBA", (self.width, HUD_TOP_HEIGHT), (0, 0, 0, 255)
         )
         draw = ImageDraw.Draw(hud_canvas)
 
@@ -330,17 +357,11 @@ class Draw:
             row: int = i % max_rows
             col: int = i // max_rows
             x = 20 + col * (self.width // 3)
-            y = 10 + row * (hud_height // 2)
+            y = 10 + row * (HUD_TOP_HEIGHT // 2)
 
             label, state = text
             suffix = ("ON" if state else "OFF") if state is not None else ""
             draw.text(
                 (x, y), label + suffix, fill=(255, 255, 0, 255), font=font
             )
-
-        cheat_ptr: int = pil_to_mlx_image(
-            hud_canvas, "cheat_cache.png", self.mlx_init, self.mlx
-        )
-        self.mlx.mlx_put_image_to_window(
-            self.mlx_init, self.mlx_window, cheat_ptr, 0, 0
-        )
+        self.cheat_img = self._put_canvas(hud_canvas, self.cheat_img, 0, 0)

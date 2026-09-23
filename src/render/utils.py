@@ -10,10 +10,15 @@ if TYPE_CHECKING:
     from mlx import Mlx
 
 
+HUD_TOP_HEIGHT: int = 80
+HUD_BOTTOM_HEIGHT: int = 50
+
+
 def make_color(r: int, g: int, b: int, a: int = 255) -> int:
     """Install RGBA components into a single integer color."""
 
     return r | (g << 8) | (b << 16) | (a << 24)
+
 
 RED: int = make_color(255, 0, 0)
 CREAM: int = make_color(233, 218, 223)
@@ -70,7 +75,7 @@ list_key = [
     (55, "7"),
     (56, "8"),
     (57, "9"),
-    (48, "0")
+    (48, "0"),
 ]
 
 

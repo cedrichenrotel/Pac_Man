@@ -1,13 +1,12 @@
 from __future__ import annotations
-from src.render.utils import XK_ESCAPE, install_menu_image
+
 from typing import Any
+
+from src.render.utils import XK_ESCAPE, install_menu_image
 
 
 class InstructionScene:
-    def __init__(
-        self,
-        game: Any
-    ) -> None:
+    def __init__(self, game: Any) -> None:
         self.game = game
         self.player_name = self.game.player_name
         self.highscore = self.game.highscore

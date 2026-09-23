@@ -149,14 +149,17 @@ We will explain the functions used in this example later.
 ``` python
 from mlx import Mlx
 
+
 def mymouse(button, x, y, mystuff):
     print(f"Got mouse event! button {button} at {x},{y}.")
+
 
 def mykey(keynum, mystuff):
     print(f"Got key {keynum}, and got my stuff back:")
     print(mystuff)
     if keynum == 32:
         m.mlx_mouse_hook(win_ptr, None, None)
+
 
 m = Mlx()
 mlx_ptr = m.mlx_init()
@@ -180,9 +183,9 @@ construct the path to the C library called libmlx.so.
 
 ``` python
 def __init__(self):
-  module_dir = os.path.dirname(os.path.abspath(__file__))
-  self.so_file = os.path.join(module_dir, "libmlx.so")
-  #...
+    module_dir = os.path.dirname(os.path.abspath(__file__))
+    self.so_file = os.path.join(module_dir, "libmlx.so")
+    # ...
 ```
 
 - \_\_file\_\_ is a special Python variable that contains the path to
@@ -197,9 +200,9 @@ loads the library and calls the original functions.
 
 ``` python
 def __init__(self):
-  # ...
-  self.mlx_func = CDLL(self.so_file)
-  # ...
+    # ...
+    self.mlx_func = CDLL(self.so_file)
+    # ...
 ```
 
 For each C function available in the Python wrapper, there is a
@@ -207,8 +210,8 @@ declaration within the Mlx class:
 
 ``` python
 def mlx_init(self):
-  self.mlx_func.mlx_init.restype = c_void_p
-  return self.mlx_func.mlx_init()
+    self.mlx_func.mlx_init.restype = c_void_p
+    return self.mlx_func.mlx_init()
 ```
 
 You can see how it calls mlx_func.mlx_init(). This mlx_init() is already

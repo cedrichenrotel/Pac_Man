@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 from collections.abc import Callable
 from time import time
+from typing import Any
+
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.render.draw import Draw
-from typing import Any
 from src.render.utils import (
     LIGHT_GRAY,
     XK_CHEAT_FREEZE,
@@ -27,10 +29,7 @@ from src.render.utils import (
 
 
 class LevelScene(Draw):
-    def __init__(
-        self,
-        game: Any
-    ) -> None:
+    def __init__(self, game: Any) -> None:
         self.game = game
         self.pacman: Pacman | None = None
         self.GameRender = self.game.GameRender
@@ -56,6 +55,8 @@ class LevelScene(Draw):
         self.last_time: float = time()
         self.move_pac: int = 3
         self.paused: bool = False
+        self.hud_img: int | None = None
+        self.cheat_img: int | None = None
         self.entries: list[tuple[str, Callable[[], None]]] = [
             ("Return to the main menu", self.quit_game),
             ("Resume the game", self.return_to_game),
@@ -97,9 +98,7 @@ class LevelScene(Draw):
             if ghost.is_edible is False:
                 if self.cheat_invincible is False:
                     pacman.decrease_life()
-                    self.mlx.mlx_clear_window(
-                        self.mlx_init, self.mlx_window
-                    )
+                    self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
                     self.launch()
             else:
                 ghost.eaten = True
