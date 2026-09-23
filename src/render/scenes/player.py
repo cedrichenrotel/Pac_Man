@@ -107,7 +107,8 @@ class PlayerScene:
             if self.level_engine.add_player_name(self.player_name) is True:
                 self.level_engine.add_score(self.score)
                 self.level_engine.push_new_score(
-                    "./highscore", self.highscore
+                    self.config.highscore_filename,
+                    self.highscore
                 )
             else:
                 self.mlx.mlx_string_put(
