@@ -15,7 +15,7 @@ def make_color(r: int, g: int, b: int, a: int = 255) -> int:
 
     return r | (g << 8) | (b << 16) | (a << 24)
 
-
+RED: int = make_color(255, 0, 0)
 CREAM: int = make_color(233, 218, 223)
 LIGHT_GRAY: int = make_color(200, 200, 200)
 YELLOW: int = make_color(255, 255, 0)

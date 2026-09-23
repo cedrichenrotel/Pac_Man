@@ -143,7 +143,7 @@ class LevelScene(Draw):
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
         self.process_render()
-        if reset_timer is True:
+        if reset_timer is False:
             self.last_time = time()
 
     def process_render(self) -> None:
