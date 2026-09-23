@@ -1,15 +1,10 @@
 from __future__ import annotations
-
 from collections.abc import Callable
 from time import time
-from typing import TYPE_CHECKING
-
-from mlx import Mlx
-
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
-from src.engine.model import Config_json
 from src.render.draw import Draw
+from typing import Any
 from src.render.utils import (
     LIGHT_GRAY,
     XK_CHEAT_FREEZE,
@@ -29,39 +24,26 @@ from src.render.utils import (
     transform_all_coord_to_cardinal,
 )
 
-# guarded to avoid a circular import: GameRender.py imports LevelScene at
-# module level, so GameRender can only be imported here for type hints
-if TYPE_CHECKING:
-    from src.render.game import GameRender
-
 
 class LevelScene(Draw):
     def __init__(
         self,
-        GameRender: GameRender,
-        mlx: Mlx,
-        mlx_init: int | None,
-        mlx_window: int | None,
-        width: int,
-        height: int,
-        config: Config_json,
-        highscore: dict[str, int],
-        player_name: str,
-        score: int,
+        game: Any
     ) -> None:
+        self.game = game
         self.pacman: Pacman | None = None
-        self.GameRender = GameRender
-        self.config = config
-        self.mlx = mlx
-        self.mlx_init = mlx_init
-        self.mlx_window = mlx_window
-        self.score = score
-        self.player_name = player_name
-        self.highscore = highscore
-        self.width = width
+        self.GameRender = self.game.GameRender
+        self.config = self.game.config
+        self.mlx = self.game.mlx
+        self.mlx_init = self.game.mlx_init
+        self.mlx_window = self.game.mlx_window
+        self.score = self.game.score
+        self.player_name = self.game.player_name
+        self.highscore = self.game.highscore
+        self.width = self.game.width
         self.score = 0
         self.actual_lvl = 1
-        self.height = height
+        self.height = self.game.height
         self.is_game_over: bool = False
         self.val_test = 0
         self.time_eligible: float = 0
@@ -107,6 +89,24 @@ class LevelScene(Draw):
             return False
         return True
 
+    def check_ghost_touch(self, ghost: Ghost, pacman: Pacman) -> None:
+        if (
+            check_range(ghost.render_x, pacman.render_x, 0.2) is True
+            and check_range(ghost.render_y, pacman.render_y, 0.2) is True
+        ):
+            if ghost.is_edible is False:
+                if self.cheat_invincible is False:
+                    pacman.decrease_life()
+                    self.mlx.mlx_clear_window(
+                        self.mlx_init, self.mlx_window
+                    )
+                    self.launch()
+            else:
+                ghost.eaten = True
+                ghost.time_respawn = time()
+                self.score += self.config.points_per_ghost
+                ghost.init_ghost_eaten()
+
     def check_positioning(self) -> bool:
         """check the position of all ghost and pacman
         if a ghost grab pacman , pacman decrease
@@ -124,39 +124,13 @@ class LevelScene(Draw):
         assert pacman is not None
 
         for ghost in self.ghosts:
-            if (
-                check_range(ghost.render_x, pacman.render_x, 0.2) is True
-                and check_range(ghost.render_y, pacman.render_y, 0.2) is True
-            ):
-                if ghost.is_edible is False:
-                    if self.cheat_invincible is False:
-                        pacman.decrease_life()
-                        self.mlx.mlx_clear_window(
-                            self.mlx_init, self.mlx_window
-                        )
-                        self.launch()
-                else:
-                    ghost.eaten = True
-                    ghost.time_respawn = time()
-                    self.score += self.config.points_per_ghost
-                    ghost.init_ghost_eaten()
+            self.check_ghost_touch(ghost, pacman)
 
         if pacman.lives == 0 and pacman.dead is True:
             from src.render.scenes.game_over import GameOver
 
             self.is_game_over = True
-            game_over = GameOver(
-                self.GameRender,
-                self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width,
-                self.height,
-                self.config,
-                self.highscore,
-                self.player_name,
-                self.score,
-            )
+            game_over = GameOver(self)
             game_over.launch()
             return False
         else:
@@ -365,18 +339,7 @@ class LevelScene(Draw):
             from src.render.scenes.win import Winner
 
             self.is_winning = True
-            winner = Winner(
-                self.GameRender,
-                self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width,
-                self.height,
-                self.config,
-                self.highscore,
-                self.player_name,
-                self.score,
-            )
+            winner = Winner(self)
             winner.launch()
 
     def add_point_score(self, pacman: Pacman) -> None:
@@ -409,34 +372,12 @@ class LevelScene(Draw):
             from src.render.scenes.menu import MenuScene
 
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-            self.GameRender.current_scene = MenuScene(
-                self.GameRender,
-                self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width,
-                self.height,
-                self.config,
-                self.highscore,
-                self.player_name,
-                self.score,
-            )
+            self.GameRender.current_scene = MenuScene(self)
             self.GameRender.current_scene.launch()
         else:
             from src.render.scenes.player import PlayerScene
 
-            player = PlayerScene(
-                self.GameRender,
-                self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width,
-                self.height,
-                self.config,
-                self.highscore,
-                self.player_name,
-                self.score,
-            )
+            player = PlayerScene(self)
             player.launch()
 
     def go_to_menu(self) -> None:

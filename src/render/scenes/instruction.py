@@ -1,42 +1,24 @@
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-from mlx import Mlx
-
-from src.engine.model import Config_json
 from src.render.utils import XK_ESCAPE, install_menu_image
-
-# guarded to avoid a circular import: GameRender.py imports InstructionScene at
-# module level, so GameRender can only be imported here for type hints
-if TYPE_CHECKING:
-    from src.render.game import GameRender
+from typing import Any
 
 
 class InstructionScene:
     def __init__(
         self,
-        GameRender: GameRender,
-        mlx: Mlx,
-        mlx_init: int | None,
-        mlx_window: int | None,
-        width: int,
-        height: int,
-        config: Config_json,
-        highscore: dict[str, int],
-        player_name: str,
-        score: int,
+        game: Any
     ) -> None:
-        self.player_name = player_name
-        self.highscore = highscore
-        self.config = config
-        self.GameRender = GameRender
-        self.width = width
-        self.height = height
-        self.mlx = mlx
-        self.mlx_init = mlx_init
-        self.mlx_window = mlx_window
-        self.score = score
+        self.game = game
+        self.player_name = self.game.player_name
+        self.highscore = self.game.highscore
+        self.config = self.game.config
+        self.GameRender = self.game.GameRender
+        self.width = self.game.width
+        self.height = self.game.height
+        self.mlx = self.game.mlx
+        self.mlx_init = self.game.mlx_init
+        self.mlx_window = self.game.mlx_window
+        self.score = self.game.score
 
     def launch(self) -> None:
         """display the instructions scene"""
@@ -58,16 +40,5 @@ class InstructionScene:
         if keycode == XK_ESCAPE:
             from src.render.scenes.menu import MenuScene
 
-            self.GameRender.current_scene = MenuScene(
-                self.GameRender,
-                self.mlx,
-                self.mlx_init,
-                self.mlx_window,
-                self.width,
-                self.height,
-                self.config,
-                self.highscore,
-                self.player_name,
-                self.score,
-            )
+            self.GameRender.current_scene = MenuScene(self)
             self.GameRender.current_scene.launch()
