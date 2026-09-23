@@ -104,7 +104,8 @@ class Config_json(BaseModel):
         if (
             not isinstance(values.get("pacgum"), int)
             or values.get("pacgum", int) < 0
-            or values.get("pacgum", int) > 50
+            or values.get("pacgum", int) > (values["level"]["width"]
+                                            * values["level"]["height"]) - 40
         ):
             values["pacgum"] = 42
             print(
