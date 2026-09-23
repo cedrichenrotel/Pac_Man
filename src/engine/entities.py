@@ -150,9 +150,18 @@ class Ghost(Entities):
             (cx + 2, cy),
         ]
 
-        self.waypoints = [
-            self.find_walkable_near(maze, wp) for wp in raw_waypoints
-        ]
+        if raw_waypoints[0] == (maze._width - 1, maze._width - 1):
+            raw_waypoints = [
+                (cx, cy),
+                (cx, cy - 2),
+                (cx - 2, cy - 2),
+                (cx - 2, cy),
+            ]
+
+        for wp in raw_waypoints:
+            waypoint = self.find_walkable_near(maze, wp)
+            self.waypoints.append(waypoint)
+
         self.waypoint_index = 0
 
     def path_to_pacman(
@@ -166,9 +175,7 @@ class Ghost(Entities):
         if is_flee is True:
             if not self.waypoints:
                 self.found_pos_next_to(maze)
-
             target = self.waypoints[self.waypoint_index]
-
             if self.current_pos == target:
                 self.waypoint_index = (self.waypoint_index + 1) % len(
                     self.waypoints

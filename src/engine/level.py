@@ -61,7 +61,8 @@ class Level:
             else:
                 self.new_score = {self.player_name: self.score}
                 highscore.update(self.new_score)
-            order_asc_and_limit(highscore, self.player_name)
+            order_asc_and_limit(highscore, self.config.highscore_filename,
+                                self.player_name,)
 
     def save_score(
         self,

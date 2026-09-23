@@ -17,7 +17,6 @@ def make_color(r: int, g: int, b: int, a: int = 255) -> int:
 
 
 CREAM: int = make_color(233, 218, 223)
-RED: int = make_color(255, 0, 0)
 LIGHT_GRAY: int = make_color(200, 200, 200)
 YELLOW: int = make_color(255, 255, 0)
 
@@ -62,6 +61,16 @@ list_key = [
     (98, "B"),
     (110, "N"),
     (109, "M"),
+    (49, "1"),
+    (50, "2"),
+    (51, "3"),
+    (52, "4"),
+    (53, "5"),
+    (54, "6"),
+    (55, "7"),
+    (56, "8"),
+    (57, "9"),
+    (48, "0")
 ]
 
 
