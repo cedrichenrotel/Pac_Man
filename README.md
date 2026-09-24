@@ -170,3 +170,39 @@ A significant amount of verbal communication and discussion took place throughou
 - Commits sur les branches de l'autre : quelques commits ont été faits sur la branche de l'autre personne (par exemple ta correction de l'algo « manhattan » dans #23). Je les ai laissés de côté pour que la liste reste lisible.
 
 Tu veux que je l'insère directement dans le README.md ou tu préfères le coller toi-même ?
+### Maze Generation
+The labyrinths are generated with the **`mazegenerator`** package (v2.1.0), which comes from the A-Maze-ing project. It is shipped as a wheel in `lib/`, declared as a local dependency in `pyproject.toml`, and installed by `uv` like any other Python library:
+
+```python
+from mazegenerator import MazeGenerator
+```
+
+#### How it is used
+* **Creation**: `Level.generate_maze()` builds a `MazeGenerator` from the `width`/`height` in `config.json` and a seed:
+  ```python
+  MazeGenerator(size=(width, height), seed=seed)
+  ```
+* **Seed & levels**: The first level uses the `seed` from the config. Each new level uses `seed + level_number`, so every level has a different layout but the same seed always rebuilds the same sequence of mazes.
+* **Pac-Man compatible**: The package is used in its non-perfect mode (the default). After the maze is carved, a *braiding* step removes every dead end, which makes loops so the player can never be trapped by a ghost.
+* **"42" pattern**: The generator puts a closed "42" shape in the middle of the maze. Its cells are fully walled (value `15`), and nothing can walk through them or spawn on them.
+
+#### Maze representation
+The generated grid is available through `generator.maze`, a 2D list (`maze[y][x]`) of integers. Each cell stores its walls as a bitmask:
+
+| Bit | Value | Wall  |
+|-----|-------|-------|
+| 0   | 1     | North |
+| 1   | 2     | East  |
+| 2   | 4     | South |
+| 3   | 8     | West  |
+
+A move is allowed when the wall bit for that direction is not set (`maze[y][x] & code == 0`). Entity movement, ghost pathfinding and maze rendering all rely on this encoding.
+
+#### Placing the game elements
+Once the maze exists, `InitMaze` fills it using the configuration:
+* **Pac-Man** spawns at the center of the maze.
+* **Ghosts** spawn in the four corners.
+* **Super Pac-Gums** are placed in the four corners.
+* **Pac-Gums** are spread randomly over the walkable cells that are left (not `15` and not reserved). If `pacgum` is higher than the number of free cells, it is lowered to fit and a warning is shown.
+
+I was a bit unsure about one point. In the code you pass seed to the constructor, but in the package generate(seed) calls random.seed(seed) only when seed > 0. So a seed of 0 gives a random maze on every run. If that's the behavior you want, you could add that sentence to the "Seed & levels" bullet. Check it against your own tests firs
