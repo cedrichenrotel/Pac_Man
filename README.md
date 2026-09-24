@@ -76,11 +76,39 @@ The game features a secure JSON-based high score system.
 * Players can view the top 10 scoreboard at any time via the `"View Highscore"` option in the main menu.
 
 ### Maze Generation
-The labyrinths are generated using the maze generation package provided by 42 school. 
-It is installed via `uv` and integrated into the project just like a standard Python library:
+The labyrinths are generated with the **`mazegenerator`** package (v2.1.0), which comes from the A-Maze-ing project. It is shipped as a wheel in `lib/`, declared as a local dependency in `pyproject.toml`, and installed by `uv` like any other Python library:
+
 ```python
 from mazegenerator import MazeGenerator
 ```
+
+#### How it is used
+* **Creation**: `Level.generate_maze()` builds a `MazeGenerator` from the `width`/`height` in `config.json` and a seed:
+  ```python
+  MazeGenerator(size=(width, height), seed=seed)
+  ```
+* **Seed & levels**: The first level uses the `seed` from the config. Each new level uses `seed + level_number`, so every level has a different layout but the same seed always rebuilds the same sequence of mazes.
+* **Pac-Man compatible**: The package is used in its non-perfect mode (the default). After the maze is carved, a *braiding* step removes every dead end, which makes loops so the player can never be trapped by a ghost.
+* **"42" pattern**: The generator puts a closed "42" shape in the middle of the maze. Its cells are fully walled (value `15`), and nothing can walk through them or spawn on them.
+
+#### Maze representation
+The generated grid is available through `generator.maze`, a 2D list (`maze[y][x]`) of integers. Each cell stores its walls as a bitmask:
+
+| Bit | Value | Wall  |
+|-----|-------|-------|
+| 0   | 1     | North |
+| 1   | 2     | East  |
+| 2   | 4     | South |
+| 3   | 8     | West  |
+
+A move is allowed when the wall bit for that direction is not set (`maze[y][x] & code == 0`). Entity movement, ghost pathfinding and maze rendering all rely on this encoding.
+
+#### Placing the game elements
+Once the maze exists, `InitMaze` fills it using the configuration:
+* **Pac-Man** spawns at the center of the maze.
+* **Ghosts** spawn in the four corners.
+* **Super Pac-Gums** are placed in the four corners.
+* **Pac-Gums** are spread randomly over the walkable cells that are left (not `15` and not reserved). If `pacgum` is higher than the number of free cells, it is lowered to fit and a warning is shown.
 
 ---
 
