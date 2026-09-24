@@ -36,14 +36,16 @@ def parse_args() -> argparse.Namespace:
 
 def parse_highscore(file: Path, path: str) -> bool:
     """check if highscore.json is in good format"""
+
     try:
         if os.stat(file).st_size != 0:
             with open(path) as f:
                 data = json.load(f)
+                if isinstance(data, dict) is False:
+                    raise ValueError("format is not in {}")
             for key, value in data.items():
                 UserScore({key: value})
-
-    except json.JSONDecodeError as e:
+    except (json.JSONDecodeError, ValueError)as e:
         print(
             f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
             f"Invalid highscore.json: {e}"
