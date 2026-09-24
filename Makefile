@@ -11,7 +11,7 @@ run:
 	@$(UV) run python -m src $(CONFIG) 2> >(grep -v "MESA: warning: Driver does not support" >&2)
 
 debug:
-	$(UV) run python -m pdb $(FILE)
+	$(UV) run python -m pdb -m src $(CONFIG)
 
 clean:
 	rm -rf __pycache__ .mypy_cache .pytest_cache .uv_cache
