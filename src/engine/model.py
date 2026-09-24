@@ -3,9 +3,13 @@ import sys
 from src.colors import COLORS
 
 try:
+    import json
+    import os
     from typing import Any
-
-    from pydantic import BaseModel, Field, RootModel, model_validator
+    from pathlib import Path
+    from pydantic import (BaseModel, Field,
+                          RootModel, model_validator,
+                          ValidationError)
 except ImportError:
     sys.exit()
 
@@ -77,6 +81,32 @@ class Config_json(BaseModel):
     level_max_time: int = Field(default=90)
     level: Level = Field(default_factory=Level)
 
+    @staticmethod
+    def parse_highscore(file: Path, path: str) -> bool:
+        """check if highscore.json is in good format"""
+        try:
+            if os.stat(file).st_size != 0:
+                with open(path) as f:
+                    data = json.load(f)
+                    if isinstance(data, dict) is False:
+                        raise ValueError("format is not in {}")
+                for key, value in data.items():
+                    UserScore({key: value})
+        except (json.JSONDecodeError, Exception)as e:
+            print(
+                f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                f"Invalid highscore.json: {e}"
+            )
+            return False
+        except ValidationError:
+            print(
+                f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                "parsing error in highscore.json: "
+                "invalid format in {player_name : score}"
+            )
+            return False
+        return True
+
     @model_validator(mode="before")
     def check_config_values(cls, values: dict[str, Any]) -> dict[str, Any]:
 
@@ -89,7 +119,14 @@ class Config_json(BaseModel):
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                 "invalid highscore_filename, using default."
             )
-
+        else:
+            if (cls.parse_highscore(Path(values["highscore_filename"]),
+                                    values["highscore_filename"])
+               is False):
+                values["highscore_filename"] = "highscore.json"
+                print(
+                    f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                    "invalid highscore_filename, using default.")
         if (
             not isinstance(values.get("lives"), int)
             or values.get("lives", int) <= 0
