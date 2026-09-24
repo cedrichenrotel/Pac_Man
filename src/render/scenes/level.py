@@ -102,13 +102,19 @@ class LevelScene(Draw):
             if ghost.is_edible is False:
                 if self.cheat_invincible is False:
                     pacman.decrease_life()
+                    pacman.eaten = True
+                    for g in self.ghosts:
+                        g.eaten = True
+                        g.is_edible = False
+                        g.init_entities_eaten()
+                    pacman.init_entities_eaten()
                     self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                    self.launch()
+                    self.render()
             else:
                 ghost.eaten = True
                 ghost.time_respawn = time()
                 self.score += self.config.points_per_ghost
-                ghost.init_ghost_eaten()
+                ghost.init_entities_eaten()
 
     def check_positioning(self) -> bool:
         """check the position of all ghost and pacman

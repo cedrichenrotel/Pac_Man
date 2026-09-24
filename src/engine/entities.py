@@ -26,6 +26,8 @@ class Entities:
         self.frame_index: int = 0
         self.last_time: float = time()
         self.anim_last_time: float = 0.0
+        self.start_pos: tuple[int, int] = (x, y)
+        self.eaten: bool = False
 
     def move(self, direction: str, maze: MazeGenerator) -> bool:
         """allows entities to move through the maze without
@@ -39,6 +41,15 @@ class Entities:
                 self.y += dy
                 return True
         return False
+
+    def init_entities_eaten(self) -> None:
+        """resets the entites to its original position"""
+
+        if self.eaten is True:
+            self.current_pos = self.start_pos
+            self.x, self.y = self.start_pos
+            self.render_x, self.render_y = self.start_pos
+            self.eaten = False
 
     def move_render(self, vitesse: float) -> bool:
         """Smooth movement via the fixed pitch"""
@@ -69,7 +80,6 @@ class Pacman(Entities):
         self.lives: int = lives
         self.dead: bool = False
         self.time_dead: float | None = None
-        self.start_pos: tuple[int, int] = (x, y)
 
     def decrease_life(self) -> None:
 
@@ -82,17 +92,22 @@ class Pacman(Entities):
 class Ghost(Entities):
     def __init__(self, x: int, y: int) -> None:
         super().__init__(x, y)
-        self.eaten: bool = False
         self.is_edible: bool = False
         self.path_to_goal: list[str] = []
         self.start_time_is_edible: float | None = None
-        self.start_pos: tuple[int, int] = (x, y)
         self.time_edible = 10
         self.respawn_delay = 5
         self.time_respawn: float | None = None
         self.last_path_time: float = time()
         self.waypoints: list[tuple[int, int]] = []
         self.waypoint_index: int = 0
+
+    def init_entities_eaten(self) -> None:
+        """resets the ghosts using the reinitialisation_entities_eaten
+        function and removes the ghost’s path"""
+
+        super().init_entities_eaten()
+        self.path_to_goal = []
 
     def time_is_edible(
         self, maze: MazeGenerator, pacman: Pacman
@@ -111,16 +126,6 @@ class Ghost(Entities):
                 self.path_to_goal = []
             return elapsed_time
         return None
-
-    def init_ghost_eaten(self) -> None:
-        """resets the ghost to its original position"""
-
-        if self.eaten is True:
-            self.current_pos = self.start_pos
-            self.x, self.y = self.start_pos
-            self.render_x, self.render_y = self.start_pos
-            self.path_to_goal = []
-            self.eaten = False
 
     def moving_position_initial(self, maze: MazeGenerator) -> bool:
         """change ghost position next to super_pacgum"""
