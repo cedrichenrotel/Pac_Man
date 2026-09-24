@@ -26,9 +26,8 @@ def main() -> None:
             clean_config_json: str = read_json(config_path)
             load_config_json: dict[str, Any] = load_json(clean_config_json)
         except Exception as e:
-            print(f"{COLORS['bright_red']}[ERROR]:{COLORS['reset']} {e}")
-            sys.exit()
-
+            print(f"{COLORS['bright_yellow']}[WARNING]:{COLORS['reset']} {e}")
+            load_config_json = {}
         try:
             config: Config_json = Config_json(**load_config_json)
         except Exception as e:

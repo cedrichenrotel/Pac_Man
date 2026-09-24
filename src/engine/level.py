@@ -4,6 +4,7 @@ from src.colors import COLORS
 
 try:
     from mazegenerator import MazeGenerator
+
     from src.engine.init_maze import InitMaze
     from src.engine.model import Config_json
     from src.engine.utils import order_asc_and_limit
@@ -31,10 +32,10 @@ class Level:
             if seed is not None:
                 self.generator: MazeGenerator = MazeGenerator(
                     size=(self.config.level.width, self.config.level.height),
-                    seed=seed
+                    seed=seed,
                 )
             else:
-                self.generator: MazeGenerator = MazeGenerator(
+                self.generator = MazeGenerator(
                     size=(self.config.level.width, self.config.level.height)
                 )
         except Exception as e:
