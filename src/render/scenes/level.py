@@ -411,6 +411,8 @@ class LevelScene(Draw):
         """open the pause menu and hand key control to on_key_break"""
         self.cheat_freeze_ghost = True
         self.time_when_pause = time()
+        for ghost in self.ghosts:
+            ghost.time_when_pause = time()
         self.paused = True
         self.selected = 0
         self.draw_menu()

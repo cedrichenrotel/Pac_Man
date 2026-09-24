@@ -45,6 +45,7 @@ class Draw:
     last_time: float
     hud_img: int | None
     cheat_img: int | None
+    paused: bool
 
     def _put_canvas(
         self, canvas: Image.Image, img_ptr: int | None, x: int, y: int
@@ -270,7 +271,16 @@ class Draw:
                 vulnerability: float | None = ghost.time_is_edible(
                     self.level_engine.generator, self.pacman
                 )
+                if self.paused is False:
 
+                    if ghost.time_when_pause is not None:
+
+                        time_during_break: float = (time() -
+                                                    ghost.time_when_pause)
+                        assert ghost.start_time_is_edible is not None
+                        ghost.start_time_is_edible = (ghost.
+                                                      start_time_is_edible +
+                                                      time_during_break)
                 assert vulnerability is not None
 
                 waiting: bool = (

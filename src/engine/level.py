@@ -34,7 +34,7 @@ class Level:
                     seed=seed
                 )
             else:
-                self.generator: MazeGenerator = MazeGenerator(
+                self.generator = MazeGenerator(
                     size=(self.config.level.width, self.config.level.height)
                 )
         except Exception as e:

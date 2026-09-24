@@ -101,6 +101,7 @@ class Ghost(Entities):
         self.last_path_time: float = time()
         self.waypoints: list[tuple[int, int]] = []
         self.waypoint_index: int = 0
+        self.time_when_pause: float | None = None
 
     def init_entities_eaten(self) -> None:
         """resets the ghosts using the reinitialisation_entities_eaten
