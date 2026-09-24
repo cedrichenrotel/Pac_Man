@@ -207,7 +207,7 @@ class Config_json(BaseModel):
 
         if (
             not isinstance(values.get("seed"), int)
-            or values.get("seed", int) < 0
+            or values.get("seed", int) != 42
         ):
             values["seed"] = 42
             print(
