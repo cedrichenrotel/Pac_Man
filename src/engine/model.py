@@ -101,10 +101,34 @@ class Config_json(BaseModel):
                 "invalid lives, using default."
             )
 
+        level: Any | None = values.get("level")
+        if not isinstance(level, dict):
+            assert level is not None
+            level = values["level"] = {"width": 15, "height": 15}
+            print(
+                f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                "Invalid level value, using default."
+            )
+        val_width: Any = level.get("width")
+        val_height: Any = level.get("height")
+
+        if not isinstance(val_width, int):
+            val_width = 15
+            print(
+                f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                f"Invalid width value, using default -> width: {val_width}."
+            )
+        if not isinstance(val_height, int):
+            val_height = 15
+            print(
+                f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                f"Invalid height value, using default -> height: {val_height}."
+            )
+
         if (
             not isinstance(values.get("pacgum"), int)
             or values.get("pacgum", int) < 0
-            or values.get("pacgum", int) > 50
+            or values.get("pacgum", int) > (val_width * val_height) - 40
         ):
             values["pacgum"] = 42
             print(
@@ -164,16 +188,6 @@ class Config_json(BaseModel):
             print(
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                 "Invalid level_max_time, using default."
-            )
-
-        if (
-            not isinstance(values.get("level"), dict)
-            or len(values.get("level", {})) == 0
-        ):
-            values["level"] = {"width": 15, "height": 15}
-            print(
-                f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-                "Invalid level, using default."
             )
 
         return values
