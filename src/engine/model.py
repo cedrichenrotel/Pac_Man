@@ -101,15 +101,16 @@ class Config_json(BaseModel):
                 "invalid lives, using default."
             )
 
-        level: dict[str, Any] = values.get("level")
+        level: Any | None = values.get("level")
         if not isinstance(level, dict):
+            assert level is not None
             level = values["level"] = {"width": 15, "height": 15}
             print(
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                 "Invalid level value, using default."
             )
-        val_width: int = level.get("width")
-        val_height: int = level.get("height")
+        val_width: Any = level.get("width")
+        val_height: Any = level.get("height")
 
         if not isinstance(val_width, int):
             val_width = 15
