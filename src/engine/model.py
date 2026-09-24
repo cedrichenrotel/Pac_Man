@@ -140,7 +140,6 @@ class Config_json(BaseModel):
 
         level: Any | None = values.get("level")
         if not isinstance(level, dict):
-            assert level is not None
             level = values["level"] = {"width": 15, "height": 15}
             print(
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "

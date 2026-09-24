@@ -54,7 +54,7 @@ class Winner:
             if len(self.player_name) != 0:
                 level_engine = Level(self.config)
                 level_engine.save_score(
-                    self.player_name, self.score, "./highscore", self.highscore
+                    self.player_name, self.score, self.highscore
                 )
                 from src.render.scenes.menu import MenuScene
 

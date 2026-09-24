@@ -3,7 +3,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from time import time
 from typing import Any
+
 from PIL import ImageDraw
+
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.render.draw import Draw
@@ -24,8 +26,8 @@ from src.render.utils import (
     YELLOW,
     check_range,
     compare_position,
+    pil_to_mlx_image,
     transform_all_coord_to_cardinal,
-    pil_to_mlx_image
 )
 
 
@@ -145,15 +147,13 @@ class LevelScene(Draw):
         else:
             return True
 
-    def launch(self, reset_timer: bool = True) -> None:
+    def launch(self) -> None:
         """display the level scene"""
 
         self.level_engine = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
         self.process_render()
-        if reset_timer is False:
-            self.last_time = time()
 
     def process_render(self) -> None:
         if self.is_winning is True:
@@ -297,8 +297,6 @@ class LevelScene(Draw):
             if pacman.key_direction is None:
                 pacman.last_time = time()
             pacman.key_direction = "W"
-            if pacman.key_direction is None:
-                pacman.last_time = time()
         elif keycode == XK_RIGHT:
             if pacman.key_direction is None:
                 pacman.last_time = time()
@@ -395,9 +393,10 @@ class LevelScene(Draw):
 
         if len(self.player_name) != 0:
             from src.render.scenes.menu import MenuScene
-            self.level_engine.save_score(self.player_name, self.score,
-                                         self.config.highscore_filename,
-                                         self.highscore)
+
+            self.level_engine.save_score(
+                self.player_name, self.score, self.highscore
+            )
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             self.GameRender.current_scene = MenuScene(self)
             self.GameRender.current_scene.launch()

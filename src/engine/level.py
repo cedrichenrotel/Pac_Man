@@ -4,6 +4,7 @@ from src.colors import COLORS
 
 try:
     from mazegenerator import MazeGenerator
+
     from src.engine.init_maze import InitMaze
     from src.engine.model import Config_json
     from src.engine.utils import order_asc_and_limit
@@ -31,7 +32,7 @@ class Level:
             if seed is not None:
                 self.generator: MazeGenerator = MazeGenerator(
                     size=(self.config.level.width, self.config.level.height),
-                    seed=seed
+                    seed=seed,
                 )
             else:
                 self.generator = MazeGenerator(
@@ -50,23 +51,23 @@ class Level:
     def add_player_name(self, player_name: str) -> bool:
         self.player_name = player_name
 
-        if player_name in self.highscore.keys():
+        if player_name in self.highscore:
             return False
         return True
 
     def add_score(self, num: int) -> None:
         self.score += num
 
-    def push_new_score(self, path: str, highscore: dict[str, int]) -> None:
+    def push_new_score(self, highscore: dict[str, int]) -> None:
         """push the new score from player to all highscore,
         order by descending, max 10 best score and write
         in highscore.json
         """
         if len(self.player_name) != 0:
-            if self.player_name in self.highscore.keys():
+            if self.player_name in self.highscore:
                 if (
-                    self.highscore[self.player_name] < self.score
-                    or self.highscore[self.player_name] is None
+                    self.highscore[self.player_name] is None
+                    or self.highscore[self.player_name] < self.score
                 ):
                     self.highscore[self.player_name] = self.score
             else:
@@ -82,7 +83,6 @@ class Level:
         self,
         player_name: str,
         score: int,
-        path: str,
         highscore: dict[str, int],
     ) -> None:
         """save score and player at the end of a game"""
@@ -91,7 +91,7 @@ class Level:
 
         self.add_score(score)
         self.add_player_name(player_name)
-        self.push_new_score(path, highscore)
+        self.push_new_score(highscore)
 
     def next_level(self) -> None:
         """called by the render side when the current level is won,
