@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from time import time
 from typing import Any
-
+from PIL import ImageDraw
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.render.draw import Draw
@@ -25,6 +25,7 @@ from src.render.utils import (
     check_range,
     compare_position,
     transform_all_coord_to_cardinal,
+    pil_to_mlx_image
 )
 
 
@@ -80,8 +81,11 @@ class LevelScene(Draw):
         self.mlx.mlx_put_image_to_window(
             self.mlx_init, self.mlx_window, self.maze_img_ptr, 0, 0
         )
+        self.mlx.mlx_put_image_to_window(
+            self.mlx_init, self.mlx_window, self.pacgum_img_ptr, 0, 0
+        )
+
         self.draw_super_pacgum()
-        self.draw_pacgum()
         self.draw_pacman()
         self.draw_ghost()
         self.draw_hud_on_canvas()
@@ -98,13 +102,19 @@ class LevelScene(Draw):
             if ghost.is_edible is False:
                 if self.cheat_invincible is False:
                     pacman.decrease_life()
+                    pacman.eaten = True
+                    for g in self.ghosts:
+                        g.eaten = True
+                        g.is_edible = False
+                        g.init_entities_eaten()
+                    pacman.init_entities_eaten()
                     self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
-                    self.launch()
+                    self.render()
             else:
                 ghost.eaten = True
                 ghost.time_respawn = time()
                 self.score += self.config.points_per_ghost
-                ghost.init_ghost_eaten()
+                ghost.init_entities_eaten()
 
     def check_positioning(self) -> bool:
         """check the position of all ghost and pacman
@@ -154,6 +164,7 @@ class LevelScene(Draw):
 
         if self.draw_maze() is False:
             return
+        self.draw_pacgum()
         if self.render() is False:
             return
 
@@ -343,6 +354,7 @@ class LevelScene(Draw):
         ghosts: list[Ghost] = self.level_engine.init_maze.ghosts
 
         if pacman.current_pos in self.pacgum_pos:
+            self.revoke_pacgum(pacman.current_pos)
             self.pacgum_pos.remove(pacman.current_pos)
             self.score += self.config.points_per_pacgum
         elif pacman.current_pos in self.super_pacgum_pos:
@@ -353,6 +365,29 @@ class LevelScene(Draw):
             self.score += self.config.points_per_super_pacgum
         if len(self.pacgum_pos) == 0 and len(self.super_pacgum_pos) == 0:
             self.winning()
+
+    def revoke_pacgum(self, pos: tuple[int, int]) -> None:
+        """destroy the pacgum at the pos is on the canva of pacgums and
+        free the last canva to update the new one whithout the pacgum etead"""
+
+        _, width, height = self.GameRender.sprites_stores.sprites["pacgum"][0]
+
+        px: int = int(self.margin_x + pos[0] * self.cell_size)
+        py: int = int(self.margin_y + pos[1] * self.cell_size)
+        rect_x = px + self.cell_size // 2 - width // 2
+        rect_y = py + self.cell_size // 2 - height // 2
+
+        draw = ImageDraw.Draw(self.canvas_pacgum)
+        draw.rectangle(
+            [rect_x, rect_y, rect_x + width, rect_y + height],
+            fill=(0, 0, 0, 0),
+        )
+
+        if hasattr(self.mlx, "mlx_destroy_image"):
+            self.mlx.mlx_destroy_image(self.mlx_init, self.pacgum_img_ptr)
+        self.pacgum_img_ptr = pil_to_mlx_image(
+            self.canvas_pacgum, "pacgum_cache.png", self.mlx_init, self.mlx
+        )
 
     def quit_game(self) -> None:
         self.mlx.mlx_loop_hook(self.mlx_init, None, self)

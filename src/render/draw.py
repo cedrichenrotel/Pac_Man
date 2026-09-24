@@ -174,6 +174,43 @@ class Draw:
         )
         return True
 
+    def draw_pacgum(self) -> None:
+        """draw the pacgum on the canva at good position"""
+
+        image_path: str = get_asset_path("sprites/pacgum/pacgum.png")
+        self.pacgum_sprite = Image.open(image_path).convert("RGBA")
+
+        self.canvas_pacgum = Image.new(
+            "RGBA", (self.width, self.height), (0, 0, 0, 0)
+        )
+
+        _, width, height = self.GameRender.sprites_stores.sprites[
+            "pacgum"
+        ][0]
+
+        pacgums = self.level_engine.init_maze.pacgum_pos
+
+        for y in range(len(self.maze)):
+            for x in range(len(self.maze[y])):
+                pos = (x , y)
+                if pos in pacgums:
+                    self.draw_pacgum_on_canva(pos, width, height)
+
+        self.pacgum_img_ptr: int = pil_to_mlx_image(
+            self.canvas_pacgum, "pacgum_cache.png", self.mlx_init, self.mlx
+        )
+
+    def draw_pacgum_on_canva(self, pos: tuple[int, int], width: int,
+                             height: int) -> None:
+
+        px: int = int(self.margin_x + pos[0] * self.cell_size)
+        py: int = int(self.margin_y + pos[1] * self.cell_size)
+        self.canvas_pacgum.paste(
+            self.pacgum_sprite, (px + self.cell_size // 2 - width // 2,
+                                 py + self.cell_size // 2 - height // 2),
+            self.pacgum_sprite
+        )
+
     def draw_pacman(self) -> None:
         """Draw the Pacman sprite on the maze."""
         life = None
@@ -251,20 +288,6 @@ class Draw:
                 ghost.render_x, ghost.render_y, img_ptr, height, width
             )
 
-    def draw_pacgum(self) -> bool:
-        """Draw the Pacgum sprite on the maze."""
-
-        img_ptr, width, height = self.GameRender.sprites_stores.sprites[
-            "pacgum"
-        ][0]
-        pacgums = self.level_engine.init_maze.pacgum_pos
-
-        for pacgum in pacgums:
-            self._put_sprite_centered(
-                pacgum[0], pacgum[1], img_ptr, height, width
-            )
-        return True
-
     def draw_super_pacgum(self) -> bool:
         """Draw the Super Pacgum sprite on the maze."""
 
@@ -300,6 +323,9 @@ class Draw:
         self.countdown: int = int(
             self.config.level_max_time - (time() - self.last_time)
         )
+        assert self.pacman is not None
+        if self.countdown <= 0:
+            self.pacman.lives = 0
 
         list_text: list[tuple[str, Any]] = [
             ("LIFE:  ", self.pacman.lives if self.pacman else 0),
