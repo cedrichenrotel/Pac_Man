@@ -46,7 +46,7 @@ class Level:
     def add_score(self, num: int) -> None:
         self.score += num
 
-    def push_new_score(self, path: str, highscore: dict[str, int]) -> None:
+    def push_new_score(self, highscore: dict[str, int]) -> None:
         """push the new score from player to all highscore,
         order by descending, max 10 best score and write
         in highscore.json
@@ -71,7 +71,6 @@ class Level:
         self,
         player_name: str,
         score: int,
-        path: str,
         highscore: dict[str, int],
     ) -> None:
         """save score and player at the end of a game"""
@@ -80,7 +79,7 @@ class Level:
 
         self.add_score(score)
         self.add_player_name(player_name)
-        self.push_new_score(path, highscore)
+        self.push_new_score(highscore)
 
     def next_level(self) -> None:
         """called by the render side when the current level is won,

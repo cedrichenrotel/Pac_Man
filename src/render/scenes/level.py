@@ -3,7 +3,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from time import time
 from typing import Any
+
 from PIL import ImageDraw
+
 from src.engine.entities import Ghost, Pacman
 from src.engine.level import Level
 from src.render.draw import Draw
@@ -24,8 +26,8 @@ from src.render.utils import (
     YELLOW,
     check_range,
     compare_position,
-    transform_all_coord_to_cardinal,
     pil_to_mlx_image,
+    transform_all_coord_to_cardinal,
 )
 
 
@@ -295,8 +297,6 @@ class LevelScene(Draw):
             if pacman.key_direction is None:
                 pacman.last_time = time()
             pacman.key_direction = "W"
-            if pacman.key_direction is None:
-                pacman.last_time = time()
         elif keycode == XK_RIGHT:
             if pacman.key_direction is None:
                 pacman.last_time = time()
