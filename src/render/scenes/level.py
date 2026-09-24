@@ -360,7 +360,9 @@ class LevelScene(Draw):
 
         if len(self.player_name) != 0:
             from src.render.scenes.menu import MenuScene
-
+            self.level_engine.save_score(self.player_name, self.score,
+                                         self.config.highscore_filename,
+                                         self.highscore)
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             self.GameRender.current_scene = MenuScene(self)
             self.GameRender.current_scene.launch()

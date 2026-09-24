@@ -4,13 +4,7 @@ from src.colors import COLORS
 
 try:
     import argparse
-    import json
-    import os
     from pathlib import Path
-
-    from pydantic import ValidationError
-
-    from src.engine.model import UserScore
 except ImportError as e:
     print(f"{COLORS['bright_red']}[IMPORT ERROR]{COLORS['reset']} {e}")
     sys.exit()
@@ -32,30 +26,3 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Pac-Man GameRender")
     parser.add_argument("config", help="path to JSON config file")
     return parser.parse_args()
-
-
-def parse_highscore(file: Path, path: str) -> bool:
-    """check if highscore.json is in good format"""
-
-    try:
-        if os.stat(file).st_size != 0:
-            with open(path) as f:
-                data = json.load(f)
-                if isinstance(data, dict) is False:
-                    raise ValueError("format is not in {}")
-            for key, value in data.items():
-                UserScore({key: value})
-    except (json.JSONDecodeError, ValueError)as e:
-        print(
-            f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-            f"Invalid highscore.json: {e}"
-        )
-        return False
-    except ValidationError:
-        print(
-            f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-            "parsing error in highscore.json: "
-            "invalid format in {player_name : score}"
-        )
-        return False
-    return True
