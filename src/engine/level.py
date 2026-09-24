@@ -4,7 +4,6 @@ from src.colors import COLORS
 
 try:
     from mazegenerator import MazeGenerator
-
     from src.engine.init_maze import InitMaze
     from src.engine.model import Config_json
     from src.engine.utils import order_asc_and_limit
@@ -25,13 +24,25 @@ class Level:
         self.actual_lvl: int = 0
         self.highscore: dict[str, int]
 
-    def generate_maze(self, seed: int) -> None:
+    def generate_maze(self, seed: int | None = None) -> None:
         """generates a maze for the given seed and initialises its
         elements"""
-
-        self.generator: MazeGenerator = MazeGenerator(
-            size=(self.config.level.width, self.config.level.height), seed=seed
-        )
+        try:
+            if seed is not None:
+                self.generator: MazeGenerator = MazeGenerator(
+                    size=(self.config.level.width, self.config.level.height),
+                    seed=seed
+                )
+            else:
+                self.generator: MazeGenerator = MazeGenerator(
+                    size=(self.config.level.width, self.config.level.height)
+                )
+        except Exception as e:
+            print(
+                "{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
+                f"the generator is broken{e}"
+            )
+            sys.exit(0)
 
         self.init_maze: InitMaze = InitMaze(self.generator, self.config)
         self.init_maze.config_start()
@@ -87,4 +98,4 @@ class Level:
         regenerates the maze and reinitialises its elements"""
 
         self.actual_lvl += 1
-        self.generate_maze(self.config.seed + self.actual_lvl)
+        self.generate_maze()

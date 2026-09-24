@@ -395,7 +395,9 @@ class LevelScene(Draw):
 
         if len(self.player_name) != 0:
             from src.render.scenes.menu import MenuScene
-
+            self.level_engine.save_score(self.player_name, self.score,
+                                         self.config.highscore_filename,
+                                         self.highscore)
             self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
             self.GameRender.current_scene = MenuScene(self)
             self.GameRender.current_scene.launch()
@@ -407,7 +409,7 @@ class LevelScene(Draw):
 
     def go_to_menu(self) -> None:
         """open the pause menu and hand key control to on_key_break"""
-
+        self.cheat_freeze_ghost = True
         self.time_when_pause = time()
         self.paused = True
         self.selected = 0
@@ -416,7 +418,7 @@ class LevelScene(Draw):
 
     def return_to_game(self) -> None:
         """close the pause menu and give control back to on_key"""
-
+        self.cheat_freeze_ghost = False
         time_during_break = time() - self.time_when_pause
         self.last_time = self.last_time + time_during_break
 
