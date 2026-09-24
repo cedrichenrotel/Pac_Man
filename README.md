@@ -117,3 +117,56 @@ The project was organized around extensive peer reviews for each implementation.
 Each feature was discussed and agreed upon collectively throughout the development process. Every feature was developed on its own branch and reviewed through a Pull Request before being merged into the `main` branch.
 
 A significant amount of verbal communication and discussion took place throughout the project. This allowed us to coordinate effectively without the need for a formal timeline or project management tools such as Jira.
+
+Voici une proposition de texte, en anglais comme le reste du README. Je l'ai construite à partir des 28 PR fusionnées (#1 → #32) et de l'auteur des commits dans chaque branche. Mateo apparaît sous plusieurs identités git (matgiber, ewa, Mateo, Mateo Gibert) et je les ai regroupées sous son nom.
+
+## Project Management
+
+The project was organized around extensive peer reviews for each implementation.
+
+Each feature was discussed and agreed upon collectively throughout the development process. Every feature was developed on its own branch and reviewed through a Pull Request before being merged into the `main` branch. As a rule, the Pull Requests of one team member were reviewed and merged by the other (28 Pull Requests merged in total).
+
+A significant amount of verbal communication and discussion took place throughout the project. This allowed us to coordinate effectively without the need for a formal timeline or project management tools such as Jira.
+
+### Task distribution
+
+**Cédric Henrotel (`cedrichenrotel`)**
+* Project bootstrap: `main` entry point and `config.json` parser (comment handling, validation) — PR #1, #2
+* Integration of the `mazegenerator` package and initialization of maze elements (Pac-Man, ghosts, pac-gums, super pac-gums) — PR #2, #5
+* Entity class hierarchy (`Entity`, `Pacman`, `Ghost`) using polymorphism — PR #5
+* Maze and elements rendering, resolution handling — PR #8
+* Pac-Man movement, key bindings and sprite animations — PR #9, #12
+* Pac-gum / super pac-gum logic, ghost vulnerability (blue ghosts) and timer — PR #16
+* Pac-Man eating ghosts: ghost respawn, flashing, death sprite — PR #18
+* Project restructuring (`level.py` refactor, `draw` module) — PR #20
+* Cheat codes and their on-screen display, level timer — PR #22
+* Win / Game Over screens, waiting time and blinking display — PR #26
+* Debugging, refactoring (ghost movement, render utils, duplicate removal), maze size safety — PR #29, #30
+* Fixes on the new pac-gum system (reset on life loss, countdown, lint) — PR #32
+
+**Mateo Gibert (`matgiber`)**
+* MiniLibX setup, `Game` / scene architecture, main menu (selector, logo, colors, error messages) — PR #4
+* Folder structure split into `engine` / `render`, level logic and `GameEngine` class — PR #6
+* Ghost pathfinding algorithm (DFS) — PR #7, later optimized in PR #13, #23
+* Highscore system (`highscore.json` persistence and display) — PR #10
+* Ghost / Pac-Man collision detection, lives display — PR #13
+* Instructions page — PR #14
+* Player name input page and score recording — PR #17
+* Rendering and game-loop optimization, HUD on canvas, window close handling — PR #21
+* Fleeing ghosts algorithm and level win detection — PR #23
+* Pause menu, macOS/Linux `mlx` support in `pyproject.toml` — PR #24
+* Launch file, build/export command (`pyinstaller`), score fixes — PR #25
+* README writing — PR #27, #28
+* Refactoring of positioning, ghost side bug fix — PR #28
+* New pac-gum system with a limit based on maze size, timer paused during pause menu — PR #31, #32
+
+**Shared work**
+* Code reviews on every Pull Request
+* Linting and typing compliance (`flake8`, `mypy`, `ruff`) on both sides
+
+À vérifier avant de coller le texte :
+- #2 : ce numéro est une supposition. Le merge « CH_integration_genrator et initialisation_element_labyrinthe » n'a pas de numéro dans le log, donc tu peux le supprimer ou le corriger.
+- Répartition de #32 : Mateo a créé le nouveau système de pac-gums et tu as corrigé les bugs. C'est ce que j'ai écras comme ça que ça s'est passé.
+- Commits sur les branches de l'autre : quelques commits ont été faits sur la branche de l'autre personne (par exemple ta correction de l'algo « manhattan » dans #23). Je les ai laissés de côté pour que la liste reste lisible.
+
+Tu veux que je l'insère directement dans le README.md ou tu préfères le coller toi-même ?
