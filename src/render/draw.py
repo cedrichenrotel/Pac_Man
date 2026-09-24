@@ -323,6 +323,9 @@ class Draw:
         self.countdown: int = int(
             self.config.level_max_time - (time() - self.last_time)
         )
+        assert self.pacman is not None
+        if self.countdown <= 0:
+            self.pacman.lives = 0
 
         list_text: list[tuple[str, Any]] = [
             ("LIFE:  ", self.pacman.lives if self.pacman else 0),

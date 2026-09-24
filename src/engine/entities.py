@@ -69,6 +69,7 @@ class Pacman(Entities):
         self.lives: int = lives
         self.dead: bool = False
         self.time_dead: float | None = None
+        self.start_pos: tuple[int, int] = (x, y)
 
     def decrease_life(self) -> None:
 
