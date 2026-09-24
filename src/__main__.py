@@ -36,6 +36,7 @@ def main() -> None:
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                 f"Invalid config values: {e}"
             )
+            config = Config_json()
 
         engine = GameEngine(config)
         engine.run()

@@ -25,7 +25,7 @@ from src.render.utils import (
     check_range,
     compare_position,
     transform_all_coord_to_cardinal,
-    pil_to_mlx_image
+    pil_to_mlx_image,
 )
 
 
@@ -145,15 +145,13 @@ class LevelScene(Draw):
         else:
             return True
 
-    def launch(self, reset_timer: bool = True) -> None:
+    def launch(self) -> None:
         """display the level scene"""
 
         self.level_engine = Level(self.config)
         self.level_engine.generate_maze(self.config.seed)
         self.maze = self.level_engine.generator.maze
         self.process_render()
-        if reset_timer is False:
-            self.last_time = time()
 
     def process_render(self) -> None:
         if self.is_winning is True:

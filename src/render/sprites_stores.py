@@ -41,7 +41,7 @@ class SpriteStores:
         list_file: list[str] = sorted(os.listdir(chomp_path))
         for direction in direction_image:
             if os.path.exists(os.path.join(pacman_path, direction)):
-                return
+                continue
             os.makedirs(os.path.join(pacman_path, direction))
             for file in list_file:
                 img = Image.open(os.path.join(chomp_path, file))

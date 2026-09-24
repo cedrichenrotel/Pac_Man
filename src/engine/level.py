@@ -39,7 +39,7 @@ class Level:
     def add_player_name(self, player_name: str) -> bool:
         self.player_name = player_name
 
-        if player_name in self.highscore.keys():
+        if player_name in self.highscore:
             return False
         return True
 
@@ -52,10 +52,10 @@ class Level:
         in highscore.json
         """
         if len(self.player_name) != 0:
-            if self.player_name in self.highscore.keys():
+            if self.player_name in self.highscore:
                 if (
-                    self.highscore[self.player_name] < self.score
-                    or self.highscore[self.player_name] is None
+                    self.highscore[self.player_name] is None
+                    or self.highscore[self.player_name] < self.score
                 ):
                     self.highscore[self.player_name] = self.score
             else:
