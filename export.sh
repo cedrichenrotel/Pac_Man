@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-echo "==> Installation/Mise à jour de l'environnement virtuel avec uv..."
+echo "==> Installing/Updating the virtual environment with uv..."
 uv sync
 
-echo "==> Suppression des anciens builds..."
+echo "==> Removing previous builds..."
 rm -rf build dist build_hooks
 
-echo "==> Génération du runtime hook (injection config par défaut)..."
+echo "==> Generating the runtime hook (default config injection)..."
 mkdir -p build_hooks
 cat > build_hooks/runtime_hook.py << 'EOF'
 import sys
@@ -18,7 +18,7 @@ if len(sys.argv) == 1:
     sys.argv.append(os.path.join(base, "config.json"))
 EOF
 
-echo "==> Packaging PyInstaller..."
+echo "==> Packaging with PyInstaller..."
 uv run pyinstaller --onefile --name "pacman" \
   --paths . \
   --add-data "assets:assets" \
@@ -27,7 +27,7 @@ uv run pyinstaller --onefile --name "pacman" \
   --runtime-hook build_hooks/runtime_hook.py \
   src/__main__.py
 
-echo "==> Rendre l'exécutable exécutable..."
+echo "==> Making the executable executable..."
 chmod +x dist/pacman
 
-echo "==> Build terminé avec succès dans le dossier dist/"
+echo "==> Build completed successfully in the dist/ directory."
