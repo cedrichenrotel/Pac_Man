@@ -185,15 +185,13 @@ class Draw:
             "RGBA", (self.width, self.height), (0, 0, 0, 0)
         )
 
-        _, width, height = self.GameRender.sprites_stores.sprites[
-            "pacgum"
-        ][0]
+        _, width, height = self.GameRender.sprites_stores.sprites["pacgum"][0]
 
         pacgums = self.level_engine.init_maze.pacgum_pos
 
         for y in range(len(self.maze)):
             for x in range(len(self.maze[y])):
-                pos = (x , y)
+                pos = (x, y)
                 if pos in pacgums:
                     self.draw_pacgum_on_canva(pos, width, height)
 
@@ -201,15 +199,19 @@ class Draw:
             self.canvas_pacgum, "pacgum_cache.png", self.mlx_init, self.mlx
         )
 
-    def draw_pacgum_on_canva(self, pos: tuple[int, int], width: int,
-                             height: int) -> None:
+    def draw_pacgum_on_canva(
+        self, pos: tuple[int, int], width: int, height: int
+    ) -> None:
 
         px: int = int(self.margin_x + pos[0] * self.cell_size)
         py: int = int(self.margin_y + pos[1] * self.cell_size)
         self.canvas_pacgum.paste(
-            self.pacgum_sprite, (px + self.cell_size // 2 - width // 2,
-                                 py + self.cell_size // 2 - height // 2),
-            self.pacgum_sprite
+            self.pacgum_sprite,
+            (
+                px + self.cell_size // 2 - width // 2,
+                py + self.cell_size // 2 - height // 2,
+            ),
+            self.pacgum_sprite,
         )
 
     def draw_pacman(self) -> None:
@@ -272,15 +274,14 @@ class Draw:
                     self.level_engine.generator, self.pacman
                 )
                 if self.paused is False:
-
                     if ghost.time_when_pause is not None:
-
-                        time_during_break: float = (time() -
-                                                    ghost.time_when_pause)
+                        time_during_break: float = (
+                            time() - ghost.time_when_pause
+                        )
                         assert ghost.start_time_is_edible is not None
-                        ghost.start_time_is_edible = (ghost.
-                                                      start_time_is_edible +
-                                                      time_during_break)
+                        ghost.start_time_is_edible = (
+                            ghost.start_time_is_edible + time_during_break
+                        )
                 assert vulnerability is not None
 
                 waiting: bool = (

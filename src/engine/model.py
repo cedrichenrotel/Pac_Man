@@ -5,11 +5,16 @@ from src.colors import COLORS
 try:
     import json
     import os
-    from typing import Any
     from pathlib import Path
-    from pydantic import (BaseModel, Field,
-                          RootModel, model_validator,
-                          ValidationError)
+    from typing import Any
+
+    from pydantic import (
+        BaseModel,
+        Field,
+        RootModel,
+        ValidationError,
+        model_validator,
+    )
 except ImportError:
     sys.exit()
 
@@ -92,7 +97,7 @@ class Config_json(BaseModel):
                         raise ValueError("format is not in {}")
                 for key, value in data.items():
                     UserScore({key: value})
-        except (json.JSONDecodeError, Exception)as e:
+        except (json.JSONDecodeError, Exception) as e:
             print(
                 f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
                 f"Invalid highscore.json: {e}"
@@ -120,13 +125,18 @@ class Config_json(BaseModel):
                 "invalid highscore_filename, using default."
             )
         else:
-            if (cls.parse_highscore(Path(values["highscore_filename"]),
-                                    values["highscore_filename"])
-               is False):
+            if (
+                cls.parse_highscore(
+                    Path(values["highscore_filename"]),
+                    values["highscore_filename"],
+                )
+                is False
+            ):
                 values["highscore_filename"] = "highscore.json"
                 print(
                     f"{COLORS['bright_yellow']}[WARNING]{COLORS['reset']} "
-                    "invalid highscore_filename, using default.")
+                    "invalid highscore_filename, using default."
+                )
         if (
             not isinstance(values.get("lives"), int)
             or values.get("lives", int) <= 0

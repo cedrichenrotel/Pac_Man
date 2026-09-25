@@ -6,8 +6,10 @@ try:
     import json
     import os
     from pathlib import Path
-    from src.engine.model import Config_json
+
     from mazegenerator import MazeGenerator
+
+    from src.engine.model import Config_json
 
 except ImportError as e:
     print(f"[IMPORT ERROR]: {e}")
@@ -168,8 +170,9 @@ def install_score_system(path: str, file: Path) -> dict[str, int]:
 
     highscores: dict[str, int] = {}
     if create_json_missing(file) is True:
-        is_highscore_good_format: bool = Config_json.parse_highscore(file,
-                                                                     path)
+        is_highscore_good_format: bool = Config_json.parse_highscore(
+            file, path
+        )
         if is_highscore_good_format is False:
             create_json_missing(file)
         elif os.stat(file).st_size != 0:

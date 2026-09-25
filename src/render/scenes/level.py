@@ -113,10 +113,15 @@ class LevelScene(Draw):
                     self.mlx.mlx_clear_window(self.mlx_init, self.mlx_window)
                     self.render()
             else:
+                if (
+                    ghost.time_respawn is not None
+                    and time() - ghost.time_respawn <= ghost.respawn_delay
+                ):
+                    return
                 ghost.eaten = True
+                ghost.init_entities_eaten()
                 ghost.time_respawn = time()
                 self.score += self.config.points_per_ghost
-                ghost.init_entities_eaten()
 
     def check_positioning(self) -> bool:
         """check the position of all ghost and pacman
